@@ -1,0 +1,63 @@
+@use 'sass:map';
+
+$sizes: (
+  sm: var(--forms-size-sm),
+  md: var(--forms-size-md),
+  lg: var(--forms-size-lg)
+);
+
+@mixin height($size) {
+  height: $size;
+  min-height: $size;
+  max-height: $size;
+}
+
+@mixin button-layout() {
+  border-radius: var(--forms-radius);
+
+  &[data-fill] {
+    width: 100%;
+  }
+
+  svg {
+    opacity: 0.8;
+  }
+
+  &[data-size='sm'] {
+    @include height(var(--forms-size-sm));
+    padding: 4px 16px;
+  }
+
+  &[data-size='md'] {
+    @include height(var(--forms-size-md));
+    padding: 4px 16px;
+  }
+
+  &[data-size='lg'] {
+    @include height(var(--forms-size-lg));
+    padding: 0px 26px;
+  }
+}
+
+@mixin items-spacing($spacing) {
+  & > * {
+    margin-right: $spacing;
+  }
+
+  & > :last-child {
+    margin-right: 0;
+  }
+}
+
+@mixin truncate-text() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin popover() {
+  overflow: initial !important;
+  display: flex;
+  outline: none;
+  z-index: 999;
+}

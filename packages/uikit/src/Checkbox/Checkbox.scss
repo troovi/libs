@@ -1,0 +1,35 @@
+.checkbox-container {
+  max-width: max-content;
+}
+
+.checkbox-icon-container {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 1px solid #ffffff75;
+  border-radius: 4px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  outline: none;
+  gap: 6px;
+
+  cursor: pointer;
+
+  label {
+    cursor: pointer;
+  }
+
+  &[data-checked] {
+    .checkbox-icon {
+      visibility: visible;
+    }
+  }
+}
+
+.checkbox-icon {
+  visibility: hidden;
+  color: #4bc310;
+}

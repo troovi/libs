@@ -1,0 +1,23 @@
+@import '../mixins.scss';
+
+.input {
+  @include height(var(--forms-size-md));
+
+  border-radius: var(--forms-radius);
+  outline: none;
+  width: 100%;
+  color: #ffffff;
+  border: 1px solid #686868;
+  background-color: #101010;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 47%);
+  padding: 6px 8px;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  &:focus {
+    border-color: #3787e9;
+  }
+}

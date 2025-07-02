@@ -1,0 +1,26 @@
+body {
+  overflow: hidden;
+  margin: 0;
+  font-family: monospace;
+  outline: none;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+}
+
+#root {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.window {
+  border: 2px solid #000;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #444444;
+}

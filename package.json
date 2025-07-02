@@ -1,0 +1,10 @@
+{
+  "name": "libs",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "rsync -av --exclude='package-lock.json' --exclude='node_modules' '/Users/pavel/Documents/XemoResearch/@libs' root@91.194.160.225:/root/xemo"
+  }
+}

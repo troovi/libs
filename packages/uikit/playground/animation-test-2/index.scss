@@ -1,0 +1,62 @@
+// Описание test-2-animation: анимация запускается через transform, а исчезает через opacity
+
+// Данный пример необходим для понимания прерывания enter анимации
+// Анимация появления (data-enter) намеренно сделана долгой, чтобы запустить завершение анимации ещё до окончания анимации enter.
+// В случае если анимация enter была бы окончена, вызов завершения анимации запускал бы этап [data-leave], однако при вызове завершения
+// в моменте выполнения enter, [data-leave] не будет вызван, а вместо этого будет добавлен атрибут [data-closed], который запустит анимацию вспять, до initial состояния, которое описано в [data-closed][data-enter]
+
+.test-2-animation {
+  // initial - начальное состояние (перед появлением)
+  &[data-closed][data-enter] {
+    transform: scale(0.3);
+  }
+
+  // animate from initial - анимация до конечного состояния, от начального
+  &[data-enter] {
+    transform: scale(1);
+    transition-delay: 0;
+    transition-duration: 2s;
+    transition-property: transform;
+    transition-timing-function: linear;
+  }
+
+  // exit - анимация завершения
+  &[data-leave] {
+    transition-delay: 0;
+    transition-duration: 1s;
+    transition-property: opacity;
+    transition-timing-function: linear;
+    opacity: 0;
+  }
+}
+
+// В данном примере, анимировано прерывание enter
+
+.test-2-completed-animation {
+  // начальное состояние
+  // также будет запускаться при прерывании enter-анимации
+  &[data-closed][data-enter] {
+    // описываем начальное состояние (перед появлением). Обращаю внимание что "opacity: 0" не будет учтен при data-enter анимации
+    transform: scale(0.3);
+    opacity: 0;
+    // стили использующиеся при прерывании data-enter анимации (переход в начальное состояние)
+    transition-duration: 200ms;
+    transition-property: transform, opacity; // учитываем opacity
+  }
+
+  // animate - анимация появления запускаемая от начального до конечного состояния
+  &[data-enter] {
+    transform: scale(1);
+    transition-duration: 2s;
+    transition-property: transform;
+    transition-timing-function: linear;
+  }
+
+  // exit - анимация завершения
+  &[data-leave] {
+    transition-duration: 1s;
+    transition-property: opacity;
+    transition-timing-function: linear;
+    opacity: 0;
+  }
+}

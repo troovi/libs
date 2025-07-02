@@ -1,0 +1,42 @@
+:root {
+  --forms-radius: 4px;
+  --forms-size-sm: 24px;
+  --forms-size-md: 30px;
+  --forms-size-lg: 40px;
+
+  --border-color: #8f8f8f;
+  --color-error: #e92c2c;
+  --color-text: #e1e3e6;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+}
+
+.bp6-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+  width: max-content;
+
+  svg {
+    display: block;
+  }
+}
+
+.bp6-icon > svg:not([fill]) {
+  fill: currentcolor;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
+}

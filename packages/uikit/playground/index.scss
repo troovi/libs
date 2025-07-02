@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  font-family: monospace;
+  outline: none;
+}
+
+// SIMPLE TEST
+
+.box-styles {
+  background: red;
+  color: rgb(255, 255, 255);
+  width: 120px;
+  height: 60px;
+}
+
+// CLASSNAMES USAGE
+
+.enterFrom {
+  opacity: 0;
+}
+
+.enter {
+  transition: opacity;
+  transition-timing-function: linear;
+  transition-duration: 10s;
+}
+
+.enterTo {
+  opacity: 1;
+}
+
+// leave
+
+.leaveFrom {
+  opacity: 1;
+}
+
+.leave {
+  transition: all;
+  transition-timing-function: linear;
+  transition-duration: 5s;
+}
+
+.leaveTo {
+  opacity: 0;
+}
+
+.col-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  padding: 20px 120px;
+}
+
+.spinner-border {
+  animation: none;
+}

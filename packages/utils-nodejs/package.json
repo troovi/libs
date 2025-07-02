@@ -1,0 +1,19 @@
+{
+  "name": "@troovi/utils-nodejs",
+  "version": "1.2.0",
+  "main": "dist/index.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  },
+  "publishConfig": {
+    "@troovi:registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "@troovi/utils-js": "file:../utils-js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9"
+  }
+}

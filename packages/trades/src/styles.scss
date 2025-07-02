@@ -1,0 +1,22 @@
+.bubbles {
+  display: flex;
+  justify-content: flex-end;
+  height: max-content;
+  color: #fff;
+}
+
+.trade {
+  &[data-lot='buy'] {
+    background-color: #2fa122;
+  }
+
+  &[data-lot='sell'] {
+    background-color: #b32626;
+  }
+}
+
+.hypotenyse {
+  height: 1px;
+  position: absolute;
+  background: #ffffff;
+}

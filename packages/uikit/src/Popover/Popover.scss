@@ -1,0 +1,134 @@
+@import '../mixins.scss';
+
+:root {
+  --popover-arrow-size: 28px;
+  --popover-arrow-shadow-width: 15px;
+  --popover-arrow-shadow: 2px 2px 5px rgb(0 0 0 / 8%);
+  --popover-shadow: 0px 20px 44px 8px #000;
+  --popover-background: #171717;
+  --popover-radius: 8px;
+}
+
+.popover {
+  @include popover();
+
+  background: var(--popover-background);
+  box-shadow: var(--popover-shadow);
+  border-radius: var(--popover-radius);
+  border: 1px solid #ffffff52;
+
+  transform: scale(1);
+  opacity: 1;
+
+  // начальное состояние (перед появлением), а также стили при закрытии data-enter анимации
+  &[data-closed][data-enter] {
+    // начальное состояние
+    transform: scale(0.3);
+    // данные стили применены при прерывании enter-анимации
+    transition-duration: 100ms;
+    transition-property: transform, opacity;
+    opacity: 0;
+  }
+
+  // animate  - анимация появления запускаемая от начального до конечного состояния
+  &[data-enter] {
+    transform: scale(1);
+    transition-delay: 0;
+    transition-duration: 200ms;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.54, 1.12, 0.38, 1.11);
+    opacity: 1;
+  }
+
+  // exit - анимация завершения
+  &[data-leave] {
+    transform: scale(0.8);
+    transition-delay: 0;
+    transition-duration: 150ms;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.54, 1.12, 0.38, 1.11);
+    left: var(--prev-left) !important;
+    opacity: 0;
+  }
+
+  // arrow
+
+  &[data-anchor='bottom center'] {
+    transform-origin: top;
+
+    .popover-arrow {
+      left: 50%;
+      transform: translateX(-50%) translateY(calc(-100% + 1.5px));
+      top: 0px;
+    }
+  }
+
+  &[data-anchor='top center'] {
+    transform-origin: bottom;
+
+    .popover-arrow {
+      left: 50%;
+      transform: translateX(-50%) translateY(calc(100% - 1.5px)) rotate(180deg);
+      bottom: 0px;
+    }
+  }
+
+  &[data-anchor='left center'] {
+    transform-origin: right;
+
+    .popover-arrow {
+      top: 50%;
+      transform: translateY(-50%) translateX(calc(100% - 1.5px)) rotate(90deg);
+      right: 0px;
+    }
+  }
+
+  &[data-anchor='right center'] {
+    transform-origin: left;
+
+    .popover-arrow {
+      top: 50%;
+      transform: translateY(-50%) translateX(calc(-100% + 1.5px)) rotate(-90deg);
+      left: 0px;
+    }
+  }
+
+  &-arrow {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    pointer-events: none;
+    width: var(--popover-arrow-size);
+    height: var(--popover-arrow-size);
+    overflow: hidden;
+
+    &::before {
+      position: absolute;
+      bottom: 0;
+      inset-inline-start: 0;
+      width: var(--popover-arrow-size);
+      height: calc(var(--popover-arrow-size) / 2);
+      background: var(--popover-background);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M 0 8 A 4 4 0 0 0 2.82842712474619 6.82842712474619 L 6.585786437626905 3.0710678118654755 A 2 2 0 0 1 9.414213562373096 3.0710678118654755 L 13.17157287525381 6.82842712474619 A 4 4 0 0 0 16 8 Z' /%3E%3C/svg%3E");
+      mask-size: auto;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      content: '';
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: var(--popover-arrow-shadow-width);
+      height: var(--popover-arrow-shadow-width);
+      bottom: 0;
+      inset-inline: 0;
+      margin: auto;
+      border-radius: 0 0 2px 0;
+      transform: translateY(50%) rotate(-135deg);
+      box-shadow: var(--popover-arrow-shadow);
+      z-index: 0;
+      background: transparent;
+    }
+  }
+}

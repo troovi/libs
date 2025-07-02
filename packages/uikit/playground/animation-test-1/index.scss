@@ -1,0 +1,20 @@
+.test-1-animation {
+  transition-duration: 4s;
+  transition-property: all;
+  transition-timing-function: linear;
+
+  // presets before transition in (initial state)
+  &[data-closed][data-enter] {
+    opacity: 0;
+  }
+
+  // transition in
+  &[data-enter] {
+    opacity: 1;
+  }
+
+  // transition out
+  &[data-leave] {
+    opacity: 0;
+  }
+}

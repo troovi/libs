@@ -1,0 +1,83 @@
+@import '../mixins.scss';
+
+:root {
+  --select-background: #141414;
+}
+
+.select {
+  @include button-layout();
+  @include items-spacing(10px);
+
+  color: var(--color-text);
+  outline: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+
+  background: #101010;
+  border: 1px solid #686868;
+
+  &[data-hover] {
+    background: #191919;
+  }
+
+  &:active {
+    background: #212121;
+  }
+
+  &[data-error] {
+    border-color: var(--color-error);
+  }
+
+  &-text {
+    @include truncate-text();
+
+    flex: 1 1 auto;
+
+    &[data-placeholder] {
+      opacity: 0.6;
+    }
+  }
+
+  &-arrow {
+    margin-left: 10px;
+
+    svg {
+      opacity: 0.6;
+    }
+  }
+}
+
+.select-popup {
+  @include popover();
+
+  flex-direction: column;
+
+  width: var(--button-width);
+  background: var(--popover-background);
+  box-shadow: var(--popover-shadow);
+  border-radius: var(--forms-radius);
+
+  &[data-enter][data-closed] {
+    opacity: 0;
+  }
+
+  &[data-enter] {
+    opacity: 1;
+    transition-delay: 0;
+    transition-duration: 0.1s;
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 1, 0.75, 0.9);
+  }
+
+  &[data-leave] {
+    opacity: 0;
+    transition-delay: 0;
+    transition-duration: 0.1s;
+    transition-property: opacity;
+    width: var(--prev-button);
+    left: var(--prev-left) !important;
+    transition-timing-function: cubic-bezier(0.4, 1, 0.75, 0.9);
+  }
+}

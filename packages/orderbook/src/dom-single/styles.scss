@@ -1,0 +1,103 @@
+:root {
+  --dom-bid-color: #039100;
+  --dom-ask-color: #760000;
+  --dom-mid-color: #ff2cff;
+}
+
+.orderbook {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &-inner {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .top-left {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 999;
+  }
+
+  .bottom-left {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    z-index: 999;
+  }
+
+  &-content {
+    overflow-y: scroll;
+    height: 100%;
+    padding: 0px 8px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &-layout {
+      display: flex;
+      overflow: hidden;
+    }
+  }
+}
+
+.dom-list {
+  position: relative;
+  padding-right: 1px;
+}
+
+.dom-css {
+  font-size: 11px;
+  border-right: 1px solid #ffffff29;
+  border-left: 1px solid #ffffff29;
+}
+
+.dom-css > div {
+  position: relative;
+  cursor: pointer;
+  height: 18px;
+}
+
+.dom-css > div > div:hover {
+  background-color: #ffffff1a;
+}
+
+.dom-css > div > div > div {
+  min-width: 100%;
+  height: 18px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 6px;
+  color: #fff;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dom-css > div > nav {
+  position: absolute;
+  background: #ffa801;
+  max-width: 100%;
+  height: 18px;
+  pointer-events: none;
+}
+
+.asks {
+  background-color: var(--dom-ask-color);
+}
+
+.bids {
+  background-color: var(--dom-bid-color);
+}
+
+.free {
+  background-color: #171717;
+}
+
+.both {
+  background-color: var(--dom-mid-color);
+}
