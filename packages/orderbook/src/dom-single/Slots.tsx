@@ -61,13 +61,11 @@ const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver 
               <nav style={{ width: `${(volume * 100) / dom.basevolume}%` }} />
               <div>
                 <div>
-                  <div>
-                    {item.status === 'both'
-                      ? `${roundVolume(item.asksVolume)} | ${roundVolume(item.bidsVolume)}`
-                      : roundVolume(volume)}
-                  </div>
-                  <div>{tick}</div>
+                  {item.status === 'both'
+                    ? `${roundVolume(item.asksVolume)} | ${roundVolume(item.bidsVolume)}`
+                    : roundVolume(volume)}
                 </div>
+                <div>{tick}</div>
               </div>
             </div>
           )

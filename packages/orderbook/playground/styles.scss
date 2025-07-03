@@ -16,11 +16,40 @@ body {
 #root {
   overflow: hidden;
   height: 100vh;
+  background-color: #232323;
 }
 
 .window {
-  border: 2px solid #000;
+  border: 1px solid #585858;
   overflow: hidden;
   border-radius: 6px;
-  background-color: #444444;
+  background-color: #0f0f0f;
+}
+
+.widget-header {
+  padding: 0 10px;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(4, 4, 5, 0.2), 0 1.5px 0 rgba(6, 6, 7, 0.05), 0 2px 0 rgba(4, 4, 5, 0.05);
+  transition: background-color 0.1s linear;
+  background: rgb(255 255 255 / 7%);
+  border-bottom: 1px solid #ffffff12;
+
+  &-button {
+    width: 16px;
+    height: 16px;
+    background: #ffffff23;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ffffff33;
+    }
+
+    &:active {
+      background-color: #ffffff4d;
+    }
+  }
 }

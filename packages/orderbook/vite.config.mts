@@ -17,6 +17,9 @@ export default defineConfig({
       }
     })
   ],
+  server: {
+    hmr: false
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')

@@ -3,33 +3,23 @@ import { width as w } from '@troovi/utils-browser'
 import { roundVolume } from '../service/utils'
 import { OrderBookArbitrageService, InitialScroll } from './service'
 
-interface TickData {
-  asksVolume: number
-  bidsVolume: number
-}
-
-export interface DomAdditionalProps {
-  DOMPrimitives?: React.ReactNode
-  onTickOver?: (tick: string, data: TickData) => void
-  onTickClick?: (tick: string, data: TickData) => void
-  onDomLeave?: () => void
-}
-
-interface SlotsProps extends DomAdditionalProps {
+interface SlotsProps {
   dom: OrderBookArbitrageService
   width: number
 }
 
-const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver }: SlotsProps) => {
+const Slots = ({ dom, width }: SlotsProps) => {
   const [, rerender] = useState([])
 
   useMemo(() => {
-    dom.onRerender = () => rerender([])
+    dom.rerenderTrack = () => {
+      rerender([])
+    }
   }, [])
 
   useEffect(() => {
     return () => {
-      dom.onRerender = null
+      dom.rerenderTrack = null
     }
   }, [])
 
@@ -39,42 +29,67 @@ const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver 
     }
   }, [dom.trackState])
 
-  const { updateId, initialScroll, ticks, track } = dom.viewState
+  const { initialScroll, updateId } = dom.viewState
 
   return (
     <div className="dom-list" style={w(width)}>
       {initialScroll && (
         <ApplyScroll key={`initial-${updateId}`} initialScroll={initialScroll} dom={dom} />
       )}
-      <div className="dom-css" onMouseLeave={onDomLeave}>
-        {ticks.map((tick, i) => {
-          const item = track[tick]
-          const volume = item.asksVolume + item.bidsVolume
+      <div className="dom-arbitrage">
+        <div>
+          <Book dom={dom} side="F" />
+        </div>
+        <div className="price-scale">
+          {dom.viewableTicks.map((tick, i) => (
+            <div key={`tick--${tick}-${i}`}>{tick}</div>
+          ))}
+        </div>
+        <div>
+          <Book dom={dom} side="S" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
-          return (
-            <div
-              className={item.status}
-              key={`tick--${tick}--${item.status}-${i}`}
-              onMouseOver={() => onTickOver?.(tick, item)}
-              onClick={() => onTickClick?.(tick, item)}
-            >
-              <nav style={{ width: `${(volume * 100) / dom.basevolume}%` }} />
+const Book = ({ dom, side }: { dom: OrderBookArbitrageService; side: 'S' | 'F' }) => {
+  const [, rerender] = useState([])
+
+  useMemo(() => {
+    dom[side].rerender = () => {
+      rerender([])
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      dom[side].rerender = null
+    }
+  }, [])
+
+  return (
+    <>
+      {dom.viewableTicks.map((tick, i) => {
+        const { status, asksVolume, bidsVolume } = dom.viewableTrack[tick][side]
+        const volume = asksVolume + bidsVolume
+
+        return (
+          <div key={`tick--${tick}-${i}`} data-tick={tick} className={`tick ${status}`}>
+            <nav style={{ width: `${(volume * 100) / dom[side].basevolume}%` }} />
+            <div>
               <div>
                 <div>
-                  <div>
-                    {item.status === 'both'
-                      ? `${roundVolume(item.asksVolume)} | ${roundVolume(item.bidsVolume)}`
-                      : roundVolume(volume)}
-                  </div>
-                  <div>{tick}</div>
+                  {status === 'both'
+                    ? `${roundVolume(asksVolume)} | ${roundVolume(bidsVolume)}`
+                    : roundVolume(volume)}
                 </div>
               </div>
             </div>
-          )
-        })}
-      </div>
-      {DOMPrimitives}
-    </div>
+          </div>
+        )
+      })}
+    </>
   )
 }
 

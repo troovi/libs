@@ -28,7 +28,7 @@ export const Trades = ({ trades, width = 280 }: { trades: TradesService; width: 
             <div
               className="trade-bubble"
               data-price={item.price}
-              key={`trade-${i}-${item.price}-${item.roundedQty}`}
+              key={`trade-${i}-${item.price}-${item.lot}-${item.quantity}`}
               style={{ marginTop: `${item.marginTop}px` }}
             >
               <div className="quote-trade">{roundTo(item.quantity * item.price, 2)}$</div>

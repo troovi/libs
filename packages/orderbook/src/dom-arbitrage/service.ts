@@ -1,14 +1,33 @@
 import { ScrollAnimation } from '@troovi/utils-browser'
-import { EventBroadcaster, roundTo } from '@troovi/utils-js'
+import { EventBroadcaster, getFloatDigits, roundTo } from '@troovi/utils-js'
 import { createState } from '@troovi/transmit'
 
-import { Track } from '../service/types'
 import { TickFormatter } from '../service/tick-formatter'
 import { OrderBookState, OrderBookUpdate } from '../service/dom-state'
+import { TickData } from '../service/types'
 
-export interface OrderBookOptions {
+interface Track {
+  [tick: string]: { S: TickData; F: TickData }
+}
+
+interface Prices {
+  [price: number]: string
+}
+
+interface Book {
   snapshot: OrderBookUpdate
   priceStep: number
+  factor?: number
+}
+
+interface TrackViewState {
+  updateId: number
+  initialScroll?: InitialScroll
+}
+
+export interface OrderBookOptions {
+  S: Book
+  F: Book
 }
 
 export interface InitialScroll {
@@ -16,27 +35,106 @@ export interface InitialScroll {
   mode: 'top' | 'center'
 }
 
-interface DOMViewState {
-  updateId: number
-  track: Track
-  ticks: string[]
-  initialScroll?: InitialScroll
+const books = ['S', 'F'] as const
+
+class BookService {
+  public readonly state: OrderBookState
+
+  public readonly limits: {
+    maxPrice: number
+    minPrice: number
+  }
+
+  public priceFactor: number = 1
+  public priceFormatter: (price: number) => number = (n) => n
+  public inversePriceFormatter: (price: number) => number = (n) => n
+
+  public basevolume: number = 1
+
+  public bestBid = createState(0)
+  public bestAsk = createState(0)
+
+  public updateAfterRendered: boolean = false
+  public rerender: (() => void) | null = null
+
+  constructor({ factor, priceStep, snapshot }: Book) {
+    if (factor) {
+      this.priceFactor = factor
+
+      const basePrecision = getFloatDigits(priceStep.toString())
+      const precision = basePrecision + Math.log10(factor)
+
+      this.priceFormatter = (price: number) => {
+        return roundTo(price / factor, precision)
+      }
+
+      this.inversePriceFormatter = (price: number) => {
+        return roundTo(price * factor, basePrecision)
+      }
+    }
+
+    this.state = new OrderBookState({ priceStep })
+
+    this.bestBid = createState(this.getBestBid())
+    this.bestAsk = createState(this.getBestAsk())
+
+    this.limits = {
+      maxPrice: this.priceFormatter(snapshot.asks[snapshot.asks.length - 1][0]),
+      minPrice: this.priceFormatter(snapshot.bids[snapshot.bids.length - 1][0])
+    }
+
+    this.state.onBestBidChange.subscribe((price) => {
+      this.bestBid.set(this.priceFormatter(price))
+    })
+
+    this.state.onBestAskChange.subscribe((price) => {
+      this.bestAsk.set(this.priceFormatter(price))
+    })
+
+    this.state.update(snapshot)
+    this.optimalVolumes(snapshot)
+  }
+
+  public getBestBid() {
+    return this.priceFormatter(this.state.best.bids)
+  }
+
+  public getBestAsk() {
+    return this.priceFormatter(this.state.best.asks)
+  }
+
+  private optimalVolumes(snapshot: OrderBookUpdate) {
+    const volumes: number[] = [
+      ...snapshot.bids.map(([, qty]) => qty),
+      ...snapshot.asks.map(([, qty]) => qty)
+    ]
+
+    volumes.sort((a, b) => b - a)
+    volumes.shift()
+    volumes.shift()
+
+    const highest = volumes.splice(0, Math.round(volumes.length / 2))
+
+    const avg = highest.reduce((a, b) => a + b, 0) / volumes.length
+    const vol = (100 * avg * this.priceFactor) / 1
+
+    this.basevolume = Math.round(vol)
+  }
 }
 
 export class OrderBookArbitrageService {
-  public priceStep: number
   public tickHeight: number = 18
   public maxTicks: number = 140
 
-  public viewState: DOMViewState = {
-    updateId: 0,
-    track: {},
-    ticks: []
+  // state
+  public viewState: TrackViewState = {
+    updateId: 0
   }
 
-  // state
+  public tickFormatter: TickFormatter
 
-  public readonly state: OrderBookState
+  public S: BookService
+  public F: BookService
 
   private readonly limits: {
     maxPrice: number
@@ -49,157 +147,159 @@ export class OrderBookArbitrageService {
   private minViewablePrice: number
 
   // current
-  private viewablePrice: number
-  private viewableTrack: Track = {}
-  private viewableTicks: string[] = []
+
+  private middlePrice: number
+  public viewableTrack: Track = {}
+  public viewableTicks: string[] = []
+  private viewablePrices: { S: Prices; F: Prices } = { S: {}, F: {} }
+
+  // scroll
 
   private trackThreshold = 5
 
   // other
   private targetScrollPrice: number | null = null
-  private updateAfterRendered: boolean = false
 
-  public basevolume: number = 1
+  public rerenderTrack: (() => void) | null = null
+
   public scrollable: ScrollAnimation | null = null
   public trackState = { id: 0, isRendered: false }
 
   public enableAutoScrolling = true
 
-  public onRerender: (() => void) | null = null
   public afterTrackRendered: (() => void) | null = null
-
-  public bestBid = createState(0)
-  public bestAsk = createState(0)
 
   public onTrackChanged = new EventBroadcaster<void>()
   public onTickChanged = new EventBroadcaster<void>()
 
-  public tickFormatter: TickFormatter
+  constructor(options: OrderBookOptions) {
+    books.forEach((book) => {
+      this[book] = new BookService(options[book])
+    })
 
-  constructor({ priceStep, snapshot }: OrderBookOptions) {
-    this.priceStep = priceStep
-
-    this.tickFormatter = new TickFormatter({ priceStep })
-    this.state = new OrderBookState({ priceStep })
-
-    this.bestBid = createState(snapshot.bids[0][0])
-    this.bestAsk = createState(snapshot.asks[0][0])
+    this.tickFormatter = new TickFormatter({
+      priceStep: Math.min(
+        this.S.priceFormatter(options.S.priceStep),
+        this.F.priceFormatter(options.F.priceStep)
+      )
+    })
 
     this.limits = {
-      maxPrice: snapshot.asks[snapshot.asks.length - 1][0],
-      minPrice: snapshot.bids[snapshot.bids.length - 1][0]
+      maxPrice: Math.min(this.S.limits.maxPrice, this.S.limits.maxPrice),
+      minPrice: Math.max(this.F.limits.minPrice, this.F.limits.minPrice)
     }
+  }
 
-    this.state.onBestBidChange.subscribe((price) => {
-      this.bestBid.set(price)
-    })
-
-    this.state.onBestAskChange.subscribe((price) => {
-      this.bestAsk.set(price)
-    })
-
-    this.state.update(snapshot)
-    this.optimalVolumes(snapshot)
+  public getMiddlePrice() {
+    return Math.min(this.S.getBestBid(), this.F.getBestAsk())
   }
 
   public setDefaultView() {
-    this.viewablePrice = this.state.best.bids
+    this.middlePrice = this.getMiddlePrice()
     this.rebuildTrack()
   }
 
-  private updateState(update: OrderBookUpdate) {
-    this.state.update(update, ({ side, price, quantity }) => {
-      const tick = this.viewableTrack[this.tickFormatter.getTick(price)]
+  private updateState(update: OrderBookUpdate, book: 'S' | 'F') {
+    this[book].state.update(update, ({ side, price, quantity }) => {
+      const tick = this.viewableTrack[this.viewablePrices[book][price]]
 
       if (tick) {
+        // update tick
+
         if (quantity) {
-          tick[side][price] = quantity
+          tick[book][side][price] = quantity
         } else {
-          delete tick[side][price]
+          delete tick[book][side][price]
         }
 
-        tick[`${side}Volume`] = this.getClusterVolume(tick[side])
-        tick.status = this.getTickStatus(tick)
+        tick[book][`${side}Volume`] = this.getClusterVolume(tick[book][side]) * this[book].priceFactor
+        tick[book].status = this.getTickStatus(tick[book])
       }
     })
   }
 
-  private render(initialScroll?: InitialScroll) {
+  private renderBook(book: 'S' | 'F') {
+    this[book].rerender?.()
+  }
+
+  private renderTrack(initialScroll: InitialScroll) {
     this.viewState = {
       updateId: this.viewState.updateId + 1,
-      ticks: this.viewableTicks,
-      track: this.viewableTrack,
       initialScroll
     }
 
-    this.onRerender?.()
+    this.rerenderTrack?.()
   }
 
-  public update(update: OrderBookUpdate) {
-    if (!this.onRerender) {
-      this.state.update(update)
+  public update(update: OrderBookUpdate, book: 'S' | 'F') {
+    if (!this[book].rerender) {
+      this[book].state.update(update)
       return
     }
 
-    this.updateState(update)
+    this.updateState(update, book)
 
     if (this.trackState.isRendered) {
+      // autoscrolling
       if (this.enableAutoScrolling) {
-        const bestBid = this.state.best.bids
+        const middlePrice = this.getMiddlePrice()
 
-        if (bestBid !== this.targetScrollPrice) {
-          if (bestBid > this.maxViewablePrice || bestBid < this.minViewablePrice) {
+        if (middlePrice !== this.targetScrollPrice) {
+          if (middlePrice > this.maxViewablePrice || middlePrice < this.minViewablePrice) {
             this.setDefaultView()
             return
           }
 
-          if (!this.isBestBidAreViewable()) {
+          if (!this.isMiddlePriceAreViewable()) {
             this.scrollToCenter()
           }
         }
       }
 
-      this.render()
+      this.renderBook(book)
     } else {
-      this.updateAfterRendered = true
+      this[book].updateAfterRendered = true
     }
   }
 
-  public onTrackRendered = () => {
+  // only in hook usage
+  public onTrackRendered() {
     this.trackState.isRendered = true
     delete this.viewState.initialScroll
 
-    if (this.updateAfterRendered) {
-      this.updateAfterRendered = false
+    books.forEach((book) => {
+      if (this[book].updateAfterRendered) {
+        this[book].updateAfterRendered = false
 
-      if (this.enableAutoScrolling) {
-        const bestBid = this.state.best.bids
+        if (this.enableAutoScrolling) {
+          const middlePrice = this.getMiddlePrice()
 
-        if (bestBid > this.maxViewablePrice || bestBid < this.minViewablePrice) {
-          this.afterTrackRendered = null
-          this.setDefaultView()
-          return
+          if (middlePrice > this.maxViewablePrice || middlePrice < this.minViewablePrice) {
+            this.afterTrackRendered = null
+            this.setDefaultView()
+            return
+          }
         }
-      }
 
-      this.render()
-    }
+        this.renderBook(book)
+      }
+    })
 
     if (this.afterTrackRendered) {
       this.afterTrackRendered()
     }
   }
 
-  private isBestBidAreViewable() {
-    const bestBidPosition = this.getPricePosition(this.state.best.bids)
+  private isMiddlePriceAreViewable() {
+    const middlePricePosition = this.getPricePosition(this.getMiddlePrice())
     const position = this.scrollable?.getPosition()
 
     if (position) {
-      if (bestBidPosition > position.scrollTop + position.clientHeight * (5 / 6)) {
+      if (middlePricePosition > position.scrollTop + position.clientHeight * (5 / 6)) {
         return false
       }
 
-      if (bestBidPosition < position.scrollTop + position.clientHeight * (1 / 6)) {
+      if (middlePricePosition < position.scrollTop + position.clientHeight * (1 / 6)) {
         return false
       }
     }
@@ -209,49 +309,75 @@ export class OrderBookArbitrageService {
 
   private rebuildTrack(getScrollTop?: (data: { maxPrice: number; prevMaxPrice: number }) => number) {
     const tickStep = this.tickFormatter.tick
-    const viewablePrice = +this.tickFormatter.getTick(this.viewablePrice)
+    const middlePrice = +this.tickFormatter.getTick(this.middlePrice)
 
-    const maxTick = this.tickFormatter.getTick(viewablePrice + (tickStep * this.maxTicks) / 2)
-    const minTick = this.tickFormatter.getTick(viewablePrice - (tickStep * this.maxTicks) / 2)
+    const maxTick = this.tickFormatter.getTick(middlePrice + (tickStep * this.maxTicks) / 2)
+    const minTick = this.tickFormatter.getTick(middlePrice - (tickStep * this.maxTicks) / 2)
 
     const prevMaxPrice = this.maxViewablePrice
 
-    this.minViewablePrice = +minTick
     this.maxViewablePrice = +maxTick
+    this.minViewablePrice = +minTick
 
     const track: Track = {}
     const ticks: string[] = []
+    const prices: { S: Prices; F: Prices } = { S: {}, F: {} }
 
-    for (let tick = minTick; +tick <= +maxTick; tick = this.tickFormatter.increaseTick(tick)) {
+    const createTick = (book: 'S' | 'F') => {
       const bids = { volume: 0, prices: {} as Record<string, number> }
       const asks = { volume: 0, prices: {} as Record<string, number> }
 
-      this.tickFormatter.getPrices(+tick).forEach((price) => {
-        const priceIndex = this.state.getIndex(+price)
-
-        const ask = this.state.asks[priceIndex]
-        const bid = this.state.bids[priceIndex]
-
-        if (ask) {
-          asks.volume += ask[1]
-          asks.prices[ask[0]] = ask[1]
+      return {
+        store: { bids, asks },
+        create: (): TickData => {
+          return {
+            status: this.getTickStatus({
+              bidsVolume: bids.volume,
+              asksVolume: asks.volume
+            }),
+            asksVolume: asks.volume * this[book].priceFactor,
+            bidsVolume: bids.volume * this[book].priceFactor,
+            bids: bids.prices,
+            asks: asks.prices
+          }
         }
+      }
+    }
 
-        if (bid) {
-          bids.volume += bid[1]
-          bids.prices[bid[0]] = bid[1]
-        }
+    for (let tick = minTick; +tick <= +maxTick; tick = this.tickFormatter.increaseTick(tick)) {
+      const store = {
+        S: createTick('S'),
+        F: createTick('F')
+      }
+
+      this.tickFormatter.getPrices(+tick).forEach((__price__) => {
+        books.forEach((book) => {
+          const price = +this[book].inversePriceFormatter(+__price__)
+
+          prices[book][price] = tick
+
+          const priceIndex = this[book].state.getIndex(price)
+
+          const ask = this[book].state.asks[priceIndex]
+          const bid = this[book].state.bids[priceIndex]
+
+          const { asks, bids } = store[book].store
+
+          if (ask) {
+            asks.volume += ask[1]
+            asks.prices[ask[0]] = ask[1]
+          }
+
+          if (bid) {
+            bids.volume += bid[1]
+            bids.prices[bid[0]] = bid[1]
+          }
+        })
       })
 
       track[tick] = {
-        status: this.getTickStatus({
-          bidsVolume: bids.volume,
-          asksVolume: asks.volume
-        }),
-        asksVolume: asks.volume,
-        bidsVolume: bids.volume,
-        bids: bids.prices,
-        asks: asks.prices
+        S: store.S.create(),
+        F: store.F.create()
       }
 
       ticks.unshift(tick)
@@ -259,20 +385,21 @@ export class OrderBookArbitrageService {
 
     this.viewableTrack = track
     this.viewableTicks = ticks
+    this.viewablePrices = prices
 
     this.onTrackChanged.emit()
 
     this.trackState = { id: this.trackState.id + 1, isRendered: false }
 
     if (getScrollTop) {
-      this.render({
+      this.renderTrack({
         mode: 'top',
         scroll: getScrollTop({ maxPrice: this.maxViewablePrice, prevMaxPrice })
       })
     } else {
-      this.render({
+      this.renderTrack({
         mode: 'center',
-        scroll: this.getPricePosition(this.state.best.bids)
+        scroll: this.getPricePosition(this.getMiddlePrice())
       })
     }
   }
@@ -283,11 +410,7 @@ export class OrderBookArbitrageService {
 
   public onScroll() {
     this.getScrollable(({ scrollTop, clientHeight, scrollHeight }) => {
-      this.viewablePrice = this.getPriceFromTopPosition(scrollTop + clientHeight / 2)
-
-      if (this.viewState.initialScroll) {
-        return
-      }
+      this.middlePrice = this.getPriceFromTopPosition(scrollTop + clientHeight / 2)
 
       const progress = (scrollTop / (scrollHeight - clientHeight)) * 100
 
@@ -321,8 +444,13 @@ export class OrderBookArbitrageService {
 
   public scrollToCenter(speedValue?: number) {
     this.getScrollable(({ clientHeight, scrollHeight }, scrollable) => {
-      const bestBid = this.state.best.bids
-      const ticks = Math.abs(this.viewablePrice - bestBid) / this.tickFormatter.tick
+      const middlePrice = this.getMiddlePrice()
+
+      if (this.viewState.initialScroll) {
+        return
+      }
+
+      const ticks = Math.abs(this.middlePrice - middlePrice) / this.tickFormatter.tick
 
       if (ticks < 1) {
         this.targetScrollPrice = null
@@ -341,17 +469,17 @@ export class OrderBookArbitrageService {
 
       if (ticks < 160) {
         const threshold = this.trackThreshold
-        const targetPosition = this.getPricePosition(bestBid) - clientHeight / 2
+        const targetPosition = this.getPricePosition(middlePrice) - clientHeight / 2
         const targetPercent = (targetPosition / (scrollHeight - clientHeight)) * 100
 
-        this.targetScrollPrice = bestBid
+        this.targetScrollPrice = middlePrice
 
         if (targetPercent > threshold && targetPercent < 100 - threshold) {
           scrollable.moveTo(targetPosition, { effect: 'speed', speed }, () => {
             this.targetScrollPrice = null
           })
         } else {
-          const direction = this.viewablePrice < bestBid ? 1 : -1
+          const direction = this.middlePrice < middlePrice ? 1 : -1
           const percent = direction === 1 ? threshold - 0.1 : 100 - threshold + 0.1
           const scrollTopValue = (percent / 100) * (scrollHeight - clientHeight)
 
@@ -390,24 +518,6 @@ export class OrderBookArbitrageService {
 
   private getClusterVolume(cluster: Record<string, number>) {
     return Object.values(cluster).reduce((prev, curr) => prev + curr, 0)
-  }
-
-  private optimalVolumes(snapshot: OrderBookUpdate) {
-    const volumes: number[] = [
-      ...snapshot.bids.map(([, qty]) => qty),
-      ...snapshot.asks.map(([, qty]) => qty)
-    ]
-
-    volumes.sort((a, b) => b - a)
-    volumes.shift()
-    volumes.shift()
-
-    const highest = volumes.splice(0, Math.round(volumes.length / 2))
-
-    const avg = highest.reduce((a, b) => a + b, 0) / volumes.length
-    const vol = (100 * avg) / 1
-
-    this.basevolume = Math.round(vol)
   }
 
   public setTickStep(tickStep: string) {

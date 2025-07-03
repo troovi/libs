@@ -25,6 +25,7 @@
     "classnames": "^2.5.1"
   },
   "devDependencies": {
+    "@troovi/uikit": "../uikit",
     "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
     "@tailwindcss/postcss": "^4.1.11",

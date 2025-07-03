@@ -3,11 +3,11 @@ import cn from 'classnames'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { DomAdditionalProps, Slots } from './Slots'
+import { Slots } from './Slots'
 import { ScrollAnimation, px, width } from '@troovi/utils-browser'
 import { OrderBookArbitrageService } from './service'
 
-interface OrderBookProps extends DomAdditionalProps {
+interface OrderBookProps {
   depth: OrderBookArbitrageService
   Header?: React.ReactNode
   className?: string
@@ -59,7 +59,7 @@ export const OrderBookArbitrage = ({ depth, ...props }: OrderBookProps) => {
   }, [])
 
   const TICK_WIDTH = tickStep.length * (20 / 3)
-  const SLOTS_WIDTH = Math.max(108 + TICK_WIDTH, 148)
+  const SLOTS_WIDTH = 200 + TICK_WIDTH
 
   return (
     <div
