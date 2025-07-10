@@ -2,9 +2,9 @@ import { ScrollAnimation } from '@troovi/utils-browser'
 import { EventBroadcaster, roundTo } from '@troovi/utils-js'
 import { createState } from '@troovi/transmit'
 
-import { TickFormatter } from '../service/tick-formatter'
-import { OrderBookState, OrderBookUpdate } from '../service/dom-state'
-import { TickData } from '../service/types'
+import { TickFormatter } from './service/tick-formatter'
+import { OrderBookState, OrderBookUpdate } from './service/dom-state'
+import { TickData } from './service/types'
 
 export interface Track {
   [tick: string]: TickData
@@ -17,7 +17,7 @@ export interface OrderBookOptions {
 
 export interface InitialScroll {
   scroll: number
-  mode: 'top' | 'center'
+  position: 'top' | 'center'
 }
 
 interface DOMViewState {
@@ -282,13 +282,13 @@ export class OrderBookService {
 
     if (getScrollTop) {
       this.render({
-        mode: 'top',
+        position: 'top',
         scroll: getScrollTop({ maxPrice: this.maxViewablePrice, prevMaxPrice })
       })
     } else {
       this.render({
-        mode: 'center',
-        scroll: this.getPricePosition(this.state.best.bids)
+        position: 'center',
+        scroll: this.getPricePosition(this.middlePrice)
       })
     }
   }
@@ -307,6 +307,7 @@ export class OrderBookService {
 
       const progress = (scrollTop / (scrollHeight - clientHeight)) * 100
 
+      // top
       if (progress <= this.trackThreshold) {
         if (this.maxViewablePrice < this.limits.maxPrice) {
           this.rebuildTrack(({ prevMaxPrice, maxPrice }) => {
@@ -320,6 +321,7 @@ export class OrderBookService {
         }
       }
 
+      // bottom
       if (progress >= 100 - this.trackThreshold) {
         if (this.minViewablePrice > this.limits.minPrice) {
           this.rebuildTrack(({ prevMaxPrice, maxPrice }) => {

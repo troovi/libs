@@ -20,8 +20,6 @@ import { roundUp, truncateNumber, getFloatDigits, roundTo, getPrecisionStep } fr
 // cuted: 0.419999: [0.4199985; 0.4199995)
 // price: 0.41999999 > 0.4199995, so: cuted + step = 0.420000
 
-// todo: rewrite to auto generating
-
 interface Options {
   priceStep: number
 }
@@ -34,7 +32,8 @@ export class TickFormatter {
   private rangePrecision: number
   private tickFactor: number
   private tickInt: number
-  private priceStep: number
+
+  public priceStep: number
   public pricePrecision: number
 
   public ticksList: string[] = []

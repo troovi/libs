@@ -129,7 +129,7 @@ export class OrangeXDepth {
 
     for await (const symbol of symbols) {
       await this.setup(symbol)
-      await sleep(400)
+      await sleep(500)
     }
   }
 

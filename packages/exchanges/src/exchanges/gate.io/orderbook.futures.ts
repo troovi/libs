@@ -158,8 +158,7 @@ export class GateFuturesDepth {
       depth: []
     }
 
-    this.ws.subscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
-    await sleep(1000)
+    await this.ws.subscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
     await this.setup(symbol)
   }
 

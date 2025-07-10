@@ -64,14 +64,12 @@ export class BitMartSpotDepth {
       this.store[symbol] = { lastUpdateId: -1 }
     })
 
-    const subscription = splitByChunks(symbols, 20)
+    const chunks = splitByChunks(symbols, 20)
 
-    for await (const subscriptions of subscription) {
-      this.ws.subscribe(({ orderbook }) => {
+    for await (const subscriptions of chunks) {
+      await this.ws.subscribe(({ orderbook }) => {
         return subscriptions.map((symbol) => orderbook(symbol))
       })
-
-      await sleep(2000)
     }
   }
 

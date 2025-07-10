@@ -1,83 +1,83 @@
 import { getRandomIntString } from '../../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { WebsocketBase } from '../../../../websocket'
 
 import { EventDispatcher } from '@troovi/utils-js'
-import { Topics } from './subscriptions'
+import { subscriptions, subscriptionsParser } from './subscriptions'
 import { AnyKuCoinFuturesMessage } from './messages'
 import { KuCoinFuturesApi } from '../../api/futures/api'
+import { BaseStream, NetworkManager } from '../../../../connections'
 
 interface Options {
-  keepAlive?: boolean
-  endpoint: string
-  pingInterval: number
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: AnyKuCoinFuturesMessage) => void
-  }
-}
-
-interface MainOptions extends Omit<Options, 'endpoint' | 'pingInterval'> {
   api: KuCoinFuturesApi
-}
-
-export const createKuCoinFuturesPublicStream = async ({ api, ...options }: MainOptions) => {
-  const { token, instanceServers } = await api.getWSPublicInfo()
-
-  const server = instanceServers[0]
-
-  return new KuCoinFuturesPublicStream({
-    endpoint: `${server.endpoint}?token=${token}`,
-    pingInterval: server.pingInterval,
-    ...options
-  })
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: AnyKuCoinFuturesMessage) => void
 }
 
 // Max subscription count limitation - 400 per session
-export class KuCoinFuturesPublicStream extends WebsocketBase {
-  private streams: string[] = []
+export class KuCoinFuturesPublicStream extends BaseStream<typeof subscriptions> {
   private responses = new EventDispatcher<string>()
 
-  constructor({ endpoint, pingInterval, keepAlive, callbacks }: Options) {
-    super(endpoint, {
-      keepAlive,
-      service: `kucoin-futures`,
-      callbacks: {
-        ...callbacks,
-        onOpen: () => {
-          setInterval(() => {
-            if (this.isConnected()) {
-              this.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
+  constructor({ api, onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 100,
+      createConnection: async (id, { onOpen, onBroken }) => {
+        const { token, instanceServers } = await api.getWSPublicInfo()
+
+        const server = instanceServers[0]
+        const connection = new WebsocketBase(`${server.endpoint}?token=${token}`, {
+          service: `kucoin:futures:${id}`,
+          callbacks: {
+            onBroken,
+            onOpen: () => {
+              setInterval(() => {
+                if (connection.isConnected()) {
+                  connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
+                }
+              }, server.pingInterval)
+
+              onOpen()
+            },
+            onMessage: (data) => {
+              const raw = data.toString()
+              const response = JSON.parse(raw)
+
+              if (response.id) {
+                if (response.type === 'pong') {
+                  connection.logger.log(`Recieved "pong" message`, 'STREAM')
+                  return
+                }
+
+                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                this.responses.emit(response.id.toString(), response.type)
+
+                return
+              }
+
+              onMessage(response)
             }
-          }, pingInterval)
-
-          callbacks.onOpen()
-        },
-        onMessage: (data) => {
-          const raw = data.toString()
-          const response = JSON.parse(raw)
-
-          if (response.id) {
-            if (response.type === 'pong') {
-              this.logger.log(`Recieved "pong" message`, 'STREAM')
-              return
-            }
-
-            this.logger.log(`Interaction message: ${raw}`, 'STREAM')
-            this.responses.emit(response.id.toString(), response.type)
-
-            return
           }
+        })
 
-          callbacks.onMessage(response)
-        }
+        return connection
+      }
+    })
+
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, subscriptionsParser.getTopic(channels), 'subscribe')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, subscriptionsParser.getTopic(channels), 'unsubscribe')
       }
     })
   }
 
-  private request(topic: string, method: string) {
+  private request(connection: WebsocketBase, topic: string, method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
 
-      this.logger.verbose(`${method}: [${id}] ${topic}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${topic}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -85,30 +85,12 @@ export class KuCoinFuturesPublicStream extends WebsocketBase {
         if (message === 'ack') {
           resolve()
         } else {
-          this.logger.error(message, method)
+          connection.logger.error(message, method)
           reject()
         }
       })
 
-      this.send({ id: id, type: method, topic, response: true })
-    })
-  }
-
-  subscribe(getTopic: (subscriptions: typeof Topics) => string) {
-    const topic = getTopic(Topics)
-
-    return this.request(topic, 'subscribe').then(() => {
-      this.streams.push(topic)
-    })
-  }
-
-  unsubscribe(getTopic: (subscriptions: typeof Topics) => string) {
-    const topic = getTopic(Topics)
-
-    return this.request(topic, 'unsubscribe').then(() => {
-      this.streams = this.streams.filter((stream) => {
-        return stream !== topic
-      })
+      connection.send({ id: id, type: method, topic, response: true })
     })
   }
 }

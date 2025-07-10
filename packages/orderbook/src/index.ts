@@ -1,9 +1,10 @@
 export { OrderBookState } from './service/dom-state'
+export type { OrderBookUpdate } from './service/dom-state'
 export { OrderBookServerState } from './service/dom-state-server'
 export { roundVolume } from './service/utils'
 
-// dom
-
-export { OrderBook } from './dom-single/OrderBook'
-export { OrderBookService } from './dom-single/service'
-export type { OrderBookOptions } from './dom-single/service'
+export { OrderBook } from './OrderBook'
+export { OrderBookService } from './dom'
+export type { OrderBookOptions } from './dom'
+export type { TickData } from './service/types'
+export { TickFormatter } from './service/tick-formatter'

@@ -232,7 +232,7 @@ export class BitgetApi extends ApiClient<APIs> {
   // https://www.bitget.com/api-doc/common/public/Get-Trade-Rate
 
   private ratesLimiter = new FrequencyLimiter({
-    limit: 5,
+    limit: 4,
     interval: 1000,
     name: 'bitget'
   })

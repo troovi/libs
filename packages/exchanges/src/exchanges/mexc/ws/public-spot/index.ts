@@ -2,16 +2,15 @@ import protobuf from 'protobufjs'
 
 import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
 import { AnyMexcMessage } from './messages'
-import { MexcPublicSubscriptions as Subscriptions } from './subscriptions'
+import { subscriptions } from './subscriptions'
 import { resolve } from 'path'
 import { areArraysEqual, getRandomIntString, toArray } from '../../../../utils'
 import { EventDispatcher, splitByChunks } from '@troovi/utils-js'
+import { BaseStream, NetworkManager } from '../../../../connections'
 
 interface Options {
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: AnyMexcMessage) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: AnyMexcMessage) => void
 }
 
 interface ResponseMessage {
@@ -22,49 +21,64 @@ interface ResponseMessage {
 
 // One ws connection supports a maximum of 30 subscriptions.
 
-export class MexcSpotPublicStream extends WebsocketBase {
+export class MexcSpotPublicStream extends BaseStream<typeof subscriptions> {
   private proto: protobuf.Type
   private responses = new EventDispatcher<string>()
-  private streams: string[] = []
 
-  constructor({ keepAlive, callbacks }: Options) {
-    super(`wss://wbs-api.mexc.com/ws`, {
-      service: 'mexc-public',
-      keepAlive,
-      callbacks: {
-        ...callbacks,
-        onOpen: () => {
-          this.initializeProto().then(callbacks.onOpen)
+  constructor({ onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 30,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(`wss://wbs-api.mexc.com/ws`, {
+          service: `mexc:public:${id}`,
+          callbacks: {
+            onBroken,
+            onOpen: () => {
+              // Maintain the connection
+              setInterval(() => {
+                if (connection.isConnected()) {
+                  connection.send({ method: 'PING' })
+                }
+              }, 25000)
 
-          // Maintain the connection
-          setInterval(() => {
-            if (this.isConnected()) {
-              this.send({ method: 'PING' })
+              this.initializeProto().then(onOpen)
+            },
+            onMessage: (data) => {
+              try {
+                const message = this.proto.decode(data as Buffer)
+                const object: any = this.proto.toObject(message, {
+                  longs: String,
+                  enums: String,
+                  bytes: String
+                })
+
+                onMessage(object)
+              } catch (err) {
+                const message = data.toString()
+                const response: ResponseMessage = JSON.parse(message)
+
+                if (response.msg === 'PONG' || response.msg === 'PING') {
+                  return
+                }
+
+                connection.logger.log(`Interaction message: ${message}`, 'STREAM')
+                this.responses.emit(response.id.toString(), response.msg)
+              }
             }
-          }, 25000)
-        },
-        onMessage: (data) => {
-          try {
-            const message = this.proto.decode(data as Buffer)
-            const object: any = this.proto.toObject(message, {
-              longs: String,
-              enums: String,
-              bytes: String
-            })
-
-            callbacks.onMessage(object)
-          } catch (err) {
-            const message = data.toString()
-            const response: ResponseMessage = JSON.parse(message)
-
-            if (response.msg === 'PONG' || response.msg === 'PING') {
-              return
-            }
-
-            this.logger.log(`Interaction message: ${message}`, 'STREAM')
-            this.responses.emit(response.id.toString(), response.msg)
           }
-        }
+        })
+
+        return connection
+      }
+    })
+
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, channels, 'SUBSCRIPTION')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, channels, 'UNSUBSCRIPTION')
       }
     })
   }
@@ -74,11 +88,11 @@ export class MexcSpotPublicStream extends WebsocketBase {
     this.proto = root.lookupType('PushDataV3ApiWrapper')
   }
 
-  private request(streams: string[], method: string) {
+  private request(connection: WebsocketBase, streams: string[], method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
 
-      this.logger.verbose(`${method}: [${id}] ${streams.join(', ')}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${streams.join(', ')}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -86,44 +100,16 @@ export class MexcSpotPublicStream extends WebsocketBase {
         if (areArraysEqual(streams, message.split(','))) {
           resolve()
         } else {
-          this.logger.error(message, method)
+          connection.logger.error(message, method)
           reject()
         }
       })
 
-      this.send({
+      connection.send({
         id: +id,
         method,
         params: streams
       })
     })
-  }
-
-  subscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, 'SUBSCRIPTION').then(() => {
-      this.streams.push(...streams)
-    })
-  }
-
-  unsubscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, 'UNSUBSCRIPTION').then(() => {
-      this.streams = this.streams.filter((stream) => {
-        return !streams.includes(stream)
-      })
-    })
-  }
-
-  async unsubscribeAll() {
-    const subscriptions = splitByChunks(this.streams, 4)
-
-    for await (const streams of subscriptions) {
-      await this.request(streams, 'UNSUBSCRIPTION')
-    }
-
-    this.streams = []
   }
 }

@@ -1,9 +1,10 @@
-import { getRandomIntString, toArray } from '../../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { BaseStream, NetworkManager } from '../../../../connections'
+import { getRandomIntString } from '../../../../utils'
+import { WebsocketBase } from '../../../../websocket'
 
 import { AnyBinanceMessage } from './messages'
-import { Subscriptions } from './subscriptions'
 import { EventDispatcher } from '@troovi/utils-js'
+import { subscriptions } from './subscriptions'
 
 type Market = 'spot' | 'futures'
 
@@ -13,51 +14,64 @@ const APIs: Record<Market, string> = {
 }
 
 interface Options<M extends Market> {
-  market: M
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: AnyBinanceMessage<M>, rawMsg: string) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: AnyBinanceMessage<M>, rawMsg: string) => void
 }
 
-export class BinancePublicStream<M extends Market> extends WebsocketBase {
+export class BinancePublicStream<M extends Market> extends BaseStream<typeof subscriptions> {
   private responses = new EventDispatcher<null>()
-  private streams: string[] = []
 
-  constructor({ market, keepAlive, callbacks }: Options<M>) {
-    super(APIs[market], {
-      keepAlive,
-      service: `binance-${market}`,
-      callbacks: {
-        ...callbacks,
-        onMessage: (data) => {
-          const raw = data.toString()
-          const response = JSON.parse(raw)
+  constructor(market: M, { onMessage, onBroken }: Options<M>) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 100,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(APIs[market], {
+          service: `binance:${market}:${id}`,
+          callbacks: {
+            onOpen,
+            onBroken,
+            onMessage: (data) => {
+              const raw = data.toString()
+              const response = JSON.parse(raw)
 
-          if (response.code !== undefined || response.error !== undefined) {
-            this.logger.error(`Error message: ${JSON.stringify(response)}`, 'STREAM')
-            callbacks.onBroken?.()
-            return
+              if (response.code !== undefined || response.error !== undefined) {
+                connection.logger.error(`Error message: ${JSON.stringify(response)}`, 'STREAM')
+                onBroken?.()
+                return
+              }
+
+              if (response.result !== undefined) {
+                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                this.responses.emit(response.id.toString(), response.result)
+
+                return
+              }
+
+              onMessage(response, raw)
+            }
           }
+        })
 
-          if (response.result !== undefined) {
-            this.logger.log(`Interaction message: ${raw}`, 'STREAM')
-            this.responses.emit(response.id.toString(), response.result)
+        return connection
+      }
+    })
 
-            return
-          }
-
-          callbacks.onMessage(response, raw)
-        }
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, channels, 'SUBSCRIBE')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, channels, 'UNSUBSCRIBE')
       }
     })
   }
 
-  private request(params: any[], method: string) {
+  private request(connection: WebsocketBase, channels: string[], method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
 
-      this.logger.verbose(`${method}: [${id}] ${params.join(', ')}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${channels.join(', ')}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -65,40 +79,12 @@ export class BinancePublicStream<M extends Market> extends WebsocketBase {
         if (message === null) {
           resolve()
         } else {
-          this.logger.error(message, method)
+          connection.logger.error(message, method)
           reject()
         }
       })
 
-      this.send({ id: +id, method, params })
-    })
-  }
-
-  setProperty(event: 'combined', value: boolean) {
-    return this.request([event, value], 'SET_PROPERTY')
-  }
-
-  subscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, 'SUBSCRIBE').then(() => {
-      this.streams.push(...streams)
-    })
-  }
-
-  unsubscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, 'UNSUBSCRIBE').then(() => {
-      this.streams = this.streams.filter((stream) => {
-        return !streams.includes(stream)
-      })
-    })
-  }
-
-  unsubscribeAll() {
-    return this.request(this.streams, 'UNSUBSCRIBE').then(() => {
-      this.streams = []
+      connection.send({ id: +id, method, params: channels })
     })
   }
 }

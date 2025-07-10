@@ -1,11 +1,12 @@
-export const Subscriptions = {
-  depth(symbol: string) {
-    return { method: 'sub.depth', param: { symbol } }
-  }
-}
+import { Subscriptions } from '../../../../subscriptions'
 
-export const UnSubscribtions = {
-  depth(symbol: string) {
-    return { method: 'unsub.depth', param: { symbol } }
+export const subscriptions = new Subscriptions({
+  subscriptions: {
+    orderbook(symbol: string) {
+      return { method: 'depth', param: { symbol } }
+    }
+  },
+  getStreams(streams: { method: string; param: object }) {
+    return [JSON.stringify(streams)]
   }
-}
+})

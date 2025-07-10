@@ -29,7 +29,9 @@ export class CoinExDepth {
   }
 
   async initialize(symbols: string[]) {
-    await this.ws.subscribeOrderBook(symbols.map((symbol) => ({ symbol, level: 50 })))
+    await this.ws.subscribe(({ orderbook }) => {
+      return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
+    })
   }
 
   stop(symbols: string[]) {

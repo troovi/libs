@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { width as w } from '@troovi/utils-browser'
-import { roundVolume } from '../service/utils'
-import { OrderBookService, InitialScroll } from './service'
+import { roundVolume } from './service/utils'
+import { OrderBookService, InitialScroll } from './dom'
 
 interface TickData {
   asksVolume: number
@@ -9,7 +8,6 @@ interface TickData {
 }
 
 export interface DomAdditionalProps {
-  DOMPrimitives?: React.ReactNode
   onTickOver?: (tick: string, data: TickData) => void
   onTickClick?: (tick: string, data: TickData) => void
   onDomLeave?: () => void
@@ -17,10 +15,9 @@ export interface DomAdditionalProps {
 
 interface SlotsProps extends DomAdditionalProps {
   dom: OrderBookService
-  width: number
 }
 
-const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver }: SlotsProps) => {
+const Slots = ({ dom, onDomLeave, onTickClick, onTickOver }: SlotsProps) => {
   const [, rerender] = useState([])
 
   useMemo(() => {
@@ -42,7 +39,7 @@ const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver 
   const { updateId, initialScroll, ticks, track } = dom.viewState
 
   return (
-    <div className="dom-list" style={w(width)}>
+    <>
       {initialScroll && (
         <ApplyScroll key={`initial-${updateId}`} initialScroll={initialScroll} dom={dom} />
       )}
@@ -71,8 +68,7 @@ const Slots = ({ dom, width, DOMPrimitives, onDomLeave, onTickClick, onTickOver 
           )
         })}
       </div>
-      {DOMPrimitives}
-    </div>
+    </>
   )
 }
 
@@ -86,11 +82,11 @@ const ApplyScroll = ({ dom, initialScroll }: InitialProps) => {
     const scrollable = dom.scrollable?.ref.current
 
     if (scrollable) {
-      if (initialScroll.mode === 'center') {
+      if (initialScroll.position === 'center') {
         scrollable.scrollTop = initialScroll.scroll - scrollable.clientHeight / 2
       }
 
-      if (initialScroll.mode === 'top') {
+      if (initialScroll.position === 'top') {
         scrollable.scrollTop = initialScroll.scroll
       }
     }

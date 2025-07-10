@@ -1,18 +1,54 @@
 export class EventDispatcher<T> {
-  private subscribers: Record<string, (data: T) => void> = {}
+  private store: Record<string, (data: T) => void> = {}
 
-  emit(key: string, data: T) {
-    if (this.subscribers[key]) {
-      this.subscribers[key](data)
+  emit(event: string, data: T) {
+    if (this.store[event]) {
+      this.store[event](data)
     }
   }
 
-  on(key: string, callback: (data: T) => void) {
-    this.subscribers[key] = callback
+  on(event: string, callback: (data: T) => void) {
+    this.store[event] = callback
   }
 
-  rm(key: string) {
-    delete this.subscribers[key]
+  rm(event: string) {
+    delete this.store[event]
+  }
+}
+
+export class EventEmmiter<T> {
+  private store: Record<string, ((data: T) => void)[]> = {}
+
+  emit(event: string, data: T) {
+    if (this.store[event]) {
+      this.store[event].forEach((callback) => callback(data))
+    }
+  }
+
+  subscribe(event: string, callback: (data: T) => void) {
+    if (!this.store[event]) {
+      this.store[event] = []
+    }
+
+    this.store[event].push(callback)
+
+    return () => {
+      this.unsubscribe(event, callback)
+    }
+  }
+
+  unsubscribe(event: string, callback: (data: T) => void) {
+    if (this.store[event]) {
+      const index = this.store[event].findIndex((u) => u === callback)
+
+      if (index !== -1) {
+        this.store[event].splice(index, 1)
+
+        if (this.store[event].length === 0) {
+          delete this.store[event]
+        }
+      }
+    }
   }
 }
 

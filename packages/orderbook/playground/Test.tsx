@@ -1,7 +1,7 @@
 import data from './snapshot.json'
 
-import { OrderBook } from '../../src/dom-single/OrderBook'
-import { OrderBookService, OrderBookOptions } from '../../src/dom-single/service'
+import { OrderBook } from '../src/OrderBook'
+import { OrderBookService, OrderBookOptions } from '../src/dom'
 // import { Header } from './Header'
 
 export const TestSingle = () => {

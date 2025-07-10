@@ -1,54 +1,93 @@
-import { toArray } from '../../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { EventDispatcher } from '@troovi/utils-js'
+import { BaseStream, NetworkManager } from '../../../../connections'
+import { WebsocketBase } from '../../../../websocket'
 import { BitMartFuturesMessages } from './messages'
-import { Subscriptions } from './subscriptions'
+import { subscriptions } from './subscriptions'
 
 interface Options {
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: BitMartFuturesMessages.OrderBook) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: BitMartFuturesMessages.OrderBook) => void
 }
 
-export class BitMartFuturesStream extends WebsocketBase {
-  constructor({ keepAlive, callbacks }: Options) {
-    super(`wss://openapi-ws-v2.bitmart.com/api?protocol=1.1`, {
-      keepAlive,
-      service: 'bitmart-futures',
-      callbacks: {
-        ...callbacks,
-        onMessage: (data) => {
-          const raw = data.toString()
-          const response = JSON.parse(raw)
+export class BitMartFuturesStream extends BaseStream<typeof subscriptions> {
+  private responses = new EventDispatcher<boolean>()
 
-          if (response.action === 'subscribe' || response.action === 'unsubscribe') {
-            this.logger.log(`Interaction message: ${raw}`, 'STREAM')
-            return
+  constructor({ onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 110,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(`wss://openapi-ws-v2.bitmart.com/api?protocol=1.1`, {
+          service: `bitmart:futures:${id}`,
+          callbacks: {
+            onOpen,
+            onBroken,
+            onMessage: (data) => {
+              const raw = data.toString()
+              const response = JSON.parse(raw)
+
+              if (response.action === 'subscribe' || response.action === 'unsubscribe') {
+                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                this.responses.emit(`${response.action}:${response.group}`, true)
+                return
+              }
+
+              if (response.error) {
+                connection.logger.log(`Error message: ${raw}`, 'STREAM')
+                this.responses.emit(`${response.action}:${response.group}`, false)
+                return
+              }
+
+              onMessage(response)
+            }
           }
+        })
 
-          callbacks.onMessage(response)
-        }
+        return connection
+      }
+    })
+
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, channels, 'subscribe')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, channels, 'unsubscribe')
       }
     })
   }
 
-  subscribe(getStreams: (subscriptions: typeof Subscriptions) => string | string[]) {
-    const streams = toArray(getStreams(Subscriptions))
+  private request(connection: WebsocketBase, channels: string[], method: string) {
+    return new Promise<void>((resolve, reject) => {
+      connection.logger.verbose(`${method}: [${channels.length}]: ${channels.join(', ')}`, 'STREAM')
 
-    return this.send({
-      time: Date.now(),
-      action: 'subscribe',
-      args: streams
-    })
-  }
+      let sizes = channels.length
+      let allSuccess = true
 
-  unsubscribe(getStreams: (subscriptions: typeof Subscriptions) => string | string[]) {
-    const streams = toArray(getStreams(Subscriptions))
+      channels.forEach((channel) => {
+        this.responses.on(`${method}:${channel}`, (isSuccess) => {
+          this.responses.rm(`${method}:${channel}`)
+          sizes--
 
-    return this.send({
-      time: Date.now(),
-      action: 'unsubscribe',
-      args: streams
+          if (!isSuccess) {
+            allSuccess = false
+          }
+
+          if (sizes === 0) {
+            if (allSuccess) {
+              resolve()
+            } else {
+              reject()
+            }
+          }
+        })
+      })
+
+      connection.send({
+        time: Date.now(),
+        action: method,
+        args: channels
+      })
     })
   }
 }

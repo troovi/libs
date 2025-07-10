@@ -1,7 +1,6 @@
 export * from './exchanges/binance'
 export * from './exchanges/mexc'
 export * from './exchanges/whitebit'
-
 export * from './exchanges/kucoin'
 export * from './exchanges/bybit'
 export * from './exchanges/okx'

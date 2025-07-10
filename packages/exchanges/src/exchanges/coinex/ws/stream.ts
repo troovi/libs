@@ -1,5 +1,7 @@
+import { subscriptions } from './subscriptions'
+import { BaseStream, NetworkManager } from '../../../connections'
 import { getRandomIntString } from '../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../websocket'
+import { WebsocketBase } from '../../../websocket'
 
 import { CoinExMessages } from './messages'
 import { EventDispatcher } from '@troovi/utils-js'
@@ -11,66 +13,94 @@ const APIs = {
 }
 
 interface Options {
-  market: 'spot' | 'futures'
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: CoinExMessages.Depth) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: CoinExMessages.Depth) => void
 }
 
-interface SubscribeDepth {
-  symbol: string
-  level: 5 | 10 | 20 | 50
-  isFull?: boolean
-}
-
-export class CoinExStream extends WebsocketBase {
+export class CoinExStream extends BaseStream<typeof subscriptions> {
   private responses = new EventDispatcher<string>()
 
-  constructor({ market, keepAlive, callbacks }: Options) {
-    super(APIs[market], {
-      keepAlive,
-      service: `coinex-${market}`,
-      callbacks: {
-        ...callbacks,
-        onOpen: () => {
-          // Maintain the connection
-          setInterval(() => {
-            if (this.isConnected()) {
-              this.send({ method: 'server.ping', id: +getRandomIntString(8), params: {} })
+  constructor(market: 'spot' | 'futures', { onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 100,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(APIs[market], {
+          service: `coinex:${market}:${id}`,
+          callbacks: {
+            onBroken,
+            onOpen: () => {
+              // Maintain the connection
+              setInterval(() => {
+                if (connection.isConnected()) {
+                  connection.send({ method: 'server.ping', id: +getRandomIntString(8), params: {} })
+                }
+              }, 15000)
+
+              onOpen()
+            },
+            onMessage: (data) => {
+              gunzip(data as Buffer, (err, result) => {
+                if (err) {
+                  throw err
+                }
+
+                const raw = result.toString()
+                const response = JSON.parse(raw)
+
+                if (response.id) {
+                  connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                  this.responses.emit(response.id.toString(), response.message)
+
+                  return
+                }
+
+                onMessage(response)
+              })
             }
-          }, 15000)
+          }
+        })
 
-          callbacks.onOpen()
-        },
-        onMessage: (data) => {
-          gunzip(data as Buffer, (err, result) => {
-            if (err) {
-              throw err
-            }
+        return connection
+      }
+    })
 
-            const raw = result.toString()
-            const response = JSON.parse(raw)
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        const method = channels[0].split(':')[0]
+        const markets = channels.map((stream) => {
+          const name = stream.split(':')[1]
 
-            if (response.id) {
-              this.logger.log(`Interaction message: ${raw}`, 'STREAM')
-              this.responses.emit(response.id.toString(), response.message)
+          if (method === 'depth') {
+            return JSON.parse(name)
+          }
+        })
 
-              return
-            }
+        return this.request(connection, `${method}.subscribe`, markets)
+      },
+      unsubscribe: (connection, channels) => {
+        const method = channels[0].split(':')[0]
+        const markets = channels.map((stream) => {
+          const name = stream.split(':')[1]
 
-            callbacks.onMessage(response)
-          })
-        }
+          if (method === 'depth') {
+            return JSON.parse(name)[0]
+          }
+        })
+
+        return this.request(connection, `${method}.unsubscribe`, markets)
       }
     })
   }
 
-  private request(params: any[], method: string) {
+  private request(connection: WebsocketBase, method: string, markets: object[]) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
+      const list = markets.map((market) => {
+        return Array.isArray(market) ? market[0] : market
+      })
 
-      this.logger.verbose(`${method}: [${id}] ${params.join(', ')}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] (${markets.length}) ${list.join(', ')}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -78,30 +108,18 @@ export class CoinExStream extends WebsocketBase {
         if (message === 'OK') {
           resolve()
         } else {
-          this.logger.error(message, method)
+          connection.logger.error(message, method)
           reject()
         }
       })
 
-      this.send({
+      connection.send({
         id: +id,
         method,
         params: {
-          market_list: params
+          market_list: markets
         }
       })
     })
-  }
-
-  subscribeOrderBook(data: SubscribeDepth[]) {
-    const streams = data.map(({ symbol, level, isFull }) => {
-      return [symbol, level, '0', isFull ?? false]
-    })
-
-    return this.request(streams, 'depth.subscribe')
-  }
-
-  unsubscribeOrderBook(symbols: string[]) {
-    return this.request(symbols, 'depth.unsubscribe')
   }
 }

@@ -62,7 +62,7 @@ export class KuCoinFuturesDepth {
       depth: []
     }
 
-    await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+    await this.ws.subscribe(({ orderbook }) => orderbook([symbol]))
     await sleep(500)
 
     const snapshot = await this.api.getOrderBook({ symbol })

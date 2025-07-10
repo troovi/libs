@@ -13,6 +13,7 @@ export class OrderBookEngine {
   public readonly onBestBidChange = new EventBroadcaster<number>()
   public readonly onBestAskChange = new EventBroadcaster<number>()
 
+  public readonly priceStep: number
   private readonly priceFactor: number
 
   public bids: [number, number][] = []
@@ -24,6 +25,7 @@ export class OrderBookEngine {
   }
 
   constructor({ priceStep }: Options) {
+    this.priceStep = priceStep
     this.priceFactor = Math.round(1 / priceStep)
   }
 

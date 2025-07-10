@@ -129,8 +129,7 @@ export class GateSpotDepth {
       depth: []
     }
 
-    this.ws.subscribe(({ orderbook }) => orderbook(symbol))
-    await sleep(1000)
+    await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
     await this.setup(symbol)
   }
 

@@ -1,8 +1,9 @@
-import { areArraysEqual, getRandomIntString, toArray } from '../../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { BaseStream, NetworkManager } from '../../../../connections'
+import { areArraysEqual, getRandomIntString } from '../../../../utils'
+import { WebsocketBase } from '../../../../websocket'
 
 import { AnyOrangeXPubblicMessage } from './messages'
-import { Subscriptions } from './subscriptions'
+import { subscriptions } from './subscriptions'
 import { EventDispatcher } from '@troovi/utils-js'
 
 interface Response<T> {
@@ -12,66 +13,85 @@ interface Response<T> {
 }
 
 interface Options {
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: Response<AnyOrangeXPubblicMessage>) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: Response<AnyOrangeXPubblicMessage>) => void
 }
 
-export class OrangeXPublicStream extends WebsocketBase {
-  private responses = new EventDispatcher<any>()
-  private streams: string[] = []
+export class OrangeXPublicStream extends BaseStream<typeof subscriptions> {
+  private responses = new EventDispatcher<object>()
 
-  constructor({ keepAlive, callbacks }: Options) {
-    super(`wss://api.orangex.com/ws/api/v1`, {
-      keepAlive,
-      service: `orangex-public`,
-      callbacks: {
-        ...callbacks,
-        onOpen: () => {
-          setInterval(() => {
-            if (this.isConnected()) {
-              this.signal('PING')
+  constructor({ onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 110,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(`wss://api.orangex.com/ws/api/v1`, {
+          service: `orangex:public:${id}`,
+          callbacks: {
+            onBroken,
+            onOpen: () => {
+              setInterval(() => {
+                if (connection.isConnected()) {
+                  connection.signal('PING')
+                }
+              }, 5000)
+
+              onOpen()
+            },
+            onMessage: (data) => {
+              const raw = data.toString()
+
+              if (raw === 'PONG') {
+                connection.logger.log(`Server "pong" captured`, 'STREAM')
+                return
+              }
+
+              const response = JSON.parse(raw)
+
+              if (response.id !== undefined) {
+                if (response.error !== undefined) {
+                  connection.logger.error(
+                    `Interaction error: ${JSON.stringify(response.error)}`,
+                    'STREAM'
+                  )
+                  this.responses.emit(response.id.toString(), response.result)
+
+                  return
+                }
+
+                connection.logger.log(
+                  `Interaction message: ${JSON.stringify(response.result)}`,
+                  'STREAM'
+                )
+                this.responses.emit(response.id.toString(), response.result)
+
+                return
+              }
+
+              onMessage(response)
             }
-          }, 5000)
-
-          callbacks.onOpen()
-        },
-        onMessage: (data) => {
-          const raw = data.toString()
-
-          if (raw === 'PONG') {
-            this.logger.log(`Server "pong" captured`, 'STREAM')
-            return
           }
+        })
 
-          const response = JSON.parse(raw)
+        return connection
+      }
+    })
 
-          if (response.id !== undefined) {
-            if (response.error !== undefined) {
-              this.logger.error(`Interaction error: ${JSON.stringify(response.error)}`, 'STREAM')
-              this.responses.emit(response.id.toString(), response.result)
-
-              return
-            }
-
-            this.logger.log(`Interaction message: ${JSON.stringify(response.result)}`, 'STREAM')
-            this.responses.emit(response.id.toString(), response.result)
-
-            return
-          }
-
-          callbacks.onMessage(response)
-        }
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, channels, '/public/subscribe')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, channels, '/public/unsubscribe')
       }
     })
   }
 
-  private request(streams: string[], method: string) {
+  private request(connection: WebsocketBase, streams: string[], method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
 
-      this.logger.verbose(`${method}: [${id}] ${streams.join(', ')}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${streams.join(', ')}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -79,12 +99,12 @@ export class OrangeXPublicStream extends WebsocketBase {
         if (Array.isArray(message) && areArraysEqual(streams, message)) {
           resolve()
         } else {
-          this.logger.error(message, method)
+          connection.logger.error(JSON.stringify(message), method)
           reject()
         }
       })
 
-      this.send({
+      connection.send({
         jsonrpc: '2.0',
         id: +id,
         method,
@@ -93,31 +113,5 @@ export class OrangeXPublicStream extends WebsocketBase {
         }
       })
     })
-  }
-
-  subscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, '/public/subscribe').then(() => {
-      this.streams.push(...streams)
-    })
-  }
-
-  unsubscribe(getStreams: (subscriptions: typeof Subscriptions) => string[] | string) {
-    const streams = toArray(getStreams(Subscriptions))
-
-    return this.request(streams, '/public/unsubscribe').then(() => {
-      this.streams = this.streams.filter((stream) => {
-        return !streams.includes(stream)
-      })
-    })
-  }
-
-  unsubscribeAll() {
-    if (this.streams.length > 0) {
-      this.request(this.streams, '/public/unsubscribe').then(() => {
-        this.streams = []
-      })
-    }
   }
 }

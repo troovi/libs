@@ -1,7 +1,5 @@
-import { TestArbitrage } from './arbitrage/Test'
-// import { TestSingle } from './single/Test'
+import { TestSingle } from './Test'
 
 export const App = () => {
-  return <TestArbitrage />
-  // return <TestSingle />
+  return <TestSingle />
 }

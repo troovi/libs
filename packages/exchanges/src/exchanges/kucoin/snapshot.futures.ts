@@ -37,10 +37,8 @@ export class KuCoinFuturesSnapshot {
   }
 
   async initialize(symbols: string[]) {
-    for await (const symbol of symbols) {
-      await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbol))
-      await sleep(250)
-    }
+    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
+    await sleep(250)
   }
 }
 

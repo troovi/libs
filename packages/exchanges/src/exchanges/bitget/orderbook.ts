@@ -47,12 +47,12 @@ export class BitgetDepth {
     })
   }
 
-  initialize(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
+  async initialize(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
     })
 
-    this.ws.subscribe(({ orderbook }) => {
+    await this.ws.subscribe(({ orderbook }) => {
       return symbols.map((instId) => orderbook({ instId, instType }))
     })
   }

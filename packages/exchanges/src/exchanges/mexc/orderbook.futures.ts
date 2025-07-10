@@ -120,7 +120,7 @@ export class MexcFuturesDepth {
       depth: []
     }
 
-    this.ws.subscribe(({ depth }) => depth(symbol))
+    await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
 
     await sleep(1500)
     await this.setup(symbol)

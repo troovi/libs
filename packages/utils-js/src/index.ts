@@ -8,3 +8,6 @@ export * from './object'
 export * from './queue'
 export * from './random'
 export * from './utils'
+
+export * from './api/io'
+export * from './api/stream-api'

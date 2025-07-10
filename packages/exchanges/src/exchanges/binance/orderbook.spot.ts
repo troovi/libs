@@ -123,9 +123,7 @@ export class BinanceSpotDepth {
     })
 
     await this.ws.subscribe(({ diffBookDepth }) => {
-      return symbols.map((symbol) => {
-        return diffBookDepth({ symbol, speed: 100 })
-      })
+      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
 
     await sleep(1500)

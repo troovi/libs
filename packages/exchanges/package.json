@@ -2,7 +2,8 @@
   "name": "@troovi/exchanges",
   "version": "1.2.0",
   "scripts": {
-    "build": "rm -rf dist && tsc && copyfiles -u 1 ./src/**/*.proto ./dist/"
+    "build": "rm -rf dist && tsc && copyfiles -u 1 ./src/**/*.proto ./dist/",
+    "stream-test": "ts-node ./tests/stream-test.ts"
   },
   "publishConfig": {
     "@troovi:registry": "https://npm.pkg.github.com"

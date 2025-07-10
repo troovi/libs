@@ -5,12 +5,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { DomAdditionalProps, Slots } from './Slots'
 import { ScrollAnimation, px, width } from '@troovi/utils-browser'
-import { OrderBookService } from './service'
+import { OrderBookService } from './dom'
 
 interface OrderBookProps extends DomAdditionalProps {
   depth: OrderBookService
   Header?: React.ReactNode
   className?: string
+  DOMPrimitives?: React.ReactNode
   LeftPane?: {
     Element: React.ReactNode
     width: number
@@ -21,7 +22,7 @@ interface OrderBookProps extends DomAdditionalProps {
 }
 
 export const OrderBook = ({ depth, ...props }: OrderBookProps) => {
-  const { Header, LeftPane, className, ...restProps } = props
+  const { DOMPrimitives, Header, LeftPane, className, ...restProps } = props
 
   const [isRendered, setRender] = useState(false)
   const [tickStep, setTickStep] = useState(depth.tickFormatter.getTickStep())
@@ -91,7 +92,12 @@ export const OrderBook = ({ depth, ...props }: OrderBookProps) => {
             style={{ height: px(depth.maxTicks * depth.tickHeight) }}
           >
             {LeftPane && LeftPane.Element}
-            {isRendered && <Slots width={SLOTS_WIDTH} dom={depth} {...restProps} />}
+            {isRendered && (
+              <div className="dom-list" style={width(SLOTS_WIDTH)}>
+                <Slots dom={depth} {...restProps} />
+                {DOMPrimitives}
+              </div>
+            )}
           </div>
         </div>
       </div>

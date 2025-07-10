@@ -1,13 +1,12 @@
-import { toArray } from '../../../../utils'
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { EventDispatcher } from '@troovi/utils-js'
+import { BaseStream, NetworkManager } from '../../../../connections'
+import { WebsocketBase } from '../../../../websocket'
 import { BitMartSpotMessages } from './messages'
-import { Subscriptions } from './subscriptions'
+import { subscriptions } from './subscriptions'
 
 interface Options {
-  keepAlive?: boolean
-  callbacks: WebSocketCallbacks & {
-    onMessage: (data: BitMartSpotMessages.OrderBook) => void
-  }
+  onBroken?: (channels: string[]) => void
+  onMessage: (data: BitMartSpotMessages.OrderBook) => void
 }
 
 // Each IP can maintain up to 20 connections with the BitMart public channel server
@@ -17,45 +16,87 @@ interface Options {
 // Once connected: Clients can sending a maximum of 100 subscription messages within 10 seconds, message includes: PING text, JSON format messages (subscription and unsubscription).
 // Once connected: A maximum of 20 messages arrays can be sent by clients for a single subscription.
 
-export class BitMartSpotStream extends WebsocketBase {
-  constructor({ keepAlive, callbacks }: Options) {
-    super(`wss://ws-manager-compress.bitmart.com/api?protocol=1.1`, {
-      keepAlive,
-      service: 'bitmart-spot',
-      callbacks: {
-        ...callbacks,
-        onMessage: (data) => {
-          const raw = data.toString()
-          const response = JSON.parse(raw)
+export class BitMartSpotStream extends BaseStream<typeof subscriptions> {
+  private responses = new EventDispatcher<boolean>()
 
-          if (response.event === 'subscribe' || response.event === 'unsubscribe') {
-            this.logger.log(`Interaction message: ${raw}`, 'STREAM')
-            return
+  constructor({ onBroken, onMessage }: Options) {
+    const network = new NetworkManager({
+      onBroken,
+      connectionLimit: 110,
+      createConnection: (id, { onOpen, onBroken }) => {
+        const connection = new WebsocketBase(`wss://ws-manager-compress.bitmart.com/api?protocol=1.1`, {
+          service: `bitmart:spot:${id}`,
+          callbacks: {
+            onOpen,
+            onBroken,
+            onMessage: (data) => {
+              const raw = data.toString()
+              const response = JSON.parse(raw)
+
+              if (response.event === 'subscribe' || response.event === 'unsubscribe') {
+                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                this.responses.emit(`${response.event}:${response.topic}`, true)
+                return
+              }
+
+              if (response.errorCode) {
+                connection.logger.log(`Error message: ${raw}`, 'STREAM')
+                this.responses.emit(response.event, false)
+                return
+              }
+
+              onMessage(response)
+            }
           }
+        })
 
-          callbacks.onMessage(response)
-        }
+        return connection
+      }
+    })
+
+    super(network, subscriptions, {
+      subscribe: (connection, channels) => {
+        return this.request(connection, channels, 'subscribe')
+      },
+      unsubscribe: (connection, channels) => {
+        return this.request(connection, channels, 'unsubscribe')
       }
     })
   }
 
-  subscribe(getStreams: (subscriptions: typeof Subscriptions) => string | string[]) {
-    const streams = toArray(getStreams(Subscriptions))
+  private request(connection: WebsocketBase, channels: string[], method: string) {
+    return new Promise<void>((resolve, reject) => {
+      connection.logger.verbose(`${method}: [${channels.length}]: ${channels.join(', ')}`, 'STREAM')
 
-    return this.send({
-      time: Date.now(),
-      op: 'subscribe',
-      args: streams
-    })
-  }
+      let sizes = channels.length
 
-  unsubscribe(getStreams: (subscriptions: typeof Subscriptions) => string | string[]) {
-    const streams = toArray(getStreams(Subscriptions))
+      channels.forEach((channel) => {
+        this.responses.on(`${method}:${channel}`, (isSuccess) => {
+          this.responses.rm(`${method}:${channel}`)
 
-    return this.send({
-      time: Date.now(),
-      op: 'unsubscribe',
-      args: streams
+          if (isSuccess) {
+            sizes--
+
+            if (sizes === 0) {
+              resolve()
+            }
+          } else {
+            connection.logger.error(`${method}:${channel}`, method)
+
+            channels.forEach((channel) => {
+              this.responses.rm(`${method}:${channel}`)
+            })
+
+            reject()
+          }
+        })
+      })
+
+      connection.send({
+        time: Date.now(),
+        op: method,
+        args: channels
+      })
     })
   }
 }
