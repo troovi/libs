@@ -34,9 +34,13 @@ export class CoinExDepth {
     })
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.onEvent({ type: 'offline', symbol })
+    })
+
+    await this.ws.subscribe(({ orderbook }) => {
+      return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
     })
   }
 }

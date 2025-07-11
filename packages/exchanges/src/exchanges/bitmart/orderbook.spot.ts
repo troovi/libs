@@ -73,11 +73,18 @@ export class BitMartSpotDepth {
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
-
       this.onEvent({ type: 'offline', symbol })
     })
+
+    const chunks = splitByChunks(symbols, 20)
+
+    for await (const subscriptions of chunks) {
+      await this.ws.unsubscribe(({ orderbook }) => {
+        return subscriptions.map((symbol) => orderbook(symbol))
+      })
+    }
   }
 }

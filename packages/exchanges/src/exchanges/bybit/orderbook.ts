@@ -44,16 +44,24 @@ export class ByBitDepth {
     })
   }
 
-  stop(symbols: string[]) {
-    symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
-    })
-  }
-
   async initialize(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
+    })
+
+    const chunks = splitByChunks(symbols, 10)
+
+    for await (const chunk of chunks) {
+      await this.ws.subscribe(({ orderbook }) => {
+        return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
+      })
+    }
+  }
+
+  async stop(symbols: string[]) {
+    symbols.forEach((symbol) => {
+      this.store[symbol] = { lastUpdateId: -1 }
+      this.onEvent({ type: 'offline', symbol })
     })
 
     const chunks = splitByChunks(symbols, 10)

@@ -10,3 +10,5 @@ export * from './exchanges/bitget'
 export * from './exchanges/bitmart'
 export * from './exchanges/coinex'
 export * from './exchanges/huobi'
+
+export * from './types'

@@ -117,25 +117,20 @@ export class MexcSpotDepth {
   }
 
   async initialize(symbols: string[]) {
-    symbols.forEach((symbol) => {
+    for await (const symbol of symbols) {
       this.store[symbol] = {
         initialized: false,
         lastUpdateId: -1,
         depth: []
       }
-    })
 
-    for await (const symbol of symbols) {
-      await this.ws.subscribe(({ diffBookDepth }) => {
-        return diffBookDepth({ symbol, speed: 100 })
-      })
-
+      await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
       await sleep(1500)
       await this.setup(symbol)
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = {
         initialized: false,
@@ -145,6 +140,10 @@ export class MexcSpotDepth {
 
       this.onEvent({ type: 'offline', symbol })
     })
+
+    for await (const symbol of symbols) {
+      await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+    }
   }
 }
 

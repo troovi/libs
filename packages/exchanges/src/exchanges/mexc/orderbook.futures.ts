@@ -113,27 +113,34 @@ export class MexcFuturesDepth {
     })
   }
 
-  async initialize(symbol: string) {
-    this.store[symbol] = {
-      initialized: false,
-      lastUpdateId: -1,
-      depth: []
+  async initialize(symbols: string[]) {
+    for await (const symbol of symbols) {
+      this.store[symbol] = {
+        initialized: false,
+        lastUpdateId: -1,
+        depth: []
+      }
+
+      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await sleep(1500)
+      await this.setup(symbol)
     }
-
-    await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
-
-    await sleep(1500)
-    await this.setup(symbol)
   }
 
-  async stop(symbol: string) {
-    this.store[symbol] = {
-      initialized: false,
-      lastUpdateId: -1,
-      depth: []
-    }
+  async stop(symbols: string[]) {
+    symbols.forEach((symbol) => {
+      this.store[symbol] = {
+        initialized: false,
+        lastUpdateId: -1,
+        depth: []
+      }
 
-    this.onEvent({ type: 'offline', symbol })
+      this.onEvent({ type: 'offline', symbol })
+    })
+
+    for await (const symbol of symbols) {
+      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+    }
   }
 }
 

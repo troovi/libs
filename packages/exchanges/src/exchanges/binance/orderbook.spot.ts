@@ -133,15 +133,14 @@ export class BinanceSpotDepth {
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
-      this.store[symbol] = {
-        initialized: false,
-        lastUpdateId: -1,
-        depth: []
-      }
-
+      this.store[symbol].initialized = false
       this.onEvent({ type: 'offline', symbol })
+    })
+
+    await this.ws.unsubscribe(({ diffBookDepth }) => {
+      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
   }
 }

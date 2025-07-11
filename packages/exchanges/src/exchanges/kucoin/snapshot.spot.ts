@@ -12,7 +12,6 @@ export class KuCoinSpotSnapshot {
   private ws: KuCoinSpotPublicStream
 
   private topicName = '/spotMarket/level2Depth50:'
-
   private onEvent: (event: OrderBookEvent) => void
 
   constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
@@ -32,14 +31,15 @@ export class KuCoinSpotSnapshot {
     })
   }
 
-  stop(symbols: string[]) {
+  async initialize(symbols: string[]) {
+    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
+  }
+
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.onEvent({ type: 'offline', symbol })
     })
-  }
 
-  async initialize(symbols: string[]) {
-    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
-    await sleep(250)
+    await this.ws.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
   }
 }

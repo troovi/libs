@@ -42,22 +42,22 @@ export class OKXDepth {
   }
 
   async initialize(instIds: string[]) {
-    instIds.forEach((symbol) => {
-      this.store[symbol] = { seqId: -1 }
-    })
-
     for await (const instId of instIds) {
+      this.store[instId] = { seqId: -1 }
       await this.ws.subscribe(({ orderbook }) => orderbook(instId))
       await sleep(250)
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { seqId: -1 }
-
       this.onEvent({ type: 'offline', symbol })
     })
+
+    for await (const symbol of symbols) {
+      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+    }
   }
 }
 

@@ -40,19 +40,23 @@ export class BitgetDepth {
     })
   }
 
-  stop(symbols: string[]) {
-    symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
-    })
-  }
-
   async initialize(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
     })
 
     await this.ws.subscribe(({ orderbook }) => {
+      return symbols.map((instId) => orderbook({ instId, instType }))
+    })
+  }
+
+  async stop(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
+    symbols.forEach((symbol) => {
+      this.store[symbol] = { lastUpdateId: -1 }
+      this.onEvent({ type: 'offline', symbol })
+    })
+
+    await this.ws.unsubscribe(({ orderbook }) => {
       return symbols.map((instId) => orderbook({ instId, instType }))
     })
   }

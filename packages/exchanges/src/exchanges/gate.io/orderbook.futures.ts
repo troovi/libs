@@ -150,19 +150,21 @@ export class GateFuturesDepth {
     })
   }
 
-  async initialize(symbol: string) {
-    this.store[symbol] = {
-      initialized: false,
-      lastUpdateId: -1,
-      isUpdateAhead: false,
-      depth: []
-    }
+  async initialize(symbols: string[]) {
+    for await (const symbol of symbols) {
+      this.store[symbol] = {
+        initialized: false,
+        lastUpdateId: -1,
+        isUpdateAhead: false,
+        depth: []
+      }
 
-    await this.ws.subscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
-    await this.setup(symbol)
+      await this.ws.subscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
+      await this.setup(symbol)
+    }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = {
         initialized: false,
@@ -173,6 +175,10 @@ export class GateFuturesDepth {
 
       this.onEvent({ type: 'offline', symbol })
     })
+
+    for await (const symbol of symbols) {
+      await this.ws.unsubscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
+    }
   }
 }
 

@@ -1,4 +1,3 @@
-import { sleep } from '@troovi/utils-js'
 import { KuCoinFuturesMessages } from './ws/futures/messages'
 import { KuCoinFuturesPublicStream } from './ws/futures/stream'
 import { OrderBookEvent } from '../../types'
@@ -30,15 +29,16 @@ export class KuCoinFuturesSnapshot {
     })
   }
 
-  stop(symbols: string[]) {
+  async initialize(symbols: string[]) {
+    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
+  }
+
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.onEvent({ type: 'offline', symbol })
     })
-  }
 
-  async initialize(symbols: string[]) {
-    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
-    await sleep(250)
+    await this.ws.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
   }
 }
 

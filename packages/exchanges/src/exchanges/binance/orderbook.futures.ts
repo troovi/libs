@@ -39,6 +39,10 @@ export class BinanceFuturesDepth {
   update(event: BinanceMessages.FuturesDepthUpdate) {
     const source = this.store[event.s]
 
+    if (!source) {
+      return
+    }
+
     const latency = Date.now() - event.E
 
     if (source.initialized) {
@@ -116,23 +120,20 @@ export class BinanceFuturesDepth {
   }
 
   async initialize(symbols: string[]) {
-    symbols.forEach((symbol) => {
+    for await (const symbol of symbols) {
       this.store[symbol] = {
         initialized: false,
         lastUpdateId: -1,
         depth: []
       }
-    })
 
-    for await (const symbol of symbols) {
       await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
       await sleep(2000)
-
       await this.setup(symbol)
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = {
         initialized: false,
@@ -141,6 +142,10 @@ export class BinanceFuturesDepth {
       }
 
       this.onEvent({ type: 'offline', symbol })
+    })
+
+    await this.ws.unsubscribe(({ diffBookDepth }) => {
+      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
   }
 }

@@ -133,7 +133,7 @@ export class OrangeXDepth {
     }
   }
 
-  stop(symbols: string[]) {
+  async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = {
         initialized: false,
@@ -142,6 +142,10 @@ export class OrangeXDepth {
       }
 
       this.onEvent({ type: 'offline', symbol })
+    })
+
+    await this.ws.subscribe(({ orderbook }) => {
+      return symbols.map((symbol) => orderbook({ symbol }))
     })
   }
 }
