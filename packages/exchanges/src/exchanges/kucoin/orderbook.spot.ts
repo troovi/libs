@@ -1,5 +1,5 @@
 import { sleep } from '@troovi/utils-js'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { KuCoinSpotApi } from './api/spot/api'
 import { KuCoinSpotPublicStream } from './ws/spot/stream'
 import { KuCoinSpotMessages } from './ws/spot/messages'
@@ -70,7 +70,7 @@ export class KuCoinSpotDepth {
     for await (const symbol of symbols) {
       const snapshot = await this.api.getOrderBook({ symbol })
 
-      const orderbook = new OrderBookCache()
+      const orderbook = new OrderBookServer()
       const source = this.store[symbol]
 
       orderbook.update({
@@ -98,7 +98,7 @@ export class KuCoinSpotDepth {
         })
       }
 
-      const state = orderbook.getState()
+      const state = orderbook.getSnapshot()
 
       source.depth = []
       source.initialized = true

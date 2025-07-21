@@ -1,7 +1,7 @@
 import { sleep, stringify } from '@troovi/utils-js'
 import { BinancePublicStream } from './ws/public/stream'
 import { BinanceMessages } from './ws/public/messages'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { BinanceFuturesApi } from './api/futures/api'
 import { toNumber } from '../../utils'
 import { OrderBookEvent } from '../../types'
@@ -43,10 +43,8 @@ export class BinanceFuturesDepth {
       return
     }
 
-    const latency = Date.now() - event.E
-
     if (source.initialized) {
-      if (source.lastUpdateId !== event.pu) {
+      if (source.lastUpdateId !== event.pu && source.lastUpdateId !== event.U) {
         const { U, u, pu } = event
 
         this.logger.error(`Out: ${event.s}: ${source.lastUpdateId} ${stringify({ U, u, pu })}`, 'SYNC')
@@ -83,7 +81,7 @@ export class BinanceFuturesDepth {
 
     const snapshot = await this.api.getOrderBook({ limit: 1000, symbol })
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -91,6 +89,8 @@ export class BinanceFuturesDepth {
       bids: snapshot.bids,
       asks: snapshot.asks
     })
+
+    // console.log('snapshot lastUpdateId:', snapshot.lastUpdateId)
 
     const index = source.depth.findIndex((d) => {
       return snapshot.lastUpdateId >= d.U && snapshot.lastUpdateId <= d.u
@@ -102,7 +102,11 @@ export class BinanceFuturesDepth {
       })
     }
 
-    const state = orderbook.getState()
+    // console.log(source.depth.map(({ U, u }) => ({ u, U })))
+
+    const state = orderbook.getSnapshot()
+
+    // console.log(state.lastUpdateId)
 
     source.depth = []
     source.initialized = true
@@ -140,8 +144,6 @@ export class BinanceFuturesDepth {
         lastUpdateId: -1,
         depth: []
       }
-
-      this.onEvent({ type: 'offline', symbol })
     })
 
     await this.ws.unsubscribe(({ diffBookDepth }) => {

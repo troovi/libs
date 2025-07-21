@@ -1,20 +1,22 @@
 import { EventBroadcaster } from '@troovi/utils-js'
+import { OrderBookChange, OrderBookState, OrderBookUpdate } from './orderbook'
 
-export interface OrderBookUpdate {
-  bids: [number, number][]
-  asks: [number, number][]
+const orders = ['bids', 'asks'] as const
+
+const onEvent = {
+  bids: 'Bid' as const,
+  asks: 'Ask' as const
 }
 
-interface Options {
-  priceStep: number
-}
+// OrderBookState принимает реальный шаг цены, даже если factor 1000.
+// Так как при поиске best ордеров, пришлось бы выполнять по 1000/10000+ лишних операций обхода по пустыи индексам
 
-export class OrderBookEngine {
+export class OrderBookDeltaState implements OrderBookState {
   public readonly onBestBidChange = new EventBroadcaster<number>()
   public readonly onBestAskChange = new EventBroadcaster<number>()
 
+  public readonly priceFactor: number
   public readonly priceStep: number
-  private readonly priceFactor: number
 
   public bids: [number, number][] = []
   public asks: [number, number][] = []
@@ -24,13 +26,54 @@ export class OrderBookEngine {
     asks: Infinity
   }
 
-  constructor({ priceStep }: Options) {
-    this.priceStep = priceStep
+  constructor({ priceStep }: { priceStep: number }) {
     this.priceFactor = Math.round(1 / priceStep)
+    this.priceStep = priceStep
   }
 
   getIndex(price: number) {
     return Math.round(price * this.priceFactor)
+  }
+
+  update(data: OrderBookUpdate, onChange: (data: OrderBookChange) => void = () => {}) {
+    for (const side of orders) {
+      let isBestChanged = false
+
+      if (data[side].length) {
+        this.searchBest(data)[side](() => {
+          isBestChanged = true
+        })
+      }
+
+      let isRemoved = false
+
+      for (const [price, quantity] of data[side]) {
+        const index = this.getIndex(price)
+
+        if (quantity) {
+          this[side][index] = [price, quantity]
+        } else {
+          delete this[side][index]
+          isRemoved = true
+        }
+
+        onChange({ side, price, quantity })
+      }
+
+      if (isRemoved) {
+        const index = this.getIndex(this.best[side])
+
+        if (!this[side][index]) {
+          this.updateBest(index)[side](() => {
+            isBestChanged = true
+          })
+        }
+      }
+
+      if (isBestChanged) {
+        this[`onBest${onEvent[side]}Change`].emit(this.best[side])
+      }
+    }
   }
 
   searchBest(data: Omit<OrderBookUpdate, 'updateId'>) {

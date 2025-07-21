@@ -53,7 +53,6 @@ export class BitgetDepth {
   async stop(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
     })
 
     await this.ws.unsubscribe(({ orderbook }) => {

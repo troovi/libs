@@ -1,7 +1,7 @@
 import { sleep } from '@troovi/utils-js'
 import { OrangeXPublicStream } from './ws/public/stream'
 import { OrangeXPublicMessages } from './ws/public/messages'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { OrangeXApi } from './api'
 import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
@@ -72,7 +72,7 @@ export class OrangeXDepth {
 
     const snapshot = await this.api.getOrderBook({ instrument_name: symbol })
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -95,7 +95,7 @@ export class OrangeXDepth {
       })
     }
 
-    const state = orderbook.getState()
+    const state = orderbook.getSnapshot()
 
     source.depth = []
     source.initialized = true
@@ -140,11 +140,9 @@ export class OrangeXDepth {
         lastUpdateId: -1,
         depth: []
       }
-
-      this.onEvent({ type: 'offline', symbol })
     })
 
-    await this.ws.subscribe(({ orderbook }) => {
+    await this.ws.unsubscribe(({ orderbook }) => {
       return symbols.map((symbol) => orderbook({ symbol }))
     })
   }

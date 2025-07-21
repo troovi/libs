@@ -1,6 +1,6 @@
 import { sleep } from '@troovi/utils-js'
 
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { GateSpotStream } from './ws/spot/stream'
 import { GateApi } from './api'
 import { GateSpotMessages } from './ws/spot/messages'
@@ -77,7 +77,7 @@ export class GateSpotDepth {
       with_id: true
     })
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -105,7 +105,7 @@ export class GateSpotDepth {
       }
     }
 
-    const state = orderbook.getState()
+    const state = orderbook.getSnapshot()
 
     source.depth = []
     source.initialized = true
@@ -142,12 +142,10 @@ export class GateSpotDepth {
         lastUpdateId: -1,
         depth: []
       }
-
-      this.onEvent({ type: 'offline', symbol })
     })
 
     for await (const symbol of symbols) {
-      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }

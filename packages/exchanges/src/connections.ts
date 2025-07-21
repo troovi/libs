@@ -224,7 +224,7 @@ class ChannelsControl {
     channels.forEach((channel) => {
       // возможно при неправильной подписки на стрим, и не
       if (this.channels[channel]) {
-        throw 'channel exists'
+        throw `channel exists: ${channel}`
       }
 
       this.size++

@@ -1,5 +1,5 @@
 interface Event {
-  type: 'snapshot' | 'update'
+  type: 'snapshot' | 'update' | 'frame'
   symbol: string
   latency: number
   bids: [number, number][]

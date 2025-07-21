@@ -82,12 +82,12 @@ const ApplyScroll = ({ dom, initialScroll }: InitialProps) => {
     const scrollable = dom.scrollable?.ref.current
 
     if (scrollable) {
-      if (initialScroll.position === 'center') {
-        scrollable.scrollTop = initialScroll.scroll - scrollable.clientHeight / 2
+      if (initialScroll.mode === 'center') {
+        scrollable.scrollTop = initialScroll.position - scrollable.clientHeight / 2
       }
 
-      if (initialScroll.position === 'top') {
-        scrollable.scrollTop = initialScroll.scroll
+      if (initialScroll.mode === 'frame') {
+        scrollable.scrollTop = scrollable.scrollTop + initialScroll.shift
       }
     }
   }, [])

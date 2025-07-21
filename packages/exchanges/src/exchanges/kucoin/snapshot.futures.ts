@@ -21,7 +21,7 @@ export class KuCoinFuturesSnapshot {
     const symbol = event.topic.substring(this.topicName.length, event.topic.length)
 
     this.onEvent({
-      type: 'snapshot',
+      type: 'frame',
       symbol,
       latency: Date.now() - event.data.ts,
       bids: formatOrders(event.data.bids),
@@ -34,10 +34,6 @@ export class KuCoinFuturesSnapshot {
   }
 
   async stop(symbols: string[]) {
-    symbols.forEach((symbol) => {
-      this.onEvent({ type: 'offline', symbol })
-    })
-
     await this.ws.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
   }
 }

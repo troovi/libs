@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useCallback, useLayoutEffect } from 'react'
-import { roundTo, truncateNumber, getFloatDigits } from '@troovi/utils-js'
+import { normalize, truncateNumber, getFloatDigits } from '@troovi/utils-js'
 
 export interface NumberInputOptions {
   value: number
@@ -53,10 +53,10 @@ export const useNumberInput = ({ minValue, value, onChange, step = 1 }: NumberIn
     inputRef,
     value: inputValue.value,
     increment: () => {
-      setChanges(roundTo(value + step, precision))
+      setChanges(normalize(value + step, precision))
     },
     decrement: () => {
-      setChanges(roundTo(value - step, precision))
+      setChanges(normalize(value - step, precision))
     },
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value.trim()

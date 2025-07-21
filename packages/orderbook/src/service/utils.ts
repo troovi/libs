@@ -1,20 +1,20 @@
-import { roundTo } from '@troovi/utils-js'
+import { normalize } from '@troovi/utils-js'
 
 export const roundVolume = (value: number) => {
   // Billions
   if (value > 1000000000) {
-    return roundTo(value / 1000000000, 0) + 'B'
+    return normalize(value / 1000000000, 0) + 'B'
   }
 
   // Millions
   if (value > 1000000) {
-    return roundTo(value / 1000000, 2) + 'M'
+    return normalize(value / 1000000, 2) + 'M'
   }
 
   // Thousands
   if (value > 1000) {
-    return roundTo(value / 1000, 2) + 'K'
+    return normalize(value / 1000, 2) + 'K'
   }
 
-  return roundTo(value, 1) + ''
+  return normalize(value, 1) + ''
 }

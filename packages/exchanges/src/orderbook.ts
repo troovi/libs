@@ -4,14 +4,12 @@ interface Event {
   asks: (string | number)[][]
 }
 
-interface OrderBookState {
-  bids: Record<string, number>
-  asks: Record<string, number>
-}
-
-export class OrderBookCache {
+export class OrderBookServer {
   private lastUpdateId: number
-  private state: OrderBookState
+  private state: {
+    bids: { [price: number]: number }
+    asks: { [price: number]: number }
+  }
 
   constructor() {
     this.state = {
@@ -20,7 +18,7 @@ export class OrderBookCache {
     }
   }
 
-  getState() {
+  getSnapshot() {
     const bids = []
     const asks = []
 
@@ -34,8 +32,8 @@ export class OrderBookCache {
 
     return {
       lastUpdateId: this.lastUpdateId,
-      bids: bids.sort((a, b) => b[0] - a[0]) as [number, number][],
-      asks: asks.sort((a, b) => a[0] - b[0]) as [number, number][]
+      asks: asks.sort((a, b) => a[0] - b[0]) as [number, number][],
+      bids: bids.sort((a, b) => b[0] - a[0]) as [number, number][]
     }
   }
 
@@ -45,9 +43,9 @@ export class OrderBookCache {
     for (const order of ['bids', 'asks'] as const) {
       for (const [price, volume] of event[order]) {
         if (+volume === 0) {
-          delete this.state[order][price]
+          delete this.state[order][+price]
         } else {
-          this.state[order][price] = +volume
+          this.state[order][+price] = +volume
         }
       }
     }

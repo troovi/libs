@@ -26,7 +26,7 @@ export class BitMartSpotDepth {
     const event = data[0]
     const source = this.store[event.symbol]
 
-    if (event.type !== 'snapshot') {
+    if (event.type === 'update') {
       if (source.lastUpdateId === event.version && event.bids.length === 0 && event.asks.length === 0) {
         return
       }
@@ -76,7 +76,6 @@ export class BitMartSpotDepth {
   async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
     })
 
     const chunks = splitByChunks(symbols, 20)

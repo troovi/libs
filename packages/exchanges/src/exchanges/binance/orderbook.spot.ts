@@ -2,7 +2,7 @@ import { sleep, stringify } from '@troovi/utils-js'
 import { BinanceSpotApi } from './api/spot/api'
 import { BinancePublicStream } from './ws/public/stream'
 import { BinanceMessages } from './ws/public/messages'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { toNumber } from '../../utils'
 import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
@@ -77,7 +77,7 @@ export class BinanceSpotDepth {
 
     const snapshot = await this.api.getOrderBook({ limit: 1000, symbol })
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -96,7 +96,7 @@ export class BinanceSpotDepth {
       })
     }
 
-    const state = orderbook.getState()
+    const state = orderbook.getSnapshot()
 
     source.depth = []
     source.initialized = true
@@ -136,7 +136,6 @@ export class BinanceSpotDepth {
   async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol].initialized = false
-      this.onEvent({ type: 'offline', symbol })
     })
 
     await this.ws.unsubscribe(({ diffBookDepth }) => {

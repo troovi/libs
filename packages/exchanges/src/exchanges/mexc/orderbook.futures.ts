@@ -1,6 +1,6 @@
 import { sleep, stringify } from '@troovi/utils-js'
 import { Logger } from '@troovi/utils-nodejs'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { MexcFuturesApi } from './api/futures/api'
 import { MexcFuturesPublicStream } from './ws/public-futures'
 import { MexcFuturesMessages } from './ws/public-futures/messages'
@@ -73,7 +73,7 @@ export class MexcFuturesDepth {
 
     const snapshot = await this.api.getSnapshot(symbol)
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -96,7 +96,7 @@ export class MexcFuturesDepth {
       })
     }
 
-    const state = orderbook.getState()
+    const state = orderbook.getSnapshot()
 
     source.depth = []
     source.initialized = true
@@ -134,12 +134,10 @@ export class MexcFuturesDepth {
         lastUpdateId: -1,
         depth: []
       }
-
-      this.onEvent({ type: 'offline', symbol })
     })
 
     for await (const symbol of symbols) {
-      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }

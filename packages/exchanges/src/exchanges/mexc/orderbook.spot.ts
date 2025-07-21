@@ -1,5 +1,5 @@
 import { sleep } from '@troovi/utils-js'
-import { OrderBookCache } from '../../orderbook'
+import { OrderBookServer } from '../../orderbook'
 import { MexcSpotApi } from './api/spot/api'
 import { MexcSpotPublicStream } from './ws/public-spot'
 import { MexcMessages } from './ws/public-spot/messages'
@@ -72,7 +72,7 @@ export class MexcSpotDepth {
 
     const snapshot = await this.api.getOrderBookSnapshot(symbol)
 
-    const orderbook = new OrderBookCache()
+    const orderbook = new OrderBookServer()
     const source = this.store[symbol]
 
     orderbook.update({
@@ -99,7 +99,7 @@ export class MexcSpotDepth {
       })
     }
 
-    const state = orderbook.getState()
+    const state = orderbook.getSnapshot()
 
     source.depth = []
     source.initialized = true
@@ -137,12 +137,10 @@ export class MexcSpotDepth {
         lastUpdateId: -1,
         depth: []
       }
-
-      this.onEvent({ type: 'offline', symbol })
     })
 
     for await (const symbol of symbols) {
-      await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+      await this.ws.unsubscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
     }
   }
 }

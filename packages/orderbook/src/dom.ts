@@ -1,24 +1,31 @@
 import { ScrollAnimation } from '@troovi/utils-browser'
-import { EventBroadcaster, roundTo } from '@troovi/utils-js'
+import { EventBroadcaster, minus, multiply, normalize, plus } from '@troovi/utils-js'
 import { createState } from '@troovi/transmit'
 
 import { TickFormatter } from './service/tick-formatter'
-import { OrderBookState, OrderBookUpdate } from './service/dom-state'
-import { TickData } from './service/types'
+import { OrderBookState, OrderBookUpdate } from './service/orderbook'
+
+export interface TickData {
+  status: 'free' | 'bids' | 'asks' | 'both'
+  bidsVolume: number
+  asksVolume: number
+  bids: {
+    [price: string]: number
+  }
+  asks: {
+    [price: string]: number
+  }
+}
 
 export interface Track {
   [tick: string]: TickData
 }
 
-export interface OrderBookOptions {
+interface Options {
   snapshot: OrderBookUpdate
-  priceStep: number
 }
 
-export interface InitialScroll {
-  scroll: number
-  position: 'top' | 'center'
-}
+export type InitialScroll = { position: number; mode: 'center' } | { shift: number; mode: 'frame' }
 
 interface DOMViewState {
   updateId: number
@@ -28,7 +35,6 @@ interface DOMViewState {
 }
 
 export class OrderBookService {
-  public priceStep: number
   public tickHeight: number = 18
   public maxTicks: number = 140
 
@@ -39,8 +45,6 @@ export class OrderBookService {
   }
 
   // state
-
-  public readonly state: OrderBookState
 
   private readonly limits: {
     maxPrice: number
@@ -53,6 +57,8 @@ export class OrderBookService {
   private minViewablePrice: number
 
   // current
+
+  private isTrackBuilding: boolean = false
 
   private middlePrice: number
   private viewableTrack: Track = {}
@@ -85,18 +91,17 @@ export class OrderBookService {
 
   public tickFormatter: TickFormatter
 
-  constructor({ priceStep, snapshot }: OrderBookOptions) {
-    this.priceStep = priceStep
+  constructor(public state: OrderBookState, { snapshot }: Options) {
+    this.state.update(snapshot)
 
-    this.tickFormatter = new TickFormatter({ priceStep })
-    this.state = new OrderBookState({ priceStep })
+    this.tickFormatter = new TickFormatter({ priceStep: state.priceStep })
 
-    this.bestBid = createState(snapshot.bids[0][0])
-    this.bestAsk = createState(snapshot.asks[0][0])
+    this.bestBid = createState(this.state.best.bids)
+    this.bestAsk = createState(this.state.best.asks)
 
     this.limits = {
-      maxPrice: snapshot.asks[snapshot.asks.length - 1][0],
-      minPrice: snapshot.bids[snapshot.bids.length - 1][0]
+      maxPrice: Math.max(...this.getEdgePrices(snapshot.asks)),
+      minPrice: Math.min(...this.getEdgePrices(snapshot.bids))
     }
 
     this.state.onBestBidChange.subscribe((price) => {
@@ -107,32 +112,16 @@ export class OrderBookService {
       this.bestAsk.set(price)
     })
 
-    this.state.update(snapshot)
-    this.optimalVolumes(snapshot)
+    this.basevolume = this.getAvgVolumes(snapshot)
+  }
+
+  private getEdgePrices(orders: [number, number][]) {
+    return [orders[0][0], orders[orders.length - 1][0]]
   }
 
   public setDefaultView() {
     this.middlePrice = this.state.best.bids
     this.rebuildTrack()
-  }
-
-  private updateState(update: OrderBookUpdate) {
-    this.state.update(update, ({ side, price, quantity }) => {
-      const tick = this.viewableTrack[this.viewablePrices[price]]
-
-      if (tick) {
-        // update tick
-
-        if (quantity) {
-          tick[side][price] = quantity
-        } else {
-          delete tick[side][price]
-        }
-
-        tick[`${side}Volume`] = this.getClusterVolume(tick[side])
-        tick.status = this.getTickStatus(tick)
-      }
-    })
   }
 
   private render(initialScroll?: InitialScroll) {
@@ -152,7 +141,22 @@ export class OrderBookService {
       return
     }
 
-    this.updateState(update)
+    this.state.update(update, ({ side, price, quantity }) => {
+      const tick = this.viewableTrack[this.viewablePrices[price]]
+
+      if (tick) {
+        // update tick
+
+        if (quantity) {
+          tick[side][price] = quantity
+        } else {
+          delete tick[side][price]
+        }
+
+        tick[`${side}Volume`] = this.getClusterVolume(tick[side])
+        tick.status = this.getTickStatus(tick)
+      }
+    })
 
     if (this.trackState.isRendered) {
       if (this.enableAutoScrolling) {
@@ -178,6 +182,7 @@ export class OrderBookService {
 
   // only in hook usage
   public onTrackRendered() {
+    this.isTrackBuilding = false
     this.trackState.isRendered = true
     delete this.viewState.initialScroll
 
@@ -220,16 +225,20 @@ export class OrderBookService {
   }
 
   private rebuildTrack(getScrollTop?: (data: { maxPrice: number; prevMaxPrice: number }) => number) {
+    console.time('track')
+
+    this.isTrackBuilding = true
+
     const tickStep = this.tickFormatter.tick
     const middlePrice = +this.tickFormatter.getTick(this.middlePrice)
 
-    const maxTick = this.tickFormatter.getTick(middlePrice + (tickStep * this.maxTicks) / 2)
-    const minTick = this.tickFormatter.getTick(middlePrice - (tickStep * this.maxTicks) / 2)
-
     const prevMaxPrice = this.maxViewablePrice
 
-    this.minViewablePrice = +minTick
-    this.maxViewablePrice = +maxTick
+    this.maxViewablePrice = plus(middlePrice, multiply(tickStep, this.maxTicks / 2))
+    this.minViewablePrice = minus(middlePrice, multiply(tickStep, this.maxTicks / 2 - 1))
+
+    const maxTick = this.tickFormatter.getTick(middlePrice + (tickStep * this.maxTicks) / 2)
+    const minTick = this.tickFormatter.getTick(middlePrice - (tickStep * this.maxTicks) / 2)
 
     const track: Track = {}
     const ticks: string[] = []
@@ -240,9 +249,9 @@ export class OrderBookService {
       const asks = { volume: 0, prices: {} as Record<string, number> }
 
       this.tickFormatter.getPrices(+tick).forEach((price) => {
-        prices[+price] = tick
+        prices[price] = tick
 
-        const priceIndex = this.state.getIndex(+price)
+        const priceIndex = this.state.getIndex(price)
 
         const ask = this.state.asks[priceIndex]
         const bid = this.state.bids[priceIndex]
@@ -272,23 +281,32 @@ export class OrderBookService {
       ticks.unshift(tick)
     }
 
+    if (ticks.length !== this.maxTicks) {
+      console.warn(`Ticks size unexpected: ${ticks.length}`)
+    }
+
     this.viewableTrack = track
     this.viewableTicks = ticks
     this.viewablePrices = prices
 
+    console.timeEnd('track')
+
     this.onTrackChanged.emit()
 
-    this.trackState = { id: this.trackState.id + 1, isRendered: false }
+    this.trackState = {
+      id: this.trackState.id + 1,
+      isRendered: false
+    }
 
     if (getScrollTop) {
       this.render({
-        position: 'top',
-        scroll: getScrollTop({ maxPrice: this.maxViewablePrice, prevMaxPrice })
+        mode: 'frame',
+        shift: getScrollTop({ maxPrice: this.maxViewablePrice, prevMaxPrice })
       })
     } else {
       this.render({
-        position: 'center',
-        scroll: this.getPricePosition(this.middlePrice)
+        mode: 'center',
+        position: this.getPricePosition(this.middlePrice)
       })
     }
   }
@@ -301,7 +319,7 @@ export class OrderBookService {
     this.getScrollable(({ scrollTop, clientHeight, scrollHeight }) => {
       this.middlePrice = this.getPriceFromTopPosition(scrollTop + clientHeight / 2)
 
-      if (this.viewState.initialScroll) {
+      if (this.viewState.initialScroll || this.isTrackBuilding) {
         return
       }
 
@@ -311,12 +329,12 @@ export class OrderBookService {
       if (progress <= this.trackThreshold) {
         if (this.maxViewablePrice < this.limits.maxPrice) {
           this.rebuildTrack(({ prevMaxPrice, maxPrice }) => {
-            const counts = roundTo(
+            const counts = normalize(
               (maxPrice - prevMaxPrice) / this.tickFormatter.tick,
               this.tickFormatter.tickPrecision
             )
 
-            return scrollTop + counts * this.tickHeight
+            return counts * this.tickHeight
           })
         }
       }
@@ -325,12 +343,12 @@ export class OrderBookService {
       if (progress >= 100 - this.trackThreshold) {
         if (this.minViewablePrice > this.limits.minPrice) {
           this.rebuildTrack(({ prevMaxPrice, maxPrice }) => {
-            const counts = roundTo(
+            const counts = normalize(
               (prevMaxPrice - maxPrice) / this.tickFormatter.tick,
               this.tickFormatter.tickPrecision
             )
 
-            return scrollTop - counts * this.tickHeight
+            return counts * this.tickHeight * -1
           })
         }
       }
@@ -359,18 +377,26 @@ export class OrderBookService {
 
       if (ticks < 160) {
         const threshold = this.trackThreshold
+        // значение позиции middlePrice по центру экрана
         const targetPosition = this.getPricePosition(bestBid) - clientHeight / 2
+        // процент прогресса позиции targetPosition относительно scrollHeight (доступного трека)
+        // 100% - цель в самом вверху трека. 0% - в самом низу, 50% - посередине трека. Если больше 100% или меньше 0%, то целевая позиция вне текущего трека
         const targetPercent = (targetPosition / (scrollHeight - clientHeight)) * 100
 
         this.targetScrollPrice = bestBid
 
+        // если целевая позиция находится внутри текущего трека:
+        // (необходимо учесть threshold, так как новый трек создается когда прогесс прокрутки достигает одной из границ стакана, с учетом threshold. Если не учитывать это, то целевая позиция прокрутки может пересекать значение, когда будет создан новый трек)
         if (targetPercent > threshold && targetPercent < 100 - threshold) {
+          // выполняем операцию скорлла прямо до нее
           scrollable.moveTo(targetPosition, { effect: 'speed', speed }, () => {
             this.targetScrollPrice = null
           })
         } else {
+          // в противном случае, разделяем выполнение между несколькими треками
           const direction = this.middlePrice < bestBid ? 1 : -1
           const percent = direction === 1 ? threshold - 0.1 : 100 - threshold + 0.1
+          // преобразование процентов в значение scrollTop
           const scrollTopValue = (percent / 100) * (scrollHeight - clientHeight)
 
           this.afterTrackRendered = () => {
@@ -410,7 +436,7 @@ export class OrderBookService {
     return Object.values(cluster).reduce((prev, curr) => prev + curr, 0)
   }
 
-  private optimalVolumes(snapshot: OrderBookUpdate) {
+  private getAvgVolumes(snapshot: OrderBookUpdate) {
     const volumes: number[] = [
       ...snapshot.bids.map(([, qty]) => qty),
       ...snapshot.asks.map(([, qty]) => qty)
@@ -425,7 +451,7 @@ export class OrderBookService {
     const avg = highest.reduce((a, b) => a + b, 0) / volumes.length
     const vol = (100 * avg) / 1
 
-    this.basevolume = Math.round(vol)
+    return Math.round(vol)
   }
 
   public setTickStep(tickStep: string) {

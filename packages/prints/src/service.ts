@@ -26,7 +26,7 @@ interface Angle {
   }
 }
 
-export type PrintEntity = Bubble | Angle
+type PrintEntity = Bubble | Angle
 
 export interface TradeEvent {
   time: number
@@ -41,35 +41,20 @@ interface AddOptions {
   lot: 'sell' | 'buy'
 }
 
-export class TradesService {
+export class PrintsService {
   private maxViewablePrints: number = 18
-  public data: TradeEvent[] = []
-  public prints: PrintEntity[] = []
-  public onRerender = new EventBroadcaster<void>()
 
-  constructor(public dom: OrderBookService) {
-    this.dom.onTrackChanged.subscribe(() => {
-      this.recalculate()
-    })
-  }
+  public prints: PrintEntity[] = []
+  public changes = new EventBroadcaster<void>()
+
+  constructor(private dom: OrderBookService) {}
 
   public update(events: TradeEvent[]) {
-    this.data.unshift(...events.reverse())
-
-    if (this.data.length > 100) {
-      this.data = this.data.slice(0, 100)
-    }
-
     if (events.length > this.maxViewablePrints) {
-      events = events.slice(events.length - this.maxViewablePrints)
+      events = events.slice(-this.maxViewablePrints)
     }
 
     events.forEach((event) => {
-      if (this.prints.length > this.maxViewablePrints) {
-        this.prints.shift()
-        this.prints.shift()
-      }
-
       this.addPrint({
         price: +event.price,
         quantity: +event.quantity,
@@ -77,7 +62,8 @@ export class TradesService {
       })
     })
 
-    this.onRerender.emit()
+    this.prints = this.prints.slice(-this.maxViewablePrints)
+    this.changes.emit()
   }
 
   private addPrint({ price, quantity, lot }: AddOptions) {
@@ -148,7 +134,7 @@ export class TradesService {
       })
     })
 
-    this.onRerender.emit()
+    this.changes.emit()
   }
 }
 

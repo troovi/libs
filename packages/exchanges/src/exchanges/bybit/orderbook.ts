@@ -61,13 +61,12 @@ export class ByBitDepth {
   async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
     })
 
     const chunks = splitByChunks(symbols, 10)
 
     for await (const chunk of chunks) {
-      await this.ws.subscribe(({ orderbook }) => {
+      await this.ws.unsubscribe(({ orderbook }) => {
         return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
       })
     }

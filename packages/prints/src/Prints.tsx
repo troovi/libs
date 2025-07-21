@@ -1,15 +1,15 @@
 import './styles.scss'
 
-import { TradesService } from './service'
+import { PrintsService } from './service'
 import { useEffect, useState } from 'react'
-import { roundTo } from '@troovi/utils-js'
+import { normalize } from '@troovi/utils-js'
 import { box, px, width as w } from '@troovi/utils-browser'
 
-export const Trades = ({ trades, width = 280 }: { trades: TradesService; width: number }) => {
+export const Prints = ({ service, width = 280 }: { service: PrintsService; width: number }) => {
   const [, rerender] = useState([])
 
   useEffect(() => {
-    const unsubscribe = trades.onRerender.subscribe(() => {
+    const unsubscribe = service.changes.subscribe(() => {
       rerender([])
     })
 
@@ -19,10 +19,10 @@ export const Trades = ({ trades, width = 280 }: { trades: TradesService; width: 
   }, [])
 
   return (
-    <div className="bubbles" style={w(width)} data-count={trades.prints.length}>
-      {trades.prints.map((item, i) => {
+    <div className="bubbles" style={w(width)} data-count={service.prints.length}>
+      {service.prints.map((item, i) => {
         if (item.type === 'bubble') {
-          const size = trades.getBubbleRadius(item.roundedQty.length) * 2
+          const size = service.getBubbleRadius(item.roundedQty.length) * 2
 
           return (
             <div
@@ -31,7 +31,7 @@ export const Trades = ({ trades, width = 280 }: { trades: TradesService; width: 
               key={`trade-${i}-${item.price}-${item.lot}-${item.quantity}`}
               style={{ marginTop: `${item.marginTop}px` }}
             >
-              <div className="quote-trade">{roundTo(item.quantity * item.price, 2)}$</div>
+              <div className="quote-trade">{normalize(item.quantity * item.price, 2)}$</div>
               <div style={box(size)} className="center trade rounded-full" data-lot={item.lot}>
                 {item.roundedQty}
               </div>

@@ -79,7 +79,6 @@ export class BitMartFuturesDepth {
   async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { lastUpdateId: -1 }
-      this.onEvent({ type: 'offline', symbol })
     })
 
     const chunks = splitByChunks(symbols, 20)

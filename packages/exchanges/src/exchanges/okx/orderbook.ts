@@ -52,11 +52,10 @@ export class OKXDepth {
   async stop(symbols: string[]) {
     symbols.forEach((symbol) => {
       this.store[symbol] = { seqId: -1 }
-      this.onEvent({ type: 'offline', symbol })
     })
 
     for await (const symbol of symbols) {
-      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }
