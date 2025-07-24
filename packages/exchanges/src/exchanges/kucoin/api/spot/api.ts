@@ -98,6 +98,10 @@ interface APIs {
     params: {}
     answer: Response<Responses.WSInfo>
   }
+  '/api/v1/market/orderbook/level2_100': {
+    params: Requests.OrderBook
+    answer: Response<Responses.OrderBook>
+  }
 }
 
 interface Options {
@@ -129,11 +133,11 @@ export class KuCoinSpotApi extends ApiClient<APIs> {
     })
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ code?: string }>) => {
       if (e?.response?.data?.code === '400002') {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e
@@ -179,10 +183,8 @@ export class KuCoinSpotApi extends ApiClient<APIs> {
   // https://www.kucoin.com/docs/rest/spot-trading/market-data/get-part-order-book-aggregated-
 
   getOrderBook(params: Requests.OrderBook) {
-    type R = Response<Responses.OrderBook>
-
     return this.publicLimiter.wrap(4, () => {
-      return this.signRequest<R>('GET', '/api/v1/market/orderbook/level2_100', params).then(
+      return this.apiRequest('GET', '/api/v1/market/orderbook/level2_100', params).then(
         ({ data }) => data
       )
     })

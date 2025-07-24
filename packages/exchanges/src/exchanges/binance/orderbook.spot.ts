@@ -9,7 +9,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: BinanceSpotApi
-  ws: BinancePublicStream<'spot'>
+  stream: BinancePublicStream<'spot'>
 }
 
 interface Store {
@@ -26,14 +26,14 @@ export class BinanceSpotDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: BinanceSpotApi
-  private ws: BinancePublicStream<'spot'>
+  private stream: BinancePublicStream<'spot'>
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: BinanceMessages.SpotDepthUpdate) {
@@ -48,7 +48,7 @@ export class BinanceSpotDepth {
         source.initialized = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol: event.s })
+        this.onEvent(event.s, { type: 'offline' })
 
         sleep(2000).then(() => {
           this.logger.warn(`Reboot "${event.s}"`, 'RESTART')
@@ -58,9 +58,8 @@ export class BinanceSpotDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(event.s, {
         type: 'update',
-        symbol: event.s,
         latency: Date.now() - event.E,
         bids: toNumber(event.b),
         asks: toNumber(event.a)
@@ -104,9 +103,8 @@ export class BinanceSpotDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: 0,
       bids: state.bids,
       asks: state.asks
@@ -122,7 +120,7 @@ export class BinanceSpotDepth {
       }
     })
 
-    await this.ws.subscribe(({ diffBookDepth }) => {
+    await this.stream.subscribe(({ diffBookDepth }) => {
       return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
 
@@ -138,7 +136,7 @@ export class BinanceSpotDepth {
       this.store[symbol].initialized = false
     })
 
-    await this.ws.unsubscribe(({ diffBookDepth }) => {
+    await this.stream.unsubscribe(({ diffBookDepth }) => {
       return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
   }

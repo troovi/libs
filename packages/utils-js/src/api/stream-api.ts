@@ -24,12 +24,12 @@ export type MakeStreamResponses<T extends IOpattern<T>> = {
 
 // websocket implementation of request-response api
 
-class StreamAPI<T extends IOpattern<T>, Res extends MakeStreamResponses<T> = MakeStreamResponses<T>> {
-  private responses = new EventDispatcher<Res>()
+class StreamAPI<T extends IOpattern<T>, R extends MakeStreamResponses<T> = MakeStreamResponses<T>> {
+  private responses = new EventDispatcher<R>()
 
   constructor(private send: (data: MakeStreamRequests<T>) => void) {}
 
-  response(message: Res) {
+  response(message: R) {
     this.responses.emit(message.id, message)
   }
 

@@ -6,7 +6,7 @@ import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
-  ws: ByBitStream
+  stream: ByBitStream
 }
 
 // Regardless of Perpetual, Futures, Options or Spot, for one public connection, you cannot have length of "args" array over 21,000 characters.
@@ -16,13 +16,13 @@ export class ByBitDepth {
   private logger = new Logger('bybit dom')
   private store: { [symbol: string]: { lastUpdateId: number } } = {}
 
-  private ws: ByBitStream
+  private stream: ByBitStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: StreamMessages.DepthEvent) {
@@ -35,10 +35,9 @@ export class ByBitDepth {
 
     source.lastUpdateId = event.data.u
 
-    this.onEvent({
+    this.onEvent(event.data.s, {
       type: event.type === 'delta' ? 'update' : 'snapshot',
       latency: Date.now() - event.ts,
-      symbol: event.data.s,
       bids: toNumber(event.data.b as [string, string][]),
       asks: toNumber(event.data.a as [string, string][])
     })
@@ -52,7 +51,7 @@ export class ByBitDepth {
     const chunks = splitByChunks(symbols, 10)
 
     for await (const chunk of chunks) {
-      await this.ws.subscribe(({ orderbook }) => {
+      await this.stream.subscribe(({ orderbook }) => {
         return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
       })
     }
@@ -66,7 +65,7 @@ export class ByBitDepth {
     const chunks = splitByChunks(symbols, 10)
 
     for await (const chunk of chunks) {
-      await this.ws.unsubscribe(({ orderbook }) => {
+      await this.stream.unsubscribe(({ orderbook }) => {
         return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
       })
     }

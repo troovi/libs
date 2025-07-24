@@ -1,4 +1,4 @@
-export namespace BitMartSpotMessages {
+export namespace BitmartSpotMessages {
   export interface OrderBook {
     table: 'spot/depth/increase100'
     data: [

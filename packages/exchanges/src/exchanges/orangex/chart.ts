@@ -1,11 +1,12 @@
 import { getCurrentCandleTime, intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { OrangeXApi } from './api'
+import { ChartApi } from '../../types'
 
-export const createOrangeXChartFormatter = (api: OrangeXApi) => {
-  return createChartFormatter({
+export const createOrangeXChartApi = (api: OrangeXApi): ChartApi => {
+  const formatter = createChartFormatter({
     maxFetchSize: 500,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const types = {
         '1m': '1' as const,
         '5m': '5' as const
@@ -25,4 +26,8 @@ export const createOrangeXChartFormatter = (api: OrangeXApi) => {
       return series
     }
   })
+
+  return (market, params) => {
+    return formatter(params)
+  }
 }

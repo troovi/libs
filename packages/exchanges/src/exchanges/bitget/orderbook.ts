@@ -4,25 +4,24 @@ import { toNumber } from '../../utils'
 import { OrderBookEvent } from '../../types'
 
 interface Params {
-  ws: BitgetPublicStream
+  stream: BitgetPublicStream
 }
 
 export class BitgetDepth {
   // private logger = new Logger('orderbook')
-  private store: { [symbol: string]: { lastUpdateId: number } } = {}
+  private store: { [symbol: string]: { lastUpdateId: number; market: 'futures' | 'spot' } } = {}
 
-  private ws: BitgetPublicStream
+  private stream: BitgetPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
-    this.ws = ws
+    this.stream = stream
   }
 
   update({ data, arg, action }: BitgetPublicMessages.OrderBook) {
     const event = data[0]
-    // const source = this.store[event.symbol]
 
     // if (source.lastUpdateId !== -1 && source.lastUpdateId + 1 !== event.version) {
     //   this.logger.error(`Out of sync: ${event.version}: ${source.lastUpdateId}`, 'SYNC')
@@ -31,31 +30,34 @@ export class BitgetDepth {
 
     // source.lastUpdateId = event.version
 
-    this.onEvent({
+    this.onEvent(arg.instId, {
       type: action === 'update' ? 'update' : 'snapshot',
-      symbol: arg.instId,
       latency: Date.now() - +event.ts,
       bids: toNumber(event.bids),
       asks: toNumber(event.asks)
     })
   }
 
+  getSymbolMarket(symbol: string) {
+    return this.store[symbol].market
+  }
+
   async initialize(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1 }
+      this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
     })
 
-    await this.ws.subscribe(({ orderbook }) => {
+    await this.stream.subscribe(({ orderbook }) => {
       return symbols.map((instId) => orderbook({ instId, instType }))
     })
   }
 
   async stop(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1 }
+      this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
     })
 
-    await this.ws.unsubscribe(({ orderbook }) => {
+    await this.stream.unsubscribe(({ orderbook }) => {
       return symbols.map((instId) => orderbook({ instId, instType }))
     })
   }

@@ -1,7 +1,7 @@
-import crypto from 'crypto'
 import { AnyBinanceSecureRequest, BinanceSecureResults, BinanceSecureRequests } from './messages'
 import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
 import { sortObject, buildQueryString, getRandomIntString } from '../../../../utils'
+import { getHexSignature } from '../../../../crypto'
 
 export type Market = 'spot' | 'futures'
 
@@ -87,7 +87,6 @@ export class BinancePrivateStream extends WebsocketBase {
   // utils
 
   private getSignature(options: object) {
-    const queryString = buildQueryString(sortObject(options))
-    return crypto.createHmac('sha256', this.apiSecret).update(queryString).digest('hex')
+    return getHexSignature(this.apiSecret, buildQueryString(sortObject(options)))
   }
 }

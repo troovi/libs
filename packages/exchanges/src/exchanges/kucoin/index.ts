@@ -1,13 +1,26 @@
-export * from './candles'
+import { Exchange } from '../../types'
+import { KuCoinFuturesApi } from './api/futures/api'
+import { KuCoinSpotApi } from './api/spot/api'
+import { createKuCoinChartApi } from './chart'
+import { createKuCoinFees } from './fees'
+import { createKuCoinStream } from './stream'
+import { createKuCoinSymbols } from './symbols'
 
-export * from './api/spot/api'
-export * from './api/futures/api'
+interface Options {
+  apiKey: string
+  apiSecret: string
+  apiPassword: string
+}
 
-export * from './ws/spot/stream'
-export * from './ws/futures/stream'
+export const createKuCoinExchange = (options: Options): Exchange => {
+  const sapi = new KuCoinSpotApi(options)
+  const fapi = new KuCoinFuturesApi(options)
 
-export * from './orderbook.spot'
-export * from './orderbook.futures'
-
-export * from './snapshot.spot'
-export * from './snapshot.futures'
+  return {
+    name: 'kucoin',
+    getChart: createKuCoinChartApi(sapi, fapi),
+    getFees: createKuCoinFees(sapi, fapi),
+    getSymbols: createKuCoinSymbols(sapi, fapi),
+    createStream: createKuCoinStream(sapi, fapi)
+  }
+}

@@ -8,7 +8,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: OrangeXApi
-  ws: OrangeXPublicStream
+  stream: OrangeXPublicStream
 }
 
 interface Store {
@@ -22,14 +22,14 @@ export class OrangeXDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: OrangeXApi
-  private ws: OrangeXPublicStream
+  private stream: OrangeXPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: OrangeXPublicMessages.OrderBook) {
@@ -43,7 +43,7 @@ export class OrangeXDepth {
         source.initialized = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol })
+        this.onEvent(symbol, { type: 'offline' })
 
         sleep(8000).then(() => {
           this.logger.warn(`Reboot "${symbol}"`, 'RESTART')
@@ -53,9 +53,8 @@ export class OrangeXDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(symbol, {
         type: 'update',
-        symbol,
         latency: Date.now() - event.data.timestamp,
         bids: formatOrders(event.data.bids).sort((a, b) => a[0] - b[0]),
         asks: formatOrders(event.data.asks).sort((a, b) => a[0] - b[0])
@@ -103,9 +102,8 @@ export class OrangeXDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - +snapshot.timestamp,
       bids: state.bids,
       asks: state.asks
@@ -121,7 +119,7 @@ export class OrangeXDepth {
       }
     })
 
-    await this.ws.subscribe(({ orderbook }) => {
+    await this.stream.subscribe(({ orderbook }) => {
       return symbols.map((symbol) => orderbook({ symbol }))
     })
 
@@ -142,7 +140,7 @@ export class OrangeXDepth {
       }
     })
 
-    await this.ws.unsubscribe(({ orderbook }) => {
+    await this.stream.unsubscribe(({ orderbook }) => {
       return symbols.map((symbol) => orderbook({ symbol }))
     })
   }

@@ -106,11 +106,11 @@ export class HuobiSpotApi extends ApiClient<APIs> {
     })
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ code?: number }>) => {
       if (e?.response?.data?.code === 10003) {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e

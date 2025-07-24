@@ -8,7 +8,7 @@ import { OrderBookEvent } from '../../types'
 
 interface Params {
   api: MexcFuturesApi
-  ws: MexcFuturesPublicStream
+  stream: MexcFuturesPublicStream
 }
 
 interface Store {
@@ -22,14 +22,14 @@ export class MexcFuturesDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: MexcFuturesApi
-  private ws: MexcFuturesPublicStream
+  private stream: MexcFuturesPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: MexcFuturesMessages.Depth) {
@@ -44,7 +44,7 @@ export class MexcFuturesDepth {
         source.initialized = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol: event.symbol })
+        this.onEvent(event.symbol, { type: 'offline' })
 
         sleep(2000).then(() => {
           this.logger.warn(`Reboot "${event.symbol}"`, 'RESTART')
@@ -54,9 +54,8 @@ export class MexcFuturesDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(event.symbol, {
         type: 'update',
-        symbol: event.symbol,
         latency: Date.now() - +event.ts,
         bids: formatOrders(event.data.bids).sort((a, b) => a[0] - b[0]),
         asks: formatOrders(event.data.asks).sort((a, b) => a[0] - b[0])
@@ -104,9 +103,8 @@ export class MexcFuturesDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - snapshot.timestamp,
       bids: state.bids,
       asks: state.asks
@@ -121,7 +119,7 @@ export class MexcFuturesDepth {
         depth: []
       }
 
-      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.subscribe(({ orderbook }) => orderbook(symbol))
       await sleep(1500)
       await this.setup(symbol)
     }
@@ -137,7 +135,7 @@ export class MexcFuturesDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }

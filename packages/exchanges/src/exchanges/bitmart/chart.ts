@@ -1,12 +1,32 @@
 import { fillMissingCandles, getNextCandleTime, intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
-import { BitMartSpotApi } from './api/spot/api'
-import { BitMartFuturesApi } from './api/futures/api'
+import { ChartOptions, createChartFormatter } from '../../formatters'
+import { BitmartSpotApi } from './api/spot/api'
+import { BitmartFuturesApi } from './api/futures/api'
+import { ChartApi } from '../../types'
 
-export const createBitMartSpotChartFormatter = (api: BitMartSpotApi) => {
+export const createBitmartChartApi = (sapi: BitmartSpotApi, fapi: BitmartFuturesApi): ChartApi => {
+  const [spotFormatter, futuresFormatter] = [
+    createBitmartSpotChartFormatter(sapi),
+    createBitmartFuturesChartFormatter(fapi)
+  ]
+
+  return (market, params) => {
+    if (market === 'spot') {
+      return spotFormatter(params)
+    }
+
+    if (market === 'futures') {
+      return futuresFormatter(params)
+    }
+
+    throw {}
+  }
+}
+
+const createBitmartSpotChartFormatter = (api: BitmartSpotApi) => {
   return createChartFormatter({
     maxFetchSize: 200,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const types = {
         '1m': 1 as 1,
         '5m': 5 as 5
@@ -43,10 +63,10 @@ export const createBitMartSpotChartFormatter = (api: BitMartSpotApi) => {
   })
 }
 
-export const createBitMartFuturesChartFormatter = (api: BitMartFuturesApi) => {
+const createBitmartFuturesChartFormatter = (api: BitmartFuturesApi) => {
   return createChartFormatter({
     maxFetchSize: 500,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const isEndExist = endTime !== undefined
 
       const types = {

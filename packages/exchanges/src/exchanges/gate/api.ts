@@ -206,33 +206,33 @@ export class GateApi extends ApiClient<APIs> {
   private publicLimiter = new FrequencyLimiter({
     limit: 200,
     interval: 1000 * 10,
-    name: 'io'
+    name: 'gate'
   })
 
   // 200r/10s per endpoint
   private futuresLimiter = new FrequencyLimiter({
     limit: 200,
     interval: 1000 * 10,
-    name: 'io'
+    name: 'gate'
   })
 
   // 200r/10s per endpoint
   private spotLimiter = new FrequencyLimiter({
     limit: 200,
     interval: 1000 * 10,
-    name: 'io'
+    name: 'gate'
   })
 
   // 200r/10s per endpoint
   private walletLimiter = new FrequencyLimiter({
-    limit: 200,
-    interval: 1000 * 10,
-    name: 'io'
+    limit: 150,
+    interval: 1000 * 11,
+    name: 'gate'
   })
 
   constructor({ apiKey, apiSecret }: Options) {
     super(`https://api.gateio.ws/api/v4`, {
-      name: 'gate.io',
+      name: 'gate',
       authStrategy: (method, endpoint, options) => {
         const timestamp = Math.floor(Date.now() / 1000).toString()
         const request: Record<string, object | string> = {}
@@ -276,11 +276,11 @@ export class GateApi extends ApiClient<APIs> {
     })
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ retCode?: number }>) => {
       if (e?.response?.data?.retCode === 10002) {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e

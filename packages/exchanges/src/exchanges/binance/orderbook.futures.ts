@@ -9,7 +9,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: BinanceFuturesApi
-  ws: BinancePublicStream<'futures'>
+  stream: BinancePublicStream<'futures'>
 }
 
 interface Store {
@@ -26,14 +26,14 @@ export class BinanceFuturesDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: BinanceFuturesApi
-  private ws: BinancePublicStream<'futures'>
+  private stream: BinancePublicStream<'futures'>
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: BinanceMessages.FuturesDepthUpdate) {
@@ -52,7 +52,7 @@ export class BinanceFuturesDepth {
         source.initialized = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol: event.s })
+        this.onEvent(event.s, { type: 'offline' })
 
         sleep(2000).then(() => {
           this.logger.warn(`Reboot "${event.s}"`, 'RESTART')
@@ -62,10 +62,9 @@ export class BinanceFuturesDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(event.s, {
         type: 'update',
         latency: Date.now() - event.E,
-        symbol: event.s,
         bids: toNumber(event.b),
         asks: toNumber(event.a)
       })
@@ -90,8 +89,6 @@ export class BinanceFuturesDepth {
       asks: snapshot.asks
     })
 
-    // console.log('snapshot lastUpdateId:', snapshot.lastUpdateId)
-
     const index = source.depth.findIndex((d) => {
       return snapshot.lastUpdateId >= d.U && snapshot.lastUpdateId <= d.u
     })
@@ -102,11 +99,7 @@ export class BinanceFuturesDepth {
       })
     }
 
-    // console.log(source.depth.map(({ U, u }) => ({ u, U })))
-
     const state = orderbook.getSnapshot()
-
-    // console.log(state.lastUpdateId)
 
     source.depth = []
     source.initialized = true
@@ -114,9 +107,8 @@ export class BinanceFuturesDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - snapshot.T,
       bids: state.bids,
       asks: state.asks
@@ -131,7 +123,7 @@ export class BinanceFuturesDepth {
         depth: []
       }
 
-      await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+      await this.stream.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
       await sleep(2000)
       await this.setup(symbol)
     }
@@ -146,7 +138,7 @@ export class BinanceFuturesDepth {
       }
     })
 
-    await this.ws.unsubscribe(({ diffBookDepth }) => {
+    await this.stream.unsubscribe(({ diffBookDepth }) => {
       return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
     })
   }

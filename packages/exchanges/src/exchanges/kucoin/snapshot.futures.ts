@@ -3,26 +3,25 @@ import { KuCoinFuturesPublicStream } from './ws/futures/stream'
 import { OrderBookEvent } from '../../types'
 
 interface Params {
-  ws: KuCoinFuturesPublicStream
+  stream: KuCoinFuturesPublicStream
 }
 
 export class KuCoinFuturesSnapshot {
-  private ws: KuCoinFuturesPublicStream
+  private stream: KuCoinFuturesPublicStream
   private topicName = '/contractMarket/level2Depth50:'
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: KuCoinFuturesMessages.Depth50) {
     const symbol = event.topic.substring(this.topicName.length, event.topic.length)
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'frame',
-      symbol,
       latency: Date.now() - event.data.ts,
       bids: formatOrders(event.data.bids),
       asks: formatOrders(event.data.asks)
@@ -30,11 +29,11 @@ export class KuCoinFuturesSnapshot {
   }
 
   async initialize(symbols: string[]) {
-    await this.ws.subscribe(({ orderbook50 }) => orderbook50(symbols))
+    await this.stream.subscribe(({ orderbook50 }) => orderbook50(symbols))
   }
 
   async stop(symbols: string[]) {
-    await this.ws.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
+    await this.stream.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
   }
 }
 

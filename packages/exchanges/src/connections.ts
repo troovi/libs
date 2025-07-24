@@ -218,7 +218,7 @@ export class NetworkManager {
 
 class ChannelsControl {
   size: number = 0
-  channels: { [channel: string]: boolean } = {}
+  channels: { [channel: string]: true } = {}
 
   addChannels(channels: string[]) {
     channels.forEach((channel) => {
@@ -233,8 +233,12 @@ class ChannelsControl {
   }
 
   closeChannel(channel: string) {
-    delete this.channels[channel]
+    if (!this.channels[channel]) {
+      throw `channel doesn't exists: ${channel}`
+    }
+
     this.size--
+    delete this.channels[channel]
   }
 
   getChannels() {

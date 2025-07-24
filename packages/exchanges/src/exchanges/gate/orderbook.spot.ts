@@ -10,7 +10,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: GateApi
-  ws: GateSpotStream
+  stream: GateSpotStream
 }
 
 interface Store {
@@ -24,14 +24,14 @@ export class GateSpotDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: GateApi
-  private ws: GateSpotStream
+  private stream: GateSpotStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: GateSpotMessages.OrderBookUpdate) {
@@ -44,7 +44,7 @@ export class GateSpotDepth {
         source.initialized = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol: event.result.s })
+        this.onEvent(event.result.s, { type: 'offline' })
 
         sleep(4000).then(() => {
           this.logger.warn(`Reboot "${event.result.s}"`, 'RESTART')
@@ -54,10 +54,9 @@ export class GateSpotDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(event.result.s, {
         type: 'update',
         latency: Date.now() - event.time_ms,
-        symbol: event.result.s,
         bids: toNumber(event.result.b),
         asks: toNumber(event.result.a)
       })
@@ -113,9 +112,8 @@ export class GateSpotDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - snapshot.current,
       bids: state.bids,
       asks: state.asks
@@ -130,7 +128,7 @@ export class GateSpotDepth {
         depth: []
       }
 
-      await this.ws.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.subscribe(({ orderbook }) => orderbook(symbol))
       await this.setup(symbol)
     }
   }
@@ -145,7 +143,7 @@ export class GateSpotDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }

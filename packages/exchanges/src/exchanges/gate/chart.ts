@@ -1,11 +1,31 @@
 import { intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { GateApi } from './api'
+import { ChartApi } from '../../types'
+
+export const createGateChartApi = (api: GateApi): ChartApi => {
+  const [spotFormatter, futuresFormatter] = [
+    createGateSpotChartFormatter(api),
+    createGateSpotChartFormatter(api)
+  ]
+
+  return (market, params) => {
+    if (market === 'spot') {
+      return spotFormatter(params)
+    }
+
+    if (market === 'futures') {
+      return futuresFormatter(params)
+    }
+
+    throw {}
+  }
+}
 
 export const createGateSpotChartFormatter = (api: GateApi) => {
   return createChartFormatter({
     maxFetchSize: 1000,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       if (endTime) {
         // fetching series until endTime includes
         return api.getSpotChart({
@@ -29,7 +49,7 @@ export const createGateSpotChartFormatter = (api: GateApi) => {
 export const createGateFuturesChartFormatter = (api: GateApi) => {
   return createChartFormatter({
     maxFetchSize: 1000,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       if (endTime) {
         // fetching series until endTime includes
         return api.getFuturesChart({

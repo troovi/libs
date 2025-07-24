@@ -1,4 +1,4 @@
-export namespace BitMartFuturesMessages {
+export namespace BitmartFuturesMessages {
   export interface OrderBook {
     group: `futures/depthIncrease${string}`
     data: {

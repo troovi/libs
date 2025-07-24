@@ -4,38 +4,37 @@ import { toNumber } from '../../utils'
 import { OrderBookEvent } from '../../types'
 
 interface Params {
-  ws: CoinExStream
+  stream: CoinExStream
 }
 
 export class CoinExDepth {
-  private ws: CoinExStream
+  private stream: CoinExStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
-    this.ws = ws
+    this.stream = stream
   }
 
   update({ data }: CoinExMessages.Depth) {
     // при нестабильном подключении возможен повторный snapshot
-    this.onEvent({
+    this.onEvent(data.market, {
       type: data.is_full ? 'snapshot' : 'update',
       latency: Date.now() - data.depth.updated_at,
-      symbol: data.market,
       bids: toNumber(data.depth.bids),
       asks: toNumber(data.depth.asks)
     })
   }
 
   async initialize(symbols: string[]) {
-    await this.ws.subscribe(({ orderbook }) => {
+    await this.stream.subscribe(({ orderbook }) => {
       return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
     })
   }
 
   async stop(symbols: string[]) {
-    await this.ws.unsubscribe(({ orderbook }) => {
+    await this.stream.unsubscribe(({ orderbook }) => {
       return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
     })
   }

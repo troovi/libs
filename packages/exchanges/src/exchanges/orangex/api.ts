@@ -109,11 +109,11 @@ export class OrangeXApi extends ApiClient<APIs> {
     this.limiter = new OrangeXLimiter()
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ retCode?: number }>) => {
       if (e?.response?.data?.retCode === 10002) {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e

@@ -8,7 +8,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: KuCoinFuturesApi
-  ws: KuCoinFuturesPublicStream
+  stream: KuCoinFuturesPublicStream
 }
 
 interface Store {
@@ -22,14 +22,14 @@ export class KuCoinFuturesDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: KuCoinFuturesApi
-  private ws: KuCoinFuturesPublicStream
+  private stream: KuCoinFuturesPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: KuCoinFuturesMessages.OrderBook) {
@@ -42,9 +42,8 @@ export class KuCoinFuturesDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(symbol, {
         type: 'update',
-        symbol,
         latency: Date.now() - event.data.timestamp,
         ...getOrders(event.data.change)
       })
@@ -62,7 +61,7 @@ export class KuCoinFuturesDepth {
       depth: []
     }
 
-    await this.ws.subscribe(({ orderbook }) => orderbook([symbol]))
+    await this.stream.subscribe(({ orderbook }) => orderbook([symbol]))
     await sleep(500)
 
     const snapshot = await this.api.getOrderBook({ symbol })
@@ -95,9 +94,8 @@ export class KuCoinFuturesDepth {
     source.initialized = true
     source.lastUpdateId = state.lastUpdateId
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - snapshot.ts,
       bids: state.bids,
       asks: state.asks

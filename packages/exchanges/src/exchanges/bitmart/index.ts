@@ -1,9 +1,25 @@
-export * from './api/futures/api'
-export * from './api/spot/api'
-export * from './candles'
+import { Exchange } from '../../types'
+import { BitmartFuturesApi } from './api/futures/api'
+import { BitmartSpotApi } from './api/spot/api'
+import { createBitmartChartApi } from './chart'
+import { createBitmartFees } from './fees'
+import { createBitmartStream } from './stream'
+import { createBitmartSymbols } from './symbols'
 
-export * from './ws/spot/stream'
-export * from './ws/futures/stream'
+interface Options {
+  apiKey: string
+  apiSecret: string
+}
 
-export * from './orderbook.spot'
-export * from './orderbook.futures'
+export const createBitmartExchange = (options: Options): Exchange => {
+  const sapi = new BitmartSpotApi(options)
+  const fapi = new BitmartFuturesApi(options)
+
+  return {
+    name: 'bitmart',
+    getChart: createBitmartChartApi(sapi, fapi),
+    getFees: createBitmartFees(sapi, fapi),
+    getSymbols: createBitmartSymbols(sapi, fapi),
+    createStream: createBitmartStream()
+  }
+}

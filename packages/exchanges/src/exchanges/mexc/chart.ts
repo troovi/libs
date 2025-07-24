@@ -1,13 +1,33 @@
 import { MexcSpotApi } from './api/spot/api'
 import { MexcHandlers } from './api/api-handlers'
 import { getCurrentCandleTime, intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { MexcFuturesApi } from './api/futures/api'
+import { ChartApi } from '../../types'
 
-export const createMexcSpotChartFormatter = (api: MexcSpotApi) => {
+export const createMexcChartApi = (sapi: MexcSpotApi, fapi: MexcFuturesApi): ChartApi => {
+  const [spotFormatter, futuresFormatter] = [
+    createMexcSpotChartFormatter(sapi),
+    createMexcFuturesChartFormatter(fapi)
+  ]
+
+  return (market, params) => {
+    if (market === 'spot') {
+      return spotFormatter(params)
+    }
+
+    if (market === 'futures') {
+      return futuresFormatter(params)
+    }
+
+    throw {}
+  }
+}
+
+const createMexcSpotChartFormatter = (api: MexcSpotApi) => {
   return createChartFormatter({
     maxFetchSize: 500,
-    fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       if (endTime) {
         // fetching series until endTime includes
         return MexcHandlers.infitityTry(() => {
@@ -27,10 +47,10 @@ export const createMexcSpotChartFormatter = (api: MexcSpotApi) => {
   })
 }
 
-export const createMexcFuturesChartFormatter = (api: MexcFuturesApi) => {
+const createMexcFuturesChartFormatter = (api: MexcFuturesApi) => {
   return createChartFormatter({
     maxFetchSize: 2000,
-    fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const types = {
         '1m': 'Min1' as const,
         '5m': 'Min5' as const

@@ -5,20 +5,20 @@ import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
-  ws: OKXPublicStream
+  stream: OKXPublicStream
 }
 
 export class OKXDepth {
   private logger = new Logger('okx dom')
   private store: { [symbol: string]: { seqId: number } } = {}
 
-  private ws: OKXPublicStream
+  private stream: OKXPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: OKXMessages.Books) {
@@ -27,14 +27,14 @@ export class OKXDepth {
 
     if (source.seqId !== -1 && source.seqId !== data.prevSeqId) {
       this.logger.error(`Out: ${source.seqId} ${data.prevSeqId}`, 'SYNC')
+      this.onEvent(event.arg.instId, { type: 'offline' })
       return
     }
 
     source.seqId = data.seqId
 
-    this.onEvent({
+    this.onEvent(event.arg.instId, {
       type: event.action === 'update' ? 'update' : 'snapshot',
-      symbol: event.arg.instId,
       latency: Date.now() - +data.ts,
       asks: formatOrders(data.asks),
       bids: formatOrders(data.bids)
@@ -44,7 +44,7 @@ export class OKXDepth {
   async initialize(instIds: string[]) {
     for await (const instId of instIds) {
       this.store[instId] = { seqId: -1 }
-      await this.ws.subscribe(({ orderbook }) => orderbook(instId))
+      await this.stream.subscribe(({ orderbook }) => orderbook(instId))
       await sleep(250)
     }
   }
@@ -55,7 +55,7 @@ export class OKXDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.ws.unsubscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.unsubscribe(({ orderbook }) => orderbook(symbol))
     }
   }
 }

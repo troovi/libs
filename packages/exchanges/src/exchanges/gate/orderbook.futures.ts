@@ -9,7 +9,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: GateApi
-  ws: GateFuturesStream
+  stream: GateFuturesStream
 }
 
 interface Store {
@@ -24,14 +24,14 @@ export class GateFuturesDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: GateApi
-  private ws: GateFuturesStream
+  private stream: GateFuturesStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(event: GateFuturesMessages.OrderBookUpdate) {
@@ -63,7 +63,7 @@ export class GateFuturesDepth {
         source.isUpdateAhead = false
         source.depth.push(event)
 
-        this.onEvent({ type: 'offline', symbol })
+        this.onEvent(symbol, { type: 'offline' })
 
         sleep(4000).then(() => {
           this.logger.warn(`Reboot "${symbol}"`, 'RESTART')
@@ -75,10 +75,9 @@ export class GateFuturesDepth {
 
       source.lastUpdateId = u
 
-      this.onEvent({
+      this.onEvent(symbol, {
         type: 'update',
         latency: Date.now() - event.time_ms,
-        symbol,
         bids: formatOrders(bids),
         asks: formatOrders(asks)
       })
@@ -141,10 +140,9 @@ export class GateFuturesDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
       latency: Date.now() - snapshot.current,
-      symbol,
       bids: state.bids,
       asks: state.asks
     })
@@ -159,7 +157,9 @@ export class GateFuturesDepth {
         depth: []
       }
 
-      await this.ws.subscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
+      await this.stream.subscribe(({ orderbook }) => {
+        return orderbook({ symbol, speed: '100ms', level: '100' })
+      })
       await this.setup(symbol)
     }
   }
@@ -175,7 +175,9 @@ export class GateFuturesDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.ws.unsubscribe(({ orderbook }) => orderbook({ symbol, speed: '100ms', level: '100' }))
+      await this.stream.unsubscribe(({ orderbook }) => {
+        return orderbook({ symbol, speed: '100ms', level: '100' })
+      })
     }
   }
 }

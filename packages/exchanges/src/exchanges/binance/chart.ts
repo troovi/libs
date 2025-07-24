@@ -1,12 +1,32 @@
 import { intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { BinanceSpotApi } from './api/spot/api'
 import { BinanceFuturesApi } from './api/futures/api'
+import { ChartApi } from '../../types'
 
-export const createBinanceSpotChartFormatter = (api: BinanceSpotApi) => {
+export const createBinanceChartApi = (sapi: BinanceSpotApi, fapi: BinanceFuturesApi): ChartApi => {
+  const [spotFormatter, futuresFormatter] = [
+    createBinanceSpotChartFormatter(sapi),
+    createBinanceFuturesChartFormatter(fapi)
+  ]
+
+  return (market, params) => {
+    if (market === 'spot') {
+      return spotFormatter(params)
+    }
+
+    if (market === 'futures') {
+      return futuresFormatter(params)
+    }
+
+    throw {}
+  }
+}
+
+const createBinanceSpotChartFormatter = (api: BinanceSpotApi) => {
   return createChartFormatter({
     maxFetchSize: 1000,
-    fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       if (endTime) {
         // fetching series until endTime includes
         return api.getChart({
@@ -28,10 +48,10 @@ export const createBinanceSpotChartFormatter = (api: BinanceSpotApi) => {
   })
 }
 
-export const createBinanceFuturesChartFormatter = (api: BinanceFuturesApi) => {
+const createBinanceFuturesChartFormatter = (api: BinanceFuturesApi) => {
   return createChartFormatter({
     maxFetchSize: 1500,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       if (endTime) {
         // fetching series until endTime includes
         return api.getChart({

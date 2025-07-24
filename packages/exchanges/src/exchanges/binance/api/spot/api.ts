@@ -5,6 +5,7 @@ import { BinanceLimiter } from '../limiter'
 import { sortObject } from '../../../../utils'
 import { Candle } from '@troovi/chart'
 import { getHexSignature } from '../../../../crypto'
+import { AxiosError } from 'axios'
 
 interface Options {
   apiKey: string
@@ -141,21 +142,20 @@ export class BinanceSpotApi extends ApiClient<APIs> {
     }
   }
 
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
+    return request().catch((e: AxiosError<{ code?: number }>) => {
+      if (e?.response?.data?.code === -1021) {
+        console.log('recvWindow error, retry...')
+        return this.handleRecvError(request)
+      }
+
+      throw e
+    })
+  }
+
   getExchangeInfo(params: Requests.ExchangeInfoParams = {}) {
     return this.limiter(() => {
       return this.apiRequest('GET', '/api/v3/exchangeInfo', params)
-    })
-  }
-
-  getBalances() {
-    return this.limiter(() => {
-      return this.signRequest<Responses.AllCoins[]>('GET', '/sapi/v1/capital/config/getall', {})
-    })
-  }
-
-  getTradeFee(params: Requests.TradeFee = {}) {
-    return this.limiter(() => {
-      return this.signRequest<Responses.SymbolTradeFee[]>('GET', '/sapi/v1/asset/tradeFee', params)
     })
   }
 
@@ -177,6 +177,20 @@ export class BinanceSpotApi extends ApiClient<APIs> {
         volume: +volume,
         quoteVolume: +quoteVolume
       }))
+    })
+  }
+
+  // pritvate api's
+
+  getBalances() {
+    return this.limiter(() => {
+      return this.signRequest<Responses.AllCoins[]>('GET', '/sapi/v1/capital/config/getall', {})
+    })
+  }
+
+  getTradeFee(params: Requests.TradeFee = {}) {
+    return this.limiter(() => {
+      return this.signRequest<Responses.SymbolTradeFee[]>('GET', '/sapi/v1/asset/tradeFee', params)
     })
   }
 }

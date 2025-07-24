@@ -8,7 +8,7 @@ import { Logger } from '@troovi/utils-nodejs'
 
 interface Params {
   api: MexcSpotApi
-  ws: MexcSpotPublicStream
+  stream: MexcSpotPublicStream
 }
 
 interface Store {
@@ -22,14 +22,14 @@ export class MexcSpotDepth {
   private store: { [symbol: string]: Store } = {}
 
   private api: MexcSpotApi
-  private ws: MexcSpotPublicStream
+  private stream: MexcSpotPublicStream
 
-  private onEvent: (event: OrderBookEvent) => void
+  private onEvent: (symbol: string, event: OrderBookEvent) => void
 
-  constructor({ api, ws }: Params, onEvent: (event: OrderBookEvent) => void) {
+  constructor({ api, stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
     this.onEvent = onEvent
     this.api = api
-    this.ws = ws
+    this.stream = stream
   }
 
   update(data: MexcMessages.depthUpdate) {
@@ -43,7 +43,7 @@ export class MexcSpotDepth {
         source.initialized = false
         source.depth.push(data)
 
-        this.onEvent({ type: 'offline', symbol })
+        this.onEvent(symbol, { type: 'offline' })
 
         sleep(2000).then(() => {
           this.logger.warn(`Reboot "${symbol}"`, 'RESTART')
@@ -53,9 +53,8 @@ export class MexcSpotDepth {
         return
       }
 
-      this.onEvent({
+      this.onEvent(symbol, {
         type: 'update',
-        symbol,
         latency: Date.now() - +data.sendTime,
         bids: formatOrders(event.bids).sort((a, b) => a[0] - b[0]),
         asks: formatOrders(event.asks).sort((a, b) => a[0] - b[0])
@@ -107,9 +106,8 @@ export class MexcSpotDepth {
 
     this.logger.verbose(`Orderbook initialized: ${symbol}`, 'SETUP')
 
-    this.onEvent({
+    this.onEvent(symbol, {
       type: 'snapshot',
-      symbol,
       latency: Date.now() - snapshot.timestamp,
       bids: state.bids,
       asks: state.asks
@@ -124,7 +122,7 @@ export class MexcSpotDepth {
         depth: []
       }
 
-      await this.ws.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+      await this.stream.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
       await sleep(1500)
       await this.setup(symbol)
     }
@@ -140,7 +138,7 @@ export class MexcSpotDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.ws.unsubscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+      await this.stream.unsubscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
     }
   }
 }

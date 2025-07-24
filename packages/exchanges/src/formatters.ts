@@ -1,10 +1,10 @@
 import { Candle, intervals } from '@troovi/chart'
 
-export interface CandlesParams {
+export interface ChartOptions {
   symbol: string
   interval: '1m' | '5m'
   size: number
-  endTime?: number // если параметр указан, запрос должен вернуть данные по endTime включительно, в противном случае должны быть переданы последние данные
+  endTime?: number // если параметр указан, запрос вернет данные по endTime включительно, в противном случае, будут переданы последние данные
 }
 
 interface Params {
@@ -12,7 +12,7 @@ interface Params {
   fetchSeries: ChartFormatter
 }
 
-export type ChartFormatter = (params: CandlesParams) => Promise<Candle[]>
+export type ChartFormatter = (params: ChartOptions) => Promise<Candle[]>
 
 export const createChartFormatter = ({ maxFetchSize, fetchSeries }: Params): ChartFormatter => {
   return async ({ size, symbol, endTime, interval }) => {

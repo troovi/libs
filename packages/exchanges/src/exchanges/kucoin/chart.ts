@@ -1,12 +1,32 @@
 import { KuCoinSpotApi } from './api/spot/api'
 import { fillMissingCandles, getCurrentCandleTime, getNextCandleTime, intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { KuCoinFuturesApi } from './api/futures/api'
+import { ChartApi } from '../../types'
 
-export const createKuCoinSpotChartFormatter = (api: KuCoinSpotApi) => {
+export const createKuCoinChartApi = (sapi: KuCoinSpotApi, fapi: KuCoinFuturesApi): ChartApi => {
+  const [spotFormatter, futuresFormatter] = [
+    createKuCoinSpotChartFormatter(sapi),
+    createKuCoinFuturesChartFormatter(fapi)
+  ]
+
+  return (market, params) => {
+    if (market === 'spot') {
+      return spotFormatter(params)
+    }
+
+    if (market === 'futures') {
+      return futuresFormatter(params)
+    }
+
+    throw {}
+  }
+}
+
+const createKuCoinSpotChartFormatter = (api: KuCoinSpotApi) => {
   return createChartFormatter({
     maxFetchSize: 1500,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const types = {
         '1m': '1min' as const,
         '5m': '5min' as const
@@ -34,10 +54,10 @@ export const createKuCoinSpotChartFormatter = (api: KuCoinSpotApi) => {
   })
 }
 
-export const createKuCoinFuturesChartFormatter = (api: KuCoinFuturesApi) => {
+const createKuCoinFuturesChartFormatter = (api: KuCoinFuturesApi) => {
   return createChartFormatter({
     maxFetchSize: 200,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const types = {
         '1m': 1 as 1,
         '5m': 5 as 5

@@ -100,7 +100,7 @@ interface Options {
   apiSecret: string
 }
 
-export class BitMartFuturesApi extends ApiClient<APIs> {
+export class BitmartFuturesApi extends ApiClient<APIs> {
   constructor({ apiKey }: Options) {
     super(`https://api-cloud-v2.bitmart.com`, {
       name: 'bitmart-futures',
@@ -111,11 +111,11 @@ export class BitMartFuturesApi extends ApiClient<APIs> {
     })
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ code?: number }>) => {
       if (e?.response?.data?.code === 700003) {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e
@@ -142,8 +142,8 @@ export class BitMartFuturesApi extends ApiClient<APIs> {
 
   private feesLimiter = new FrequencyLimiter({
     limit: 1,
-    interval: 2000,
-    threshold: 500,
+    interval: 1250,
+    threshold: 0,
     name: 'bitmart'
   })
 

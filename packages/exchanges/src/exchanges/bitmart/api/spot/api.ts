@@ -81,7 +81,7 @@ interface Options {
   apiSecret: string
 }
 
-export class BitMartSpotApi extends ApiClient<APIs> {
+export class BitmartSpotApi extends ApiClient<APIs> {
   constructor({ apiKey }: Options) {
     super(`https://api-cloud.bitmart.com`, {
       name: 'bitmart-spot',
@@ -92,11 +92,11 @@ export class BitMartSpotApi extends ApiClient<APIs> {
     })
   }
 
-  handleRectError<T>(request: () => Promise<T>): Promise<T> {
+  handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ code?: number }>) => {
       if (e?.response?.data?.code === 700003) {
         console.log('recvWindow error, retry...')
-        return this.handleRectError(request)
+        return this.handleRecvError(request)
       }
 
       throw e
@@ -123,8 +123,8 @@ export class BitMartSpotApi extends ApiClient<APIs> {
 
   private feesLimiter = new FrequencyLimiter({
     limit: 1,
-    interval: 2000,
-    threshold: 250,
+    interval: 1250,
+    threshold: 0,
     name: 'bitmart'
   })
 

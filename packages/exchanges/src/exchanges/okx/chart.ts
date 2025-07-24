@@ -1,11 +1,13 @@
 import { intervals } from '@troovi/chart'
-import { CandlesParams, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../formatters'
 import { OKXApi } from './api'
 
-export const createOKXChartFormatter = (api: OKXApi) => {
-  return createChartFormatter({
+import { ChartApi } from '../../types'
+
+export const createOKXChartApi = (api: OKXApi): ChartApi => {
+  const formatter = createChartFormatter({
     maxFetchSize: 100,
-    async fetchSeries({ symbol, size, interval, endTime }: CandlesParams) {
+    async fetchSeries({ symbol, size, interval, endTime }: ChartOptions) {
       const series = await (async () => {
         if (endTime) {
           // fetching series until endTime includes
@@ -29,4 +31,8 @@ export const createOKXChartFormatter = (api: OKXApi) => {
       return series.reverse()
     }
   })
+
+  return (market, params) => {
+    return formatter(params)
+  }
 }

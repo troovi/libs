@@ -53,3 +53,31 @@ export const toNumber = (orders: [string, string][] = []) => {
 export const isEmpthy = (object: object) => {
   return Object.keys(object).length === 0
 }
+
+const extractLeadingNumber = (input: string) => {
+  const match = input.match(/^(\d+)/)
+  return match ? Number(match[1]) : null
+}
+
+export const getCoinFactor = (symbol: string) => {
+  let factor = extractLeadingNumber(symbol)
+
+  if (factor) {
+    if (factor.toString()[0] !== '1') {
+      console.log('FACTOR INVALID', symbol)
+      return null
+    }
+
+    if (factor === 1) {
+      if (symbol.startsWith('1M')) {
+        factor = 1000000
+      } else {
+        return null
+      }
+    }
+
+    return factor
+  }
+
+  return null
+}
