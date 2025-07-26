@@ -3,18 +3,18 @@ import { WebsocketBase } from '../../../../websocket'
 
 import { EventDispatcher } from '@troovi/utils-js'
 import { KuCoinSpotApi } from '../../api/spot/api'
-import { subscriptions, subscriptionsParser } from './subscriptions'
+import { streams } from './subscriptions'
 import { AnyKuCoinSpotMessage } from './messages'
 import { BaseStream, NetworkManager } from '../../../../connections'
 
 interface Options {
   api: KuCoinSpotApi
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: AnyKuCoinSpotMessage) => void
 }
 
 // Max subscription count limitation - 400 per session
-export class KuCoinSpotPublicStream extends BaseStream<typeof subscriptions> {
+export class KuCoinSpotPublicStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<string>()
 
   constructor({ api, onBroken, onMessage }: Options) {
@@ -63,12 +63,12 @@ export class KuCoinSpotPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, subscriptionsParser.getTopic(channels), 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, topic) => {
+        return this.request(connection, topic, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, subscriptionsParser.getTopic(channels), 'unsubscribe')
+      unsubscribe: (connection, topic) => {
+        return this.request(connection, topic, 'unsubscribe')
       }
     })
   }

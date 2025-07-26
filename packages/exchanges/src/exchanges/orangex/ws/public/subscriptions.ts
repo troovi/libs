@@ -1,12 +1,20 @@
-import { Subscriptions } from '../../../../subscriptions'
+import { StreamsManager } from '../../../../stream-manager'
 
-export const subscriptions = new Subscriptions({
-  subscriptions: {
-    orderbook({ symbol }: { symbol: string }) {
+export const streams = new StreamsManager({
+  combinable: true,
+  streams: {
+    orderbook: ({ symbol }: { symbol: string }) => {
       return `book.${symbol.toUpperCase()}.raw`
     }
   },
-  getStreams: (streams: string | string[]) => {
-    return Array.isArray(streams) ? streams : [streams]
+  getSubscriptions: (streams) => {
+    return streams
+  },
+  getStreamInfo: (stream) => {
+    if (stream.startsWith('book')) {
+      return { subscription: 'orderbook', params: { symbol: stream.split('.')[1] } }
+    }
+
+    throw `invalid orangex stream: ${stream}`
   }
 })

@@ -63,7 +63,10 @@ export class KuCoinSpotDepth {
       }
     })
 
-    await this.stream.subscribe(({ orderbook }) => orderbook(symbols))
+    await this.stream.subscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
+    })
+
     await sleep(500)
 
     for await (const symbol of symbols) {

@@ -123,7 +123,10 @@ export class BinanceFuturesDepth {
         depth: []
       }
 
-      await this.stream.subscribe(({ diffBookDepth }) => diffBookDepth({ symbol, speed: 100 }))
+      await this.stream.subscribe('diffBookDepth', (createStream) => {
+        return createStream({ symbol, speed: 100 })
+      })
+
       await sleep(2000)
       await this.setup(symbol)
     }
@@ -138,8 +141,18 @@ export class BinanceFuturesDepth {
       }
     })
 
-    await this.stream.unsubscribe(({ diffBookDepth }) => {
-      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
+    await this.stream.unsubscribe('diffBookDepth', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol, speed: 100 }))
     })
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = {
+      initialized: false,
+      lastUpdateId: -1,
+      depth: []
+    }
+
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

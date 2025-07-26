@@ -7,6 +7,7 @@ import { KuCoinFuturesMessages } from './ws/futures/messages'
 import { KuCoinFuturesPublicStream } from './ws/futures/stream'
 import { KuCoinSpotMessages } from './ws/spot/messages'
 import { KuCoinSpotPublicStream } from './ws/spot/stream'
+import { reboot } from '../../reboot'
 
 export const createKuCoinStream = (sapi: KuCoinSpotApi, fapi: KuCoinFuturesApi): ExchangeStream => {
   const [createSpot, createFutures] = [createKuCoinSpotStream(sapi), createKuCoinFuturesStream(fapi)]
@@ -41,30 +42,41 @@ const createKuCoinSpotStream = (api: KuCoinSpotApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new KuCoinSpotPublicStream({
       api,
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook50') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
         if (message.topic.startsWith('/spotMarket/level2Depth50')) {
-          orderbook.update(message as KuCoinSpotMessages.Depth50)
+          depthService.update(message as KuCoinSpotMessages.Depth50)
           return
         }
       }
     })
 
-    const orderbook = new KuCoinSpotSnapshot({ stream }, (symbol, event) => {
+    const depthService = new KuCoinSpotSnapshot({ stream }, (symbol, event) => {
       onEvent('spot', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }
@@ -75,29 +87,40 @@ const createKuCoinFuturesStream = (api: KuCoinFuturesApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new KuCoinFuturesPublicStream({
       api,
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook50') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
         if (message.topic.startsWith('/contractMarket/level2Depth50')) {
-          orderbook.update(message as KuCoinFuturesMessages.Depth50)
+          depthService.update(message as KuCoinFuturesMessages.Depth50)
         }
       }
     })
 
-    const orderbook = new KuCoinFuturesSnapshot({ stream }, (symbol, event) => {
+    const depthService = new KuCoinFuturesSnapshot({ stream }, (symbol, event) => {
       onEvent('futures', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }

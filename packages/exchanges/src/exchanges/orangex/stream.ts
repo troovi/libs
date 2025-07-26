@@ -1,3 +1,4 @@
+import { reboot } from '../../reboot'
 import { ExchangeStream } from '../../broker'
 import { OrangeXApi } from './api'
 import { OrangeXDepth } from './orderbook'
@@ -6,27 +7,38 @@ import { OrangeXPublicStream } from './ws/public/stream'
 export const createOrangeXStream = (api: OrangeXApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new OrangeXPublicStream({
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message.params)
+        depthService.update(message.params)
       }
     })
 
-    const orderbook = new OrangeXDepth({ api, stream }, (symbol, event) => {
+    const depthService = new OrangeXDepth({ api, stream }, (symbol, event) => {
       onEvent(symbol.endsWith('-PERPETUAL') ? 'futures' : 'spot', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.initialize(data.symbols)
+          return depthService.initialize(data.symbols)
         }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.stop(data.symbols)
+          return depthService.stop(data.symbols)
         }
       }
     }

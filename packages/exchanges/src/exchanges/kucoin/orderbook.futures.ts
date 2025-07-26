@@ -54,52 +54,59 @@ export class KuCoinFuturesDepth {
     }
   }
 
-  async initialize(symbol: string) {
-    this.store[symbol] = {
-      initialized: false,
-      lastUpdateId: -1,
-      depth: []
-    }
+  async initialize(symbols: string[]) {
+    symbols.forEach((symbol) => {
+      this.store[symbol] = {
+        initialized: false,
+        lastUpdateId: -1,
+        depth: []
+      }
+    })
 
-    await this.stream.subscribe(({ orderbook }) => orderbook([symbol]))
+    await this.stream.subscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
+    })
+
     await sleep(500)
 
-    const snapshot = await this.api.getOrderBook({ symbol })
+    for await (const symbol of symbols) {
+      const snapshot = await this.api.getOrderBook({ symbol })
 
-    const orderbook = new OrderBookServer()
-    const source = this.store[symbol]
+      const orderbook = new OrderBookServer()
+      const source = this.store[symbol]
 
-    orderbook.update({
-      updateId: +snapshot.sequence,
-      bids: snapshot.bids,
-      asks: snapshot.asks
-    })
+      orderbook.update({
+        updateId: +snapshot.sequence,
+        bids: snapshot.bids,
+        asks: snapshot.asks
+      })
 
-    const index = source.depth.findIndex(({ data }) => {
-      return data.sequence > +snapshot.sequence
-    })
+      const index = source.depth.findIndex(({ data }) => {
+        return data.sequence > +snapshot.sequence
+      })
 
-    if (index !== -1) {
-      source.depth.slice(index).forEach(({ data: event }) => {
-        orderbook.update({
-          updateId: event.sequence,
-          ...getOrders(event.change)
+      if (index !== -1) {
+        source.depth.slice(index).forEach(({ data: event }) => {
+          orderbook.update({
+            updateId: event.sequence,
+            ...getOrders(event.change)
+          })
         })
+      }
+
+      const state = orderbook.getSnapshot()
+
+      source.depth = []
+      source.initialized = true
+      source.lastUpdateId = state.lastUpdateId
+
+      this.onEvent(symbol, {
+        type: 'snapshot',
+        latency: Date.now() - snapshot.ts,
+        bids: state.bids,
+        asks: state.asks
       })
     }
-
-    const state = orderbook.getSnapshot()
-
-    source.depth = []
-    source.initialized = true
-    source.lastUpdateId = state.lastUpdateId
-
-    this.onEvent(symbol, {
-      type: 'snapshot',
-      latency: Date.now() - snapshot.ts,
-      bids: state.bids,
-      asks: state.asks
-    })
   }
 }
 

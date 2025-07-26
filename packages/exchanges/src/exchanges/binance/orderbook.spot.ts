@@ -18,9 +18,6 @@ interface Store {
   depth: BinanceMessages.SpotDepthUpdate[]
 }
 
-// A single connection can listen to a maximum of 1024 streams.
-// There is a limit of 300 connections per attempt every 5 minutes per IP.
-
 export class BinanceSpotDepth {
   private logger = new Logger('binance-dom (S)')
   private store: { [symbol: string]: Store } = {}
@@ -120,8 +117,8 @@ export class BinanceSpotDepth {
       }
     })
 
-    await this.stream.subscribe(({ diffBookDepth }) => {
-      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
+    await this.stream.subscribe('diffBookDepth', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol, speed: 100 }))
     })
 
     await sleep(1500)
@@ -136,8 +133,18 @@ export class BinanceSpotDepth {
       this.store[symbol].initialized = false
     })
 
-    await this.stream.unsubscribe(({ diffBookDepth }) => {
-      return symbols.map((symbol) => diffBookDepth({ symbol, speed: 100 }))
+    await this.stream.unsubscribe('diffBookDepth', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol, speed: 100 }))
     })
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = {
+      initialized: false,
+      lastUpdateId: -1,
+      depth: []
+    }
+
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

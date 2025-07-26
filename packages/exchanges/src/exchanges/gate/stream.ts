@@ -1,3 +1,4 @@
+import { reboot } from '../../reboot'
 import { ExchangeStream } from '../../broker'
 import { GateApi } from './api'
 import { GateFuturesDepth } from './orderbook.futures'
@@ -37,27 +38,38 @@ export const createGateStream = (api: GateApi): ExchangeStream => {
 const createGateSpotStream = (api: GateApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new GateSpotStream({
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new GateSpotDepth({ stream, api }, (symbol, event) => {
+    const depthService = new GateSpotDepth({ stream, api }, (symbol, event) => {
       onEvent('spot', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }
@@ -67,27 +79,38 @@ const createGateSpotStream = (api: GateApi): ExchangeStream => {
 const createGateFuturesStream = (api: GateApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new GateFuturesStream({
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new GateFuturesDepth({ stream, api }, (symbol, event) => {
+    const depthService = new GateFuturesDepth({ stream, api }, (symbol, event) => {
       onEvent('futures', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }

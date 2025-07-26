@@ -1,12 +1,22 @@
-import { Subscriptions } from '../../../../subscriptions'
+import { StreamsManager } from '../../../../stream-manager'
 
-export const subscriptions = new Subscriptions({
-  subscriptions: {
-    orderbook(symbol: string) {
-      return { method: 'depth', param: { symbol } }
+export const streams = new StreamsManager({
+  combinable: false,
+  streams: {
+    orderbook: (symbol: string) => {
+      return JSON.stringify({ method: 'depth', param: { symbol } })
     }
   },
-  getStreams(streams: { method: string; param: object }) {
-    return [JSON.stringify(streams)]
+  getSubscriptions: ([stream]) => {
+    return JSON.parse(stream) as { method: string; param: object }
+  },
+  getStreamInfo: (stream) => {
+    const data = JSON.parse(stream) as { method: string; param: any }
+
+    if (data.method === 'depth') {
+      return { subscription: 'orderbook', params: data.param.symbol }
+    }
+
+    throw `invalid mexc stream: ${stream}`
   }
 })

@@ -6,6 +6,7 @@ import { MexcSpotDepth } from './orderbook.spot'
 import { MexcSpotPublicStream } from './ws/public-spot'
 import { MexcFuturesPublicStream } from './ws/public-futures'
 import { MexcMessages } from './ws/public-spot/messages'
+import { reboot } from '../../reboot'
 
 export const createMexcStream = (sapi: MexcSpotApi, fapi: MexcFuturesApi): ExchangeStream => {
   const [createSpot, createFutures] = [createMexcSpotStream(sapi), createMexcFuturesStream(fapi)]
@@ -36,11 +37,22 @@ export const createMexcStream = (sapi: MexcSpotApi, fapi: MexcFuturesApi): Excha
   }
 }
 
-export const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
+const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new MexcSpotPublicStream({
-      onBroken: (streams) => {
-        console.log('broken', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'diffBookDepth') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (data) => {
         if (data.channel.startsWith('spot@public.aggre.depth')) {
@@ -94,11 +106,15 @@ export const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
         }
 
         if (params.stream === 'trade') {
-          await stream.subscribe(({ trades }) => trades({ symbol: params.symbol, speed: 100 }))
+          await stream.subscribe('trades', (createStream) => {
+            return createStream({ symbol: params.symbol, speed: 100 })
+          })
         }
 
         if (params.stream === 'kline') {
-          await stream.subscribe(({ kline }) => kline({ symbol: params.symbol, interval: 'Min1' }))
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({ symbol: params.symbol, interval: 'Min1' })
+          })
         }
       },
       unsubscribe: async (params) => {
@@ -107,22 +123,37 @@ export const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
         }
 
         if (params.stream === 'trade') {
-          await stream.unsubscribe(({ trades }) => trades({ symbol: params.symbol, speed: 100 }))
+          await stream.unsubscribe('trades', (createStream) => {
+            return createStream({ symbol: params.symbol, speed: 100 })
+          })
         }
 
         if (params.stream === 'kline') {
-          await stream.unsubscribe(({ kline }) => kline({ symbol: params.symbol, interval: 'Min1' }))
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({ symbol: params.symbol, interval: 'Min1' })
+          })
         }
       }
     }
   }
 }
 
-export const createMexcFuturesStream = (api: MexcFuturesApi): ExchangeStream => {
+const createMexcFuturesStream = (api: MexcFuturesApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new MexcFuturesPublicStream({
-      onBroken: (streams) => {
-        console.log('broken', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params)
+            orderbooks.push(info.params)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
         depthService.update(message)

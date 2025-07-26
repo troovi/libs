@@ -2,14 +2,14 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { BitmartFuturesMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: BitmartFuturesMessages.OrderBook) => void
 }
 
-export class BitmartFuturesStream extends BaseStream<typeof subscriptions> {
+export class BitmartFuturesStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<boolean>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -47,12 +47,12 @@ export class BitmartFuturesStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, channels, 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, channels, 'unsubscribe')
+      unsubscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'unsubscribe')
       }
     })
   }

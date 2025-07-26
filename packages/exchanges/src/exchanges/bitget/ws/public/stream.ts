@@ -2,17 +2,17 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { BitgetPublicMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: BitgetPublicMessages.OrderBook) => void
 }
 
 // Connection limit: 300 connection requests/IP/5min, Max 100 connections/IP
 // Subscription limit: 240 subscription requests/Hour/connection, Max 1000 channel subscription/connection
 
-export class BitgetPublicStream extends BaseStream<typeof subscriptions> {
+export class BitgetPublicStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<boolean>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -64,25 +64,27 @@ export class BitgetPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: async (connection, channels) => {
-        return this.request(connection, channels, 'subscribe')
+    super(network, streams, {
+      subscribe: async (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'subscribe')
       },
-      unsubscribe: async (connection, channels) => {
-        return this.request(connection, channels, 'unsubscribe')
+      unsubscribe: async (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'unsubscribe')
       }
     })
   }
 
-  private request(connection: WebsocketBase, channels: string[], method: string) {
+  private request(connection: WebsocketBase, channels: object[], method: string) {
     return new Promise<void>((resolve, reject) => {
       connection.logger.verbose(`${method}: ${channels.length}`, 'STREAM')
 
       let sizes = channels.length
 
       channels.forEach((channel) => {
-        this.responses.on(`${method}:${channel}`, (isSuccess) => {
-          this.responses.rm(`${method}:${channel}`)
+        const channelInfo = JSON.stringify(channel)
+
+        this.responses.on(`${method}:${channelInfo}`, (isSuccess) => {
+          this.responses.rm(`${method}:${channelInfo}`)
 
           if (isSuccess) {
             sizes--
@@ -91,7 +93,7 @@ export class BitgetPublicStream extends BaseStream<typeof subscriptions> {
               resolve()
             }
           } else {
-            connection.logger.error(`${method}:${channel}`, method)
+            connection.logger.error(`${method}:${channelInfo}`, method)
 
             channels.forEach((channel) => {
               this.responses.rm(`${method}:${channel}`)
@@ -105,7 +107,7 @@ export class BitgetPublicStream extends BaseStream<typeof subscriptions> {
       connection.send({
         time: Date.now(),
         op: method,
-        args: channels.map((u) => JSON.parse(u))
+        args: channels
       })
     })
   }

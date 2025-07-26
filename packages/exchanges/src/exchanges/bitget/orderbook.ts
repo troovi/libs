@@ -47,8 +47,8 @@ export class BitgetDepth {
       this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
     })
 
-    await this.stream.subscribe(({ orderbook }) => {
-      return symbols.map((instId) => orderbook({ instId, instType }))
+    await this.stream.subscribe('orderbook', (createStream) => {
+      return symbols.map((instId) => createStream({ instId, instType }))
     })
   }
 
@@ -57,8 +57,13 @@ export class BitgetDepth {
       this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
     })
 
-    await this.stream.unsubscribe(({ orderbook }) => {
-      return symbols.map((instId) => orderbook({ instId, instType }))
+    await this.stream.unsubscribe('orderbook', (createStream) => {
+      return symbols.map((instId) => createStream({ instId, instType }))
     })
+  }
+
+  break(symbol: string) {
+    this.store[symbol].lastUpdateId = -1
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

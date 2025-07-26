@@ -1,7 +1,8 @@
-import { Subscriptions } from '../../../../subscriptions'
+import { StreamsManager } from '../../../../stream-manager'
 
-export const subscriptions = new Subscriptions({
-  subscriptions: {
+export const streams = new StreamsManager({
+  combinable: true,
+  streams: {
     /**
      * Aggregate Trade Streams<br>
      *
@@ -14,7 +15,7 @@ export const subscriptions = new Subscriptions({
      *
      * @param {string} symbol
      */
-    aggTrade({ symbol }: { symbol: string }) {
+    aggTrade: ({ symbol }: { symbol: string }) => {
       return `${symbol.toLowerCase()}@aggTrade`
     },
 
@@ -30,7 +31,7 @@ export const subscriptions = new Subscriptions({
      *
      * @param {string} symbol
      */
-    trade({ symbol }: { symbol: string }) {
+    trade: ({ symbol }: { symbol: string }) => {
       return `${symbol.toLowerCase()}@trade`
     },
 
@@ -48,7 +49,7 @@ export const subscriptions = new Subscriptions({
      * @param {string} interval - m -> minutes; h -> hours; d -> days; w -> weeks; M -> months:<br>
      *     1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
      */
-    kline(opts: { symbol: string; interval: '1m' | '3m' | '5m' | '15m' | '30m' | '1h' }) {
+    kline: (opts: { symbol: string; interval: '1m' | '3m' | '5m' | '15m' | '30m' | '1h' }) => {
       return `${opts.symbol.toLowerCase()}@kline_${opts.interval}`
     },
 
@@ -66,7 +67,7 @@ export const subscriptions = new Subscriptions({
      *
      * @param {string} [symbol]
      */
-    bookTicker({ symbol }: { symbol: string }) {
+    bookTicker: ({ symbol }: { symbol: string }) => {
       return `${symbol.toLowerCase()}@bookTicker`
     },
 
@@ -85,7 +86,7 @@ export const subscriptions = new Subscriptions({
      * @param {string} speed - 1000ms or 100ms
      *
      */
-    partialBookDepth(opts: { symbol: string; levels: 5 | 10 | 20; speed: 100 | 250 | 500 }) {
+    partialBookDepth: (opts: { symbol: string; levels: 5 | 10 | 20; speed: 100 | 250 | 500 }) => {
       return `${opts.symbol.toLowerCase()}@depth${opts.levels}@${opts.speed}ms`
     },
 
@@ -103,11 +104,60 @@ export const subscriptions = new Subscriptions({
      * @param {string} speed - 1000ms or 100ms
      *
      */
-    diffBookDepth({ symbol, speed }: { symbol: string; speed: 100 | 1000 }) {
+    diffBookDepth: ({ symbol, speed }: { symbol: string; speed: 100 | 1000 }) => {
       return `${symbol.toLowerCase()}@depth@${speed}ms`
     }
   },
-  getStreams: (streams: string | string[]) => {
-    return Array.isArray(streams) ? streams : [streams]
+  getSubscriptions: (streams) => {
+    return streams
+  },
+  getStreamInfo: (stream) => {
+    if (stream.endsWith('@aggTrade')) {
+      return { subscription: 'aggTrade', params: { symbol: stream.split('@aggTrade')[0] } }
+    }
+
+    if (stream.endsWith('@trade')) {
+      return { subscription: 'trade', params: { symbol: stream.split('@trade')[0] } }
+    }
+
+    if (stream.includes('@kline_')) {
+      const [symbol, interval] = stream.split('@kline_')
+      return { subscription: 'kline', params: { symbol, interval: interval as '1m' } }
+    }
+
+    if (stream.endsWith('@bookTicker')) {
+      return { subscription: 'bookTicker', params: { symbol: stream.split('@bookTicker')[0] } }
+    }
+
+    if (stream.includes('@depth@')) {
+      const [symbol, ms] = stream.split('@depth@')
+      const speed = +ms.split('ms')[0] as 100 | 1000
+
+      if (speed !== 1000 && speed !== 100) {
+        throw `Invalid:${stream}`
+      }
+
+      return { subscription: 'diffBookDepth', params: { symbol, speed } }
+    }
+
+    if (stream.includes('@depth')) {
+      const [symbol, rest] = stream.split('@depth')
+      const [lvl, ms] = rest.split('@')
+
+      const speed = +ms.split('ms')[0] as 100 | 250 | 500
+      const levels = +lvl as 5 | 10 | 20
+
+      if (speed !== 100 && speed !== 250 && speed !== 500) {
+        throw `Invalid:${stream}`
+      }
+
+      if (levels !== 5 && levels !== 10 && levels !== 20) {
+        throw `Invalid:${stream}`
+      }
+
+      return { subscription: 'partialBookDepth', params: { symbol, speed, levels } }
+    }
+
+    throw `invalid binance stream:${stream}`
   }
 })

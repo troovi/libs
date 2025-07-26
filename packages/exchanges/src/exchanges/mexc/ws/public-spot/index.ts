@@ -1,15 +1,15 @@
 import protobuf from 'protobufjs'
 
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { WebsocketBase } from '../../../../websocket'
 import { AnyMexcMessage } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 import { resolve } from 'path'
-import { areArraysEqual, getRandomIntString, toArray } from '../../../../utils'
-import { EventDispatcher, splitByChunks } from '@troovi/utils-js'
+import { areArraysEqual, getRandomIntString } from '../../../../utils'
+import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: AnyMexcMessage) => void
 }
 
@@ -21,7 +21,7 @@ interface ResponseMessage {
 
 // One ws connection supports a maximum of 30 subscriptions.
 
-export class MexcSpotPublicStream extends BaseStream<typeof subscriptions> {
+export class MexcSpotPublicStream extends BaseStream<typeof streams> {
   private proto: protobuf.Type
   private responses = new EventDispatcher<string>()
 
@@ -73,7 +73,7 @@ export class MexcSpotPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
+    super(network, streams, {
       subscribe: (connection, channels) => {
         return this.request(connection, channels, 'SUBSCRIPTION')
       },

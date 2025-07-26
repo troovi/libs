@@ -29,11 +29,19 @@ export class KuCoinFuturesSnapshot {
   }
 
   async initialize(symbols: string[]) {
-    await this.stream.subscribe(({ orderbook50 }) => orderbook50(symbols))
+    await this.stream.subscribe('orderbook50', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
+    })
   }
 
   async stop(symbols: string[]) {
-    await this.stream.unsubscribe(({ orderbook50 }) => orderbook50(symbols))
+    await this.stream.unsubscribe('orderbook50', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
+    })
+  }
+
+  break(symbol: string) {
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

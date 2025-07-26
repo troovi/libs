@@ -2,14 +2,14 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { GateFuturesMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: GateFuturesMessages.OrderBookUpdate) => void
 }
 
-export class GateFuturesStream extends BaseStream<typeof subscriptions> {
+export class GateFuturesStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<{ status: 'success' | 'error' }>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -46,12 +46,12 @@ export class GateFuturesStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, JSON.parse(channels[0]), 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, JSON.parse(channels[0]), 'unsubscribe')
+      unsubscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'unsubscribe')
       }
     })
   }

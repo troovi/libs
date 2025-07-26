@@ -2,14 +2,14 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { GateSpotMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: GateSpotMessages.OrderBookUpdate) => void
 }
 
-export class GateSpotStream extends BaseStream<typeof subscriptions> {
+export class GateSpotStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<{ status: 'success' | 'error' }>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -46,19 +46,19 @@ export class GateSpotStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, JSON.parse(channels[0]), 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, JSON.parse(channels[0]), 'unsubscribe')
+      unsubscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'unsubscribe')
       }
     })
   }
 
-  private request(connection: WebsocketBase, params: Record<string, unknown>, method: string) {
+  private request(connection: WebsocketBase, subscription: Record<string, unknown>, method: string) {
     return new Promise<void>((resolve, reject) => {
-      const id = `${method}:${params.channel}:${JSON.stringify(params.payload)}`
+      const id = `${method}:${subscription.channel}:${JSON.stringify(subscription.payload)}`
       connection.logger.verbose(`${method}: ${id}`, 'STREAM')
 
       this.responses.on(id, ({ status }) => {
@@ -72,7 +72,7 @@ export class GateSpotStream extends BaseStream<typeof subscriptions> {
         }
       })
 
-      connection.send({ time: Date.now(), event: method, ...params })
+      connection.send({ time: Date.now(), event: method, ...subscription })
     })
   }
 }

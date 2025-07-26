@@ -2,14 +2,14 @@ import { sleep } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { MexcFuturesMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: MexcFuturesMessages.Depth) => void
 }
 
-export class MexcFuturesPublicStream extends BaseStream<typeof subscriptions> {
+export class MexcFuturesPublicStream extends BaseStream<typeof streams> {
   constructor({ onBroken, onMessage }: Options) {
     const network = new NetworkManager({
       onBroken,
@@ -53,22 +53,12 @@ export class MexcFuturesPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        const data = JSON.parse(channels[0])
-
-        return this.request(connection, {
-          method: `sub.${data.method}`,
-          param: data.param
-        })
+    super(network, streams, {
+      subscribe: (connection, { method, param }) => {
+        return this.request(connection, { method: `sub.${method}`, param })
       },
-      unsubscribe: (connection, channels) => {
-        const data = JSON.parse(channels[0])
-
-        return this.request(connection, {
-          method: `unsub.${data.method}`,
-          param: data.param
-        })
+      unsubscribe: (connection, { method, param }) => {
+        return this.request(connection, { method: `unsub.${method}`, param })
       }
     })
   }

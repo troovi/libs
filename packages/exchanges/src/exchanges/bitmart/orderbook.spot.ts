@@ -35,13 +35,13 @@ export class BitmartSpotDepth {
         this.logger.error(`Out: ${event.symbol} ${event.version}: ${source.lastUpdateId}`, 'SYNC')
 
         this.onEvent(event.symbol, { type: 'offline' })
-        this.stream.unsubscribe(({ orderbook }) => orderbook(event.symbol))
+        this.stream.unsubscribe('orderbook', (createStream) => createStream(event.symbol))
 
         source.lastUpdateId = -1
 
         sleep(5000).then(() => {
           this.logger.warn(`Reboot "${event.symbol}"`, 'RESTART')
-          this.stream.subscribe(({ orderbook }) => orderbook(event.symbol))
+          this.stream.subscribe('orderbook', (createStream) => createStream(event.symbol))
         })
 
         return
@@ -66,8 +66,8 @@ export class BitmartSpotDepth {
     const chunks = splitByChunks(symbols, 20)
 
     for await (const subscriptions of chunks) {
-      await this.stream.subscribe(({ orderbook }) => {
-        return subscriptions.map((symbol) => orderbook(symbol))
+      await this.stream.subscribe('orderbook', (createStream) => {
+        return subscriptions.map((symbol) => createStream(symbol))
       })
     }
   }
@@ -80,9 +80,14 @@ export class BitmartSpotDepth {
     const chunks = splitByChunks(symbols, 20)
 
     for await (const subscriptions of chunks) {
-      await this.stream.unsubscribe(({ orderbook }) => {
-        return subscriptions.map((symbol) => orderbook(symbol))
+      await this.stream.unsubscribe('orderbook', (createStream) => {
+        return subscriptions.map((symbol) => createStream(symbol))
       })
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = { lastUpdateId: -1 }
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

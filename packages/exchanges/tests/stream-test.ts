@@ -3,7 +3,7 @@ import { sleep } from '@troovi/utils-js'
 import { BinancePublicStream } from '../src/exchanges/binance'
 
 const stream = new BinancePublicStream('spot', {
-  onBroken(channels) {
+  onBroken: (channels) => {
     console.log('broken:', channels)
   },
   onMessage: (data) => {

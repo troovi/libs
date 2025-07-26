@@ -1,16 +1,22 @@
-import { Subscriptions } from '../../../../subscriptions'
+import { StreamsManager } from '../../../../stream-manager'
 
-export const subscriptions = new Subscriptions({
-  subscriptions: {
+export const streams = new StreamsManager({
+  combinable: true,
+  streams: {
     orderbook: (data: { instType: 'USDT-FUTURES' | 'SPOT'; instId: string }) => {
-      return {
-        instType: data.instType,
-        channel: 'books',
-        instId: data.instId
-      }
+      return JSON.stringify({ instType: data.instType, channel: 'books', instId: data.instId })
     }
   },
-  getStreams(stream: Record<string, unknown> | Record<string, unknown>[]) {
-    return Array.isArray(stream) ? stream.map((u) => JSON.stringify(u)) : [JSON.stringify(stream)]
+  getSubscriptions: (streams) => {
+    return streams.map((stream) => JSON.parse(stream)) as object[]
+  },
+  getStreamInfo: (stream) => {
+    const data = JSON.parse(stream)
+
+    if (data.channel === 'books') {
+      return { subscription: 'orderbook', params: data }
+    }
+
+    throw `invalid bitget stream: ${stream}`
   }
 })

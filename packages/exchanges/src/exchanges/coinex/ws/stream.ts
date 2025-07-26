@@ -1,4 +1,4 @@
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 import { BaseStream, NetworkManager } from '../../../connections'
 import { getRandomIntString } from '../../../utils'
 import { WebsocketBase } from '../../../websocket'
@@ -13,11 +13,11 @@ const APIs = {
 }
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: CoinExMessages.Depth) => void
 }
 
-export class CoinExStream extends BaseStream<typeof subscriptions> {
+export class CoinExStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<string>()
 
   constructor(market: 'spot' | 'futures', { onBroken, onMessage }: Options) {
@@ -65,30 +65,12 @@ export class CoinExStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        const method = channels[0].split(':')[0]
-        const markets = channels.map((stream) => {
-          const name = stream.split(':')[1]
-
-          if (method === 'depth') {
-            return JSON.parse(name)
-          }
-        })
-
-        return this.request(connection, `${method}.subscribe`, markets)
+    super(network, streams, {
+      subscribe: (connection, { method, subscriptions }) => {
+        return this.request(connection, `${method}.subscribe`, subscriptions)
       },
-      unsubscribe: (connection, channels) => {
-        const method = channels[0].split(':')[0]
-        const markets = channels.map((stream) => {
-          const name = stream.split(':')[1]
-
-          if (method === 'depth') {
-            return JSON.parse(name)[0]
-          }
-        })
-
-        return this.request(connection, `${method}.unsubscribe`, markets)
+      unsubscribe: (connection, { method, subscriptions }) => {
+        return this.request(connection, `${method}.unsubscribe`, subscriptions)
       }
     })
   }

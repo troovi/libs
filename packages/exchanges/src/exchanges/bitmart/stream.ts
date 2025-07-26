@@ -1,3 +1,4 @@
+import { reboot } from '../../reboot'
 import { ExchangeStream } from '../../broker'
 import { BitmartFuturesDepth } from './orderbook.futures'
 import { BitmartSpotDepth } from './orderbook.spot'
@@ -36,27 +37,38 @@ export const createBitmartStream = (): ExchangeStream => {
 const createBitmartSpotStream = (): ExchangeStream => {
   return (onEvent) => {
     const stream = new BitmartSpotStream({
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params)
+            orderbooks.push(info.params)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new BitmartSpotDepth({ stream }, (symbol, event) => {
+    const depthService = new BitmartSpotDepth({ stream }, (symbol, event) => {
       onEvent('spot', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.initialize(data.symbols)
+          return depthService.initialize(data.symbols)
         }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.stop(data.symbols)
+          return depthService.stop(data.symbols)
         }
       }
     }
@@ -66,27 +78,38 @@ const createBitmartSpotStream = (): ExchangeStream => {
 const createBitmartFuturesStream = (): ExchangeStream => {
   return (onEvent) => {
     const stream = new BitmartFuturesStream({
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new BitmartFuturesDepth({ stream }, (symbol, event) => {
+    const depthService = new BitmartFuturesDepth({ stream }, (symbol, event) => {
       onEvent('futures', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.initialize(data.symbols)
+          return depthService.initialize(data.symbols)
         }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
-          return orderbook.stop(data.symbols)
+          return depthService.stop(data.symbols)
         }
       }
     }

@@ -28,14 +28,18 @@ export class CoinExDepth {
   }
 
   async initialize(symbols: string[]) {
-    await this.stream.subscribe(({ orderbook }) => {
-      return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
+    await this.stream.subscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol, level: 50 }))
     })
   }
 
   async stop(symbols: string[]) {
-    await this.stream.unsubscribe(({ orderbook }) => {
-      return orderbook(symbols.map((symbol) => ({ symbol, level: 50 })))
+    await this.stream.unsubscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol, level: 50 }))
     })
+  }
+
+  break(symbol: string) {
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

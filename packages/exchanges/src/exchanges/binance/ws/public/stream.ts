@@ -4,7 +4,7 @@ import { WebsocketBase } from '../../../../websocket'
 
 import { AnyBinanceMessage } from './messages'
 import { EventDispatcher } from '@troovi/utils-js'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 type Market = 'spot' | 'futures'
 
@@ -14,11 +14,14 @@ const APIs: Record<Market, string> = {
 }
 
 interface Options<M extends Market> {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: AnyBinanceMessage<M>, rawMsg: string) => void
 }
 
-export class BinancePublicStream<M extends Market> extends BaseStream<typeof subscriptions> {
+// A single connection can listen to a maximum of 1024 streams.
+// There is a limit of 300 connections per attempt every 5 minutes per IP.
+
+export class BinancePublicStream<M extends Market> extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<null>()
 
   constructor(market: M, { onMessage, onBroken }: Options<M>) {
@@ -57,12 +60,12 @@ export class BinancePublicStream<M extends Market> extends BaseStream<typeof sub
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, channels, 'SUBSCRIBE')
+    super(network, streams, {
+      subscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'SUBSCRIBE')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, channels, 'UNSUBSCRIBE')
+      unsubscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'UNSUBSCRIBE')
       }
     })
   }

@@ -157,9 +157,10 @@ export class GateFuturesDepth {
         depth: []
       }
 
-      await this.stream.subscribe(({ orderbook }) => {
-        return orderbook({ symbol, speed: '100ms', level: '100' })
+      await this.stream.subscribe('orderbook', (createStream) => {
+        return createStream({ symbol, speed: '100ms', level: '100' })
       })
+
       await this.setup(symbol)
     }
   }
@@ -175,10 +176,21 @@ export class GateFuturesDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.stream.unsubscribe(({ orderbook }) => {
-        return orderbook({ symbol, speed: '100ms', level: '100' })
+      await this.stream.unsubscribe('orderbook', (createStream) => {
+        return createStream({ symbol, speed: '100ms', level: '100' })
       })
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = {
+      initialized: false,
+      lastUpdateId: -1,
+      isUpdateAhead: false,
+      depth: []
+    }
+
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

@@ -57,3 +57,9 @@ export interface Filters {
   minAmount: number
   priceFactor: number | null
 }
+
+// export abstract class OrderBookService {
+//   initialize: (symbols: string[]) => Promise<void>
+//   stop: (symbols: string[]) => Promise<void>
+//   break: () => void
+// }

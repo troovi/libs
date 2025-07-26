@@ -119,8 +119,8 @@ export class OrangeXDepth {
       }
     })
 
-    await this.stream.subscribe(({ orderbook }) => {
-      return symbols.map((symbol) => orderbook({ symbol }))
+    await this.stream.subscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
     })
 
     await sleep(1500)
@@ -140,9 +140,19 @@ export class OrangeXDepth {
       }
     })
 
-    await this.stream.unsubscribe(({ orderbook }) => {
-      return symbols.map((symbol) => orderbook({ symbol }))
+    await this.stream.unsubscribe('orderbook', (createStream) => {
+      return symbols.map((symbol) => createStream({ symbol }))
     })
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = {
+      initialized: false,
+      lastUpdateId: -1,
+      depth: []
+    }
+
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

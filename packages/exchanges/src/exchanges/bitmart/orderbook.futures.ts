@@ -35,22 +35,23 @@ export class BitmartFuturesDepth {
 
         this.onEvent(event.symbol, { type: 'offline' })
 
-        this.stream.unsubscribe(({ orderbook }) => {
-          return orderbook({ symbol: event.symbol, level: 50, speed: '200ms' })
+        this.stream.unsubscribe('orderbook', (createStream) => {
+          return createStream({ symbol: event.symbol, level: 50, speed: 200 })
         })
 
         source.lastUpdateId = -1
 
         sleep(5000).then(() => {
           this.logger.warn(`Reboot "${event.symbol}"`, 'RESTART')
-          this.stream.subscribe(({ orderbook }) => {
-            return orderbook({ symbol: event.symbol, level: 50, speed: '200ms' })
+          this.stream.subscribe('orderbook', (createStream) => {
+            return createStream({ symbol: event.symbol, level: 50, speed: 200 })
           })
         })
 
         return
       }
     }
+
     source.lastUpdateId = event.version
 
     this.onEvent(event.symbol, {
@@ -69,8 +70,8 @@ export class BitmartFuturesDepth {
     const chunks = splitByChunks(symbols, 20)
 
     for await (const subscriptions of chunks) {
-      await this.stream.subscribe(({ orderbook }) => {
-        return subscriptions.map((symbol) => orderbook({ symbol, level: 50, speed: '200ms' }))
+      await this.stream.subscribe('orderbook', (createStream) => {
+        return subscriptions.map((symbol) => createStream({ symbol, level: 50, speed: 200 }))
       })
     }
   }
@@ -83,10 +84,15 @@ export class BitmartFuturesDepth {
     const chunks = splitByChunks(symbols, 20)
 
     for await (const subscriptions of chunks) {
-      await this.stream.unsubscribe(({ orderbook }) => {
-        return subscriptions.map((symbol) => orderbook({ symbol, level: 50, speed: '200ms' }))
+      await this.stream.unsubscribe('orderbook', (createStream) => {
+        return subscriptions.map((symbol) => createStream({ symbol, level: 50, speed: 200 }))
       })
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = { lastUpdateId: -1 }
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

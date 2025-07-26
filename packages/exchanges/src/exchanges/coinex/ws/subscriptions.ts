@@ -1,19 +1,31 @@
-import { Subscriptions } from '../../../subscriptions'
+import { StreamsManager } from '../../../stream-manager'
 
-export const subscriptions = new Subscriptions({
-  subscriptions: {
-    orderbook: (items: { symbol: string; level: 5 | 10 | 20 | 50; isFull?: boolean }[]) => {
-      return {
-        method: 'depth',
-        subscriptions: items.map(({ symbol, level, isFull }) => {
-          return [symbol, level, '0', isFull ?? false]
-        })
-      }
+export const streams = new StreamsManager({
+  combinable: true,
+  streams: {
+    orderbook: (opts: { symbol: string; level: 5 | 10 | 20 | 50; isFull?: boolean }) => {
+      return `depth:${JSON.stringify([opts.symbol, opts.level, '0', opts.isFull ?? false])}`
     }
   },
-  getStreams: (streams: { method: string; subscriptions: object[] }) => {
-    return streams.subscriptions.map((item) => {
-      return `${streams.method}:${JSON.stringify(item)}`
+  getSubscriptions: (streams) => {
+    const method = streams[0].split(':')[0]
+    const subscriptions = streams.map((stream) => {
+      return JSON.parse(stream.split(':')[1]) as object
     })
+
+    return { method, subscriptions }
+  },
+  getStreamInfo: (stream) => {
+    if (stream.startsWith('depth:')) {
+      const params = JSON.parse(stream.split(':')[1]) as {
+        symbol: string
+        level: 5 | 10 | 20 | 50
+        isFull: boolean
+      }
+
+      return { subscription: 'orderbook', params }
+    }
+
+    throw `invalid coinex stream: ${stream}`
   }
 })

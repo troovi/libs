@@ -9,3 +9,11 @@ export const stringify = (...ars: any[]) => {
 export const dollar = (value: number) => {
   return value.toLocaleString('us-US', { style: 'currency', currency: 'USD' })
 }
+
+export const contain = <T>(items: T[][]): T[] => {
+  return items.reduce((prev, curr) => [...prev, ...curr], [])
+}
+
+export const nonNullable = <T>(value: T): value is NonNullable<T> => {
+  return value !== null && value !== undefined
+}

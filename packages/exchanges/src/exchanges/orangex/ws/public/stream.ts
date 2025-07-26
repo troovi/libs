@@ -3,7 +3,7 @@ import { areArraysEqual, getRandomIntString } from '../../../../utils'
 import { WebsocketBase } from '../../../../websocket'
 
 import { AnyOrangeXPubblicMessage } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 import { EventDispatcher } from '@troovi/utils-js'
 
 interface Response<T> {
@@ -13,11 +13,11 @@ interface Response<T> {
 }
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: Response<AnyOrangeXPubblicMessage>) => void
 }
 
-export class OrangeXPublicStream extends BaseStream<typeof subscriptions> {
+export class OrangeXPublicStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<object>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -77,7 +77,7 @@ export class OrangeXPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
+    super(network, streams, {
       subscribe: (connection, channels) => {
         return this.request(connection, channels, '/public/subscribe')
       },

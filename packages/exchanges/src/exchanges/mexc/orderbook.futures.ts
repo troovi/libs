@@ -119,7 +119,7 @@ export class MexcFuturesDepth {
         depth: []
       }
 
-      await this.stream.subscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.subscribe('orderbook', (createStream) => createStream(symbol))
       await sleep(1500)
       await this.setup(symbol)
     }
@@ -135,8 +135,18 @@ export class MexcFuturesDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.stream.unsubscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.unsubscribe('orderbook', (createStream) => createStream(symbol))
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = {
+      initialized: false,
+      lastUpdateId: -1,
+      depth: []
+    }
+
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

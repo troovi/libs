@@ -2,10 +2,10 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { BitmartSpotMessages } from './messages'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: BitmartSpotMessages.OrderBook) => void
 }
 
@@ -16,7 +16,7 @@ interface Options {
 // Once connected: Clients can sending a maximum of 100 subscription messages within 10 seconds, message includes: PING text, JSON format messages (subscription and unsubscription).
 // Once connected: A maximum of 20 messages arrays can be sent by clients for a single subscription.
 
-export class BitmartSpotStream extends BaseStream<typeof subscriptions> {
+export class BitmartSpotStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<boolean>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -54,12 +54,12 @@ export class BitmartSpotStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, channels, 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, channels, 'unsubscribe')
+      unsubscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'unsubscribe')
       }
     })
   }

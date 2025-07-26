@@ -1,3 +1,4 @@
+import { reboot } from '../../reboot'
 import { ExchangeStream } from '../../broker'
 import { CoinExDepth } from './orderbook'
 import { CoinExStream } from './ws/stream'
@@ -34,27 +35,38 @@ export const createCoinExStream = (): ExchangeStream => {
 const createCoinExSpotStream = (): ExchangeStream => {
   return (onEvent) => {
     const stream = new CoinExStream('spot', {
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new CoinExDepth({ stream }, (symbol, event) => {
+    const depthService = new CoinExDepth({ stream }, (symbol, event) => {
       onEvent('spot', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }
@@ -64,27 +76,38 @@ const createCoinExSpotStream = (): ExchangeStream => {
 const createCoinExFuturesStream = (): ExchangeStream => {
   return (onEvent) => {
     const stream = new CoinExStream('futures', {
-      onBroken(streams) {
-        console.log('broken:', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'orderbook') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        orderbook.update(message)
+        depthService.update(message)
       }
     })
 
-    const orderbook = new CoinExDepth({ stream }, (symbol, event) => {
+    const depthService = new CoinExDepth({ stream }, (symbol, event) => {
       onEvent('futures', { type: 'depth', symbol, event })
     })
 
     return {
       subscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.initialize(subscription.symbols)
+          return depthService.initialize(subscription.symbols)
         }
       },
       unsubscribe: async (subscription) => {
         if (subscription.stream === 'depth') {
-          return orderbook.stop(subscription.symbols)
+          return depthService.stop(subscription.symbols)
         }
       }
     }

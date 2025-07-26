@@ -44,7 +44,7 @@ export class OKXDepth {
   async initialize(instIds: string[]) {
     for await (const instId of instIds) {
       this.store[instId] = { seqId: -1 }
-      await this.stream.subscribe(({ orderbook }) => orderbook(instId))
+      await this.stream.subscribe('orderbook', (createStream) => createStream(instId))
       await sleep(250)
     }
   }
@@ -55,8 +55,13 @@ export class OKXDepth {
     })
 
     for await (const symbol of symbols) {
-      await this.stream.unsubscribe(({ orderbook }) => orderbook(symbol))
+      await this.stream.unsubscribe('orderbook', (createStream) => createStream(symbol))
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = { seqId: -1 }
+    this.onEvent(symbol, { type: 'offline' })
   }
 }
 

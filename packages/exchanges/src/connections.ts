@@ -1,18 +1,24 @@
 import { EventBroadcaster, generateCode, hash } from '@troovi/utils-js'
 import { WebsocketBase } from './websocket'
-import { ExtractA, ExtractB, Subscriptions } from './subscriptions'
+import { ExtractA, ExtractB, ExtractC, Info, StreamsManager, List } from './stream-manager'
+import { toArray } from './utils'
 
-interface Schema {
-  subscribe: (connection: WebsocketBase, channels: string[]) => Promise<void>
-  unsubscribe: (connection: WebsocketBase, channels: string[]) => Promise<void>
+interface Schema<S> {
+  subscribe: (connection: WebsocketBase, subscription: S) => Promise<void>
+  unsubscribe: (connection: WebsocketBase, subscription: S) => Promise<void>
 }
 
-export class BaseStream<T extends Subscriptions> {
-  constructor(public network: NetworkManager, private subscriptions: T, private schema: Schema) {}
+type Tun<B> = B extends true ? string | string[] : string
 
-  async subscribe(getStreams: (subscriptions: ExtractA<T>) => ExtractB<T>) {
-    const streams = this.subscriptions.getStreams(getStreams(this.subscriptions.subscriptions))
-    const fails: string[] = []
+export class BaseStream<T extends StreamsManager, L extends List = ExtractA<T>, Is = ExtractC<T>> {
+  constructor(public network: NetworkManager, public streams: T, private schema: Schema<ExtractB<T>>) {}
+
+  reboot({ subscription, params }: Info<L>) {
+    return this.subscribe(subscription, (createStream) => createStream(params))
+  }
+
+  async subscribe<K extends keyof L>(subscription: K, getStreams: (createStream: L[K]) => Tun<Is>) {
+    const streams = toArray(getStreams(this.streams.streams[subscription]))
 
     const fillChannels = async (createConnection?: boolean): Promise<void> => {
       if (streams.length > 0) {
@@ -27,21 +33,23 @@ export class BaseStream<T extends Subscriptions> {
         await Promise.allSettled<void>([
           ...distribution.map(({ connectionID, channels }) => {
             const { stream, subscriptions } = this.network.connections[connectionID]
-            // prettier-ignore
             return new Promise<void>(async (resolve, reject) => {
-              await this.schema.subscribe(stream, channels).then(resolve).catch((e) => {
-                // если в запросе на подписку был передан массив из множества streams, то при ошибке
-                // некоторые биржи отклоняют весь запрос, а некоторые (bitmart) пропускают подписки на проблемные стримы, при этом оставляя успешные.
+              await this.schema
+                .subscribe(stream, this.streams.getSubscriptions(channels))
+                .then(resolve)
+                .catch((e) => {
+                  // если в запросе на подписку был передан массив из множества streams, то при ошибке
+                  // некоторые биржи отклоняют весь запрос, а некоторые (bitmart) пропускают подписки на проблемные стримы, при этом оставляя успешные.
 
-                // удаляя данные о стримах переданных в запросе, мы не можем быть точно уверены все ли стримы были отклонены, или только те в которых возникли проблемы
-                channels.forEach((channel) => {
-                  subscriptions.closeChannel(channel)
-                  fails.push(channel)
+                  // удаляя данные о стримах переданных в запросе, мы не можем быть точно уверены все ли стримы были отклонены, или только те в которых возникли проблемы
+                  channels.forEach((channel) => {
+                    subscriptions.closeChannel(channel)
+                  })
+
+                  // также, пока нет обрабатки reject после окончания allSettled. Даже при ошибках, subscribe проходит всегда успешно
+                  // непонятно по каким причинам подписка/отписка может быть отклонена, и что делать в случае если отказ произошел (пытаться переподписываться, или возвращать ошибки)
+                  reject(e)
                 })
-
-                // также, пока нет обрабатки reject после окончания allSettled. Даже при ошибках, subscribe проходит всегда успешно
-                reject(e)
-              })
             })
           }),
           // если функция distributeChannels не смогла распределить channels между существующими подключениями, значит, они полностью используют свои лимиты,
@@ -52,12 +60,10 @@ export class BaseStream<T extends Subscriptions> {
     }
 
     await fillChannels()
-
-    return { fails }
   }
 
-  async unsubscribe(getStreams: (subscriptions: ExtractA<T>) => ExtractB<T>) {
-    const streams = this.subscriptions.getStreams(getStreams(this.subscriptions.subscriptions))
+  async unsubscribe<K extends keyof L>(subscription: K, getStreams: (createStream: L[K]) => Tun<Is>) {
+    const streams = toArray(getStreams(this.streams.streams[subscription]))
     const connections = this.network.getConnections(streams)
     const fails: string[] = []
 
@@ -65,20 +71,22 @@ export class BaseStream<T extends Subscriptions> {
       connections.map(({ channels, connection }) => {
         return new Promise<void>(async (resolve, reject) => {
           await this.schema
-            .unsubscribe(connection.stream, channels)
+            .unsubscribe(connection.stream, this.streams.getSubscriptions(channels))
+            .then(() => {
+              channels.forEach((channel) => {
+                connection.subscriptions.closeChannel(channel)
+              })
+
+              resolve()
+            })
             .catch(() => {
+              // отписка не произошла
               fails.push(...channels)
               reject()
-            })
-            .then(() => {
-              channels.forEach((channel) => connection.subscriptions.closeChannel(channel))
-              resolve()
             })
         })
       })
     )
-
-    return { fails }
   }
 }
 
@@ -88,12 +96,9 @@ interface ConnectionCallbacks {
 }
 
 interface ManagerOptions {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   connectionLimit: number
-  createConnection: (
-    id: string,
-    callbacks: ConnectionCallbacks
-  ) => Promise<WebsocketBase> | WebsocketBase
+  createConnection: (id: string, cb: ConnectionCallbacks) => Promise<WebsocketBase> | WebsocketBase
 }
 
 interface Connection {
@@ -106,13 +111,11 @@ interface Connections {
 }
 
 export class NetworkManager {
-  private onBroken?: (channels: string[]) => void
   public connections: Connections = {}
+
   private connectionLimit: number
-  private createConnection: (
-    id: string,
-    callbacks: ConnectionCallbacks
-  ) => Promise<WebsocketBase> | WebsocketBase
+  private onBroken: (channels: string[]) => void
+  private createConnection: ManagerOptions['createConnection']
 
   private isConnecting: boolean = false
   private onConnected = new EventBroadcaster<void>()

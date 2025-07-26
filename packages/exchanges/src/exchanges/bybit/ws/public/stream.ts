@@ -1,4 +1,4 @@
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 import { StreamEvents } from './messages'
 import { WebsocketBase } from '../../../../websocket'
 import { getRandomIntString } from '../../../../utils'
@@ -6,11 +6,11 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { BaseStream, NetworkManager } from '../../../../connections'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: StreamEvents) => void
 }
 
-export class ByBitStream extends BaseStream<typeof subscriptions> {
+export class ByBitStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<boolean>()
 
   constructor(market: 'spot' | 'linear', { onBroken, onMessage }: Options) {
@@ -45,21 +45,21 @@ export class ByBitStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, channels, 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, channels, 'unsubscribe')
+      unsubscribe: (connection, subscriptions) => {
+        return this.request(connection, subscriptions, 'unsubscribe')
       }
     })
   }
 
-  private request(connection: WebsocketBase, params: string[], method: string) {
+  private request(connection: WebsocketBase, subscriptions: string[], method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
 
-      connection.logger.verbose(`${method}: [${id}] ${params.join(', ')}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${subscriptions.join(', ')}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -75,7 +75,7 @@ export class ByBitStream extends BaseStream<typeof subscriptions> {
       connection.send({
         req_id: id,
         op: method,
-        args: params
+        args: subscriptions
       })
     })
   }

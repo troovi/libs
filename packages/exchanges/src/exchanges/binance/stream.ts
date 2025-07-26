@@ -1,3 +1,4 @@
+import { reboot } from '../../reboot'
 import { ExchangeStream } from '../../broker'
 import { BinanceFuturesApi } from './api/futures/api'
 import { BinanceSpotApi } from './api/spot/api'
@@ -37,8 +38,19 @@ export const createBinanceStream = (sapi: BinanceSpotApi, fapi: BinanceFuturesAp
 const createBinanceSpotStream = (api: BinanceSpotApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new BinancePublicStream('spot', {
-      onBroken: (streams) => {
-        console.log('broken', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'diffBookDepth') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (data) => {
         if (data.e === 'depthUpdate') {
@@ -69,8 +81,19 @@ const createBinanceSpotStream = (api: BinanceSpotApi): ExchangeStream => {
 const createBinanceFuturesStream = (api: BinanceFuturesApi): ExchangeStream => {
   return (onEvent) => {
     const stream = new BinancePublicStream('futures', {
-      onBroken: (streams) => {
-        console.log('broken', streams)
+      onBroken: async (channels) => {
+        const orderbooks: string[] = []
+
+        await reboot(stream, channels, (info) => {
+          if (info.subscription === 'diffBookDepth') {
+            depthService.break(info.params.symbol)
+            orderbooks.push(info.params.symbol)
+
+            return false
+          }
+        })
+
+        await depthService.initialize(orderbooks)
       },
       onMessage: (data) => {
         if (data.e === 'depthUpdate') {

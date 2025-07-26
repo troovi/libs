@@ -51,8 +51,8 @@ export class ByBitDepth {
     const chunks = splitByChunks(symbols, 10)
 
     for await (const chunk of chunks) {
-      await this.stream.subscribe(({ orderbook }) => {
-        return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
+      await this.stream.subscribe('orderbook', (createStream) => {
+        return chunk.map((symbol) => createStream({ symbol, level: 50 }))
       })
     }
   }
@@ -65,9 +65,14 @@ export class ByBitDepth {
     const chunks = splitByChunks(symbols, 10)
 
     for await (const chunk of chunks) {
-      await this.stream.unsubscribe(({ orderbook }) => {
-        return chunk.map((symbol) => orderbook({ symbol, level: 50 }))
+      await this.stream.unsubscribe('orderbook', (createStream) => {
+        return chunk.map((symbol) => createStream({ symbol, level: 50 }))
       })
     }
+  }
+
+  break(symbol: string) {
+    this.store[symbol] = { lastUpdateId: -1 }
+    this.onEvent(symbol, { type: 'offline' })
   }
 }

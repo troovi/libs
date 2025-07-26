@@ -3,7 +3,7 @@ import WebSocketClient from 'ws'
 
 export interface WebSocketCallbacks {
   onOpen: () => void
-  onBroken?: () => void
+  onBroken: () => void
   onClosed?: () => void
 }
 

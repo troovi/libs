@@ -2,15 +2,15 @@ import { WebsocketBase } from '../../../../websocket'
 import { getRandomIntString } from '../../../../utils'
 import { BaseStream, NetworkManager } from '../../../../connections'
 import { EventDispatcher } from '@troovi/utils-js'
-import { subscriptions } from './subscriptions'
+import { streams } from './subscriptions'
 import { OKXMessages } from './messages'
 
 interface Options {
-  onBroken?: (channels: string[]) => void
+  onBroken: (channels: string[]) => void
   onMessage: (data: OKXMessages.Books) => void
 }
 
-export class OKXPublicStream extends BaseStream<typeof subscriptions> {
+export class OKXPublicStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<{ event: string }>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -48,22 +48,21 @@ export class OKXPublicStream extends BaseStream<typeof subscriptions> {
       }
     })
 
-    super(network, subscriptions, {
-      subscribe: (connection, channels) => {
-        return this.request(connection, channels, 'subscribe')
+    super(network, streams, {
+      subscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'subscribe')
       },
-      unsubscribe: (connection, channels) => {
-        return this.request(connection, channels, 'unsubscribe')
+      unsubscribe: (connection, subscription) => {
+        return this.request(connection, subscription, 'unsubscribe')
       }
     })
   }
 
-  private request(connection: WebsocketBase, streams: string[], method: string) {
+  private request(connection: WebsocketBase, subscription: object, method: string) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
-      const sub = JSON.parse(streams[0])
 
-      connection.logger.verbose(`${method}: [${id}] ${JSON.stringify(sub)}`, 'STREAM')
+      connection.logger.verbose(`${method}: [${id}] ${JSON.stringify(subscription)}`, 'STREAM')
 
       this.responses.on(id, (message) => {
         this.responses.rm(id)
@@ -79,7 +78,7 @@ export class OKXPublicStream extends BaseStream<typeof subscriptions> {
       connection.send({
         id,
         op: method,
-        args: [sub]
+        args: [subscription]
       })
     })
   }
