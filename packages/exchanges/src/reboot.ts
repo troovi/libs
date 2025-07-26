@@ -1,5 +1,5 @@
-import { BaseStream } from 'src/connections'
-import { ExtractA, Info, List, StreamsManager } from 'src/stream-manager'
+import { BaseStream } from './connections'
+import { ExtractA, Info, List, StreamsManager } from './stream-manager'
 import { nonNullable } from '@troovi/utils-js'
 
 type ExtractT<S> = S extends BaseStream<infer T> ? T : never

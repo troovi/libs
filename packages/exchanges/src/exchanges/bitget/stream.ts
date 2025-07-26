@@ -12,7 +12,7 @@ export const createBitgetStream = (): ExchangeStream => {
 
         await reboot(stream, channels, (info) => {
           if (info.subscription === 'orderbook') {
-            depthService.break(info.params.instId)
+            depthService.break(info.params.instId, info.params.instType)
 
             if (info.params.instType === 'SPOT') {
               spotBooks.push(info.params.instId)
@@ -34,8 +34,8 @@ export const createBitgetStream = (): ExchangeStream => {
       }
     })
 
-    const depthService = new BitgetDepth({ stream }, (symbol, event) => {
-      onEvent(depthService.getSymbolMarket(symbol), { type: 'depth', symbol, event })
+    const depthService = new BitgetDepth({ stream }, (symbol, market, event) => {
+      onEvent(market, { type: 'depth', symbol, event })
     })
 
     return {

@@ -27,24 +27,20 @@ export class KuCoinSpotPublicStream extends BaseStream<typeof streams> {
         const server = instanceServers[0]
         const connection = new WebsocketBase(`${server.endpoint}?token=${token}`, {
           service: `kucoin:spot:${id}`,
+          pingInterval: server.pingInterval,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
-                }
-              }, server.pingInterval)
-
-              onOpen()
+            onPing: () => {
+              connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
             },
+            onOpen,
             onMessage: (data) => {
               const raw = data.toString()
               const response = JSON.parse(raw)
 
               if (response.id) {
                 if (response.type === 'pong') {
-                  connection.logger.log(`Recieved "pong" message`, 'STREAM')
+                  // connection.logger.log(`Recieved "pong" message`, 'STREAM')
                   return
                 }
 

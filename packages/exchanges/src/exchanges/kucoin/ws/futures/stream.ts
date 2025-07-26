@@ -27,16 +27,12 @@ export class KuCoinFuturesPublicStream extends BaseStream<typeof streams> {
         const server = instanceServers[0]
         const connection = new WebsocketBase(`${server.endpoint}?token=${token}`, {
           service: `kucoin:futures:${id}`,
+          pingInterval: server.pingInterval,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
-                }
-              }, server.pingInterval)
-
-              onOpen()
+            onOpen,
+            onPing: () => {
+              connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
             },
             onMessage: (data) => {
               const raw = data.toString()
@@ -44,7 +40,7 @@ export class KuCoinFuturesPublicStream extends BaseStream<typeof streams> {
 
               if (response.id) {
                 if (response.type === 'pong') {
-                  connection.logger.log(`Recieved "pong" message`, 'STREAM')
+                  // connection.logger.log(`Recieved "pong" message`, 'STREAM')
                   return
                 }
 

@@ -8,7 +8,6 @@ import { areArraysEqual, getRandomIntString } from '../../../../utils'
 import { EventDispatcher } from '@troovi/utils-js'
 
 interface Options {
-  keepAlive?: boolean
   listenKey: string
   callbacks: WebSocketCallbacks & {
     onMessage: (data: AnyMexcSecureResponse) => void
@@ -26,22 +25,17 @@ export class MexcPrivateStream extends WebsocketBase {
   private responses = new EventDispatcher<string>()
   private streams: string[] = []
 
-  constructor({ keepAlive, listenKey, callbacks }: Options) {
+  constructor({ listenKey, callbacks }: Options) {
     super(`wss://wbs-api.mexc.com/ws?listenKey=${listenKey}`, {
       service: 'mexc-private',
-      keepAlive,
+      pingInterval: 20000,
       callbacks: {
         ...callbacks,
         onOpen: () => {
           this.initializeProto().then(callbacks.onOpen)
-
-          // Maintain the connection
-          setInterval(() => {
-            if (this.isConnected()) {
-              console.log('ping mexc secure')
-              this.send({ method: 'PING' })
-            }
-          }, 25000)
+        },
+        onPing: () => {
+          this.send({ method: 'PING' })
         },
         onMessage: (data) => {
           try {

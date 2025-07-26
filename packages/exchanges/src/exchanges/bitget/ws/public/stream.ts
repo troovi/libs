@@ -22,22 +22,18 @@ export class BitgetPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://ws.bitget.com/v2/ws/public`, {
           service: `bitget:public:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.signal('ping')
-                }
-              }, 25000)
-
-              onOpen()
+            onOpen,
+            onPing: () => {
+              connection.signal('ping')
             },
             onMessage: (data) => {
               const raw = data.toString()
 
               if (raw === 'pong') {
-                connection.logger.log(`Server "pong" captured`, 'STREAM')
+                // connection.logger.log(`Server "pong" captured`, 'STREAM')
                 return
               }
 
@@ -76,7 +72,7 @@ export class BitgetPublicStream extends BaseStream<typeof streams> {
 
   private request(connection: WebsocketBase, channels: object[], method: string) {
     return new Promise<void>((resolve, reject) => {
-      connection.logger.verbose(`${method}: ${channels.length}`, 'STREAM')
+      connection.logger.verbose(`${method}: ${JSON.stringify(channels)}`, 'STREAM')
 
       let sizes = channels.length
 

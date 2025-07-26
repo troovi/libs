@@ -17,17 +17,12 @@ export class MexcFuturesPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://contract.mexc.com/edge`, {
           service: `mexc:futures:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              // Maintain the connection
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.send({ method: 'ping' })
-                }
-              }, 25000)
-
-              onOpen()
+            onOpen,
+            onPing: () => {
+              connection.send({ method: 'ping' })
             },
             onMessage: (data) => {
               const message = JSON.parse(data.toString())
@@ -39,7 +34,7 @@ export class MexcFuturesPublicStream extends BaseStream<typeof streams> {
                 }
 
                 if (message.channel === 'pong') {
-                  connection.logger.log(`Recieved "pong" message`, 'STREAM')
+                  // connection.logger.log(`Recieved "pong" message`, 'STREAM')
                   return
                 }
               }

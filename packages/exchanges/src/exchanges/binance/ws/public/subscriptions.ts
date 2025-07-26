@@ -113,20 +113,33 @@ export const streams = new StreamsManager({
   },
   getStreamInfo: (stream) => {
     if (stream.endsWith('@aggTrade')) {
-      return { subscription: 'aggTrade', params: { symbol: stream.split('@aggTrade')[0] } }
+      return {
+        subscription: 'aggTrade',
+        params: { symbol: stream.split('@aggTrade')[0].toUpperCase() }
+      }
     }
 
     if (stream.endsWith('@trade')) {
-      return { subscription: 'trade', params: { symbol: stream.split('@trade')[0] } }
+      return {
+        subscription: 'trade',
+        params: { symbol: stream.split('@trade')[0].toUpperCase() }
+      }
     }
 
     if (stream.includes('@kline_')) {
       const [symbol, interval] = stream.split('@kline_')
-      return { subscription: 'kline', params: { symbol, interval: interval as '1m' } }
+
+      return {
+        subscription: 'kline',
+        params: { symbol: symbol.toUpperCase(), interval: interval as '1m' }
+      }
     }
 
     if (stream.endsWith('@bookTicker')) {
-      return { subscription: 'bookTicker', params: { symbol: stream.split('@bookTicker')[0] } }
+      return {
+        subscription: 'bookTicker',
+        params: { symbol: stream.split('@bookTicker')[0].toUpperCase() }
+      }
     }
 
     if (stream.includes('@depth@')) {
@@ -137,7 +150,10 @@ export const streams = new StreamsManager({
         throw `Invalid:${stream}`
       }
 
-      return { subscription: 'diffBookDepth', params: { symbol, speed } }
+      return {
+        subscription: 'diffBookDepth',
+        params: { symbol: symbol.toUpperCase(), speed }
+      }
     }
 
     if (stream.includes('@depth')) {
@@ -155,7 +171,10 @@ export const streams = new StreamsManager({
         throw `Invalid:${stream}`
       }
 
-      return { subscription: 'partialBookDepth', params: { symbol, speed, levels } }
+      return {
+        subscription: 'partialBookDepth',
+        params: { symbol: symbol.toUpperCase(), speed, levels }
+      }
     }
 
     throw `invalid binance stream:${stream}`

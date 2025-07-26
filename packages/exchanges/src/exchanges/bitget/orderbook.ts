@@ -9,13 +9,16 @@ interface Params {
 
 export class BitgetDepth {
   // private logger = new Logger('orderbook')
-  private store: { [symbol: string]: { lastUpdateId: number; market: 'futures' | 'spot' } } = {}
+  private store: { [symbol: string]: { lastUpdateId: number } } = {}
 
   private stream: BitgetPublicStream
 
-  private onEvent: (symbol: string, event: OrderBookEvent) => void
+  private onEvent: (symbol: string, market: 'spot' | 'futures', event: OrderBookEvent) => void
 
-  constructor({ stream }: Params, onEvent: (symbol: string, event: OrderBookEvent) => void) {
+  constructor(
+    { stream }: Params,
+    onEvent: (symbol: string, market: 'spot' | 'futures', event: OrderBookEvent) => void
+  ) {
     this.onEvent = onEvent
     this.stream = stream
   }
@@ -30,7 +33,7 @@ export class BitgetDepth {
 
     // source.lastUpdateId = event.version
 
-    this.onEvent(arg.instId, {
+    this.onEvent(arg.instId, arg.instType === 'SPOT' ? 'spot' : 'futures', {
       type: action === 'update' ? 'update' : 'snapshot',
       latency: Date.now() - +event.ts,
       bids: toNumber(event.bids),
@@ -38,13 +41,9 @@ export class BitgetDepth {
     })
   }
 
-  getSymbolMarket(symbol: string) {
-    return this.store[symbol].market
-  }
-
   async initialize(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
+      this.store[symbol] = { lastUpdateId: -1 }
     })
 
     await this.stream.subscribe('orderbook', (createStream) => {
@@ -54,7 +53,7 @@ export class BitgetDepth {
 
   async stop(symbols: string[], instType: 'USDT-FUTURES' | 'SPOT') {
     symbols.forEach((symbol) => {
-      this.store[symbol] = { lastUpdateId: -1, market: instType === 'SPOT' ? 'spot' : 'futures' }
+      this.store[symbol] = { lastUpdateId: -1 }
     })
 
     await this.stream.unsubscribe('orderbook', (createStream) => {
@@ -62,8 +61,8 @@ export class BitgetDepth {
     })
   }
 
-  break(symbol: string) {
+  break(symbol: string, instType: 'USDT-FUTURES' | 'SPOT') {
     this.store[symbol].lastUpdateId = -1
-    this.onEvent(symbol, { type: 'offline' })
+    this.onEvent(symbol, instType === 'SPOT' ? 'spot' : 'futures', { type: 'offline' })
   }
 }

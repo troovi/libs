@@ -19,15 +19,22 @@ export class GateSpotStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://api.gateio.ws/ws/v4/`, {
           service: `gate:spot:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onOpen,
             onBroken,
+            onPing: () => {
+              connection.ping()
+            },
             onMessage: (data) => {
               const raw = data.toString()
               const response = JSON.parse(raw)
 
               if (response.event === 'subscribe' || response.event === 'unsubscribe') {
-                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                connection.logger.log(
+                  `Interaction message: ${response.channel}:${JSON.stringify(response.payload)}`,
+                  'STREAM'
+                )
 
                 this.responses.emit(
                   `${response.event}:${response.channel}:${JSON.stringify(response.payload)}`,

@@ -27,22 +27,18 @@ export class OrangeXPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://api.orangex.com/ws/api/v1`, {
           service: `orangex:public:${id}`,
+          pingInterval: 5000,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.signal('PING')
-                }
-              }, 5000)
-
-              onOpen()
+            onOpen,
+            onPing: () => {
+              connection.signal('PING')
             },
             onMessage: (data) => {
               const raw = data.toString()
 
               if (raw === 'PONG') {
-                connection.logger.log(`Server "pong" captured`, 'STREAM')
+                // connection.logger.log(`Server "pong" captured`, 'STREAM')
                 return
               }
 

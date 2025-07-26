@@ -194,13 +194,15 @@ export class NetworkManager {
 
             const channels = subscriptions.getChannels()
 
+            console.log('broken:', channels)
+
             if (stream.isConnected()) {
               stream.disconnect()
             }
 
             delete this.connections[connectionID]
 
-            this.onBroken?.(channels)
+            this.onBroken(channels)
           }
         },
         onOpen: () => {

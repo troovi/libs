@@ -10,7 +10,7 @@ export const streams = new StreamsManager({
   getSubscriptions: (streams) => {
     const method = streams[0].split(':')[0]
     const subscriptions = streams.map((stream) => {
-      return JSON.parse(stream.split(':')[1]) as object
+      return JSON.parse(stream.split(':')[1]) as object[]
     })
 
     return { method, subscriptions }

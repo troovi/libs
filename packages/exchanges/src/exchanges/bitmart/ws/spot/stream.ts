@@ -26,8 +26,12 @@ export class BitmartSpotStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://ws-manager-compress.bitmart.com/api?protocol=1.1`, {
           service: `bitmart:spot:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onOpen,
+            onPing: () => {
+              connection.ping()
+            },
             onBroken,
             onMessage: (data) => {
               const raw = data.toString()

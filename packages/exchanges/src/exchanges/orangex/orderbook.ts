@@ -38,9 +38,10 @@ export class OrangeXDepth {
 
     if (source.initialized) {
       if (source.lastUpdateId + 1 !== event.data.change_id) {
-        this.logger.error(`Out: "${symbol}": ${event.data.change_id}: ${source.lastUpdateId}`, 'SYNC')
+        this.logger.error(`Out: "${symbol}": ${source.lastUpdateId} ${event.data.change_id}`, 'SYNC')
 
         source.initialized = false
+        source.depth = []
         source.depth.push(event)
 
         this.onEvent(symbol, { type: 'offline' })
@@ -70,6 +71,8 @@ export class OrangeXDepth {
     this.logger.log(`Initializing "${symbol}" orderbook...`, 'SETUP')
 
     const snapshot = await this.api.getOrderBook({ instrument_name: symbol })
+
+    await sleep(2500)
 
     const orderbook = new OrderBookServer()
     const source = this.store[symbol]
@@ -123,11 +126,10 @@ export class OrangeXDepth {
       return symbols.map((symbol) => createStream({ symbol }))
     })
 
-    await sleep(1500)
+    await sleep(1000)
 
     for await (const symbol of symbols) {
       await this.setup(symbol)
-      await sleep(500)
     }
   }
 

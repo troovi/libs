@@ -19,9 +19,13 @@ export class BitmartFuturesStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://openapi-ws-v2.bitmart.com/api?protocol=1.1`, {
           service: `bitmart:futures:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onOpen,
             onBroken,
+            onPing: () => {
+              connection.ping()
+            },
             onMessage: (data) => {
               const raw = data.toString()
               const response = JSON.parse(raw)

@@ -32,17 +32,14 @@ export class MexcSpotPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://wbs-api.mexc.com/ws`, {
           service: `mexc:public:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onBroken,
             onOpen: () => {
-              // Maintain the connection
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.send({ method: 'PING' })
-                }
-              }, 25000)
-
               this.initializeProto().then(onOpen)
+            },
+            onPing: () => {
+              connection.send({ method: 'PING' })
             },
             onMessage: (data) => {
               try {

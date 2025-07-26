@@ -27,18 +27,13 @@ export class CoinExStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(APIs[market], {
           service: `coinex:${market}:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onBroken,
-            onOpen: () => {
-              // Maintain the connection
-              setInterval(() => {
-                if (connection.isConnected()) {
-                  connection.send({ method: 'server.ping', id: +getRandomIntString(8), params: {} })
-                }
-              }, 15000)
-
-              onOpen()
+            onPing: () => {
+              connection.send({ method: 'server.ping', id: +getRandomIntString(8), params: {} })
             },
+            onOpen,
             onMessage: (data) => {
               gunzip(data as Buffer, (err, result) => {
                 if (err) {
@@ -49,6 +44,10 @@ export class CoinExStream extends BaseStream<typeof streams> {
                 const response = JSON.parse(raw)
 
                 if (response.id) {
+                  if (response?.data?.result === 'pong') {
+                    return
+                  }
+
                   connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
                   this.responses.emit(response.id.toString(), response.message)
 
@@ -70,7 +69,7 @@ export class CoinExStream extends BaseStream<typeof streams> {
         return this.request(connection, `${method}.subscribe`, subscriptions)
       },
       unsubscribe: (connection, { method, subscriptions }) => {
-        return this.request(connection, `${method}.unsubscribe`, subscriptions)
+        return this.request(connection, `${method}.unsubscribe`, [subscriptions[0][0]]) // without extra params, only symbol
       }
     })
   }

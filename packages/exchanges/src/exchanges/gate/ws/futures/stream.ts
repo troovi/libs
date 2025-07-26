@@ -19,15 +19,22 @@ export class GateFuturesStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://fx-ws.gateio.ws/v4/ws/usdt`, {
           service: `gate:futures:${id}`,
+          pingInterval: 8000,
           callbacks: {
             onOpen,
             onBroken,
+            onPing: () => {
+              connection.ping()
+            },
             onMessage: (data) => {
               const raw = data.toString()
               const response = JSON.parse(raw)
 
               if (response.event === 'subscribe' || response.event === 'unsubscribe') {
-                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                connection.logger.log(
+                  `Interaction message: ${response.channel}:${JSON.stringify(response.payload)}`,
+                  'STREAM'
+                )
 
                 this.responses.emit(
                   `${response.event}:${response.channel}:${JSON.stringify(response.payload)}`,
