@@ -90,12 +90,12 @@ export class Broker {
     this.emitter = callback
   }
 
-  async subscribe(data: StreamTopic) {
-    this.streams[data.exchange].subscribe(data)
+  subscribe(data: StreamTopic) {
+    return this.streams[data.exchange].subscribe(data)
   }
 
-  async unsubscribe(data: StreamTopic) {
-    this.streams[data.exchange].unsubscribe(data)
+  unsubscribe(data: StreamTopic) {
+    return this.streams[data.exchange].unsubscribe(data)
   }
 
   // api

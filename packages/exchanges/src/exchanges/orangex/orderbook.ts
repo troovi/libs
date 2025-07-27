@@ -46,7 +46,7 @@ export class OrangeXDepth {
 
         this.onEvent(symbol, { type: 'offline' })
 
-        sleep(8000).then(() => {
+        sleep(5000).then(() => {
           this.logger.warn(`Reboot "${symbol}"`, 'RESTART')
           this.setup(symbol)
         })
@@ -72,7 +72,7 @@ export class OrangeXDepth {
 
     const snapshot = await this.api.getOrderBook({ instrument_name: symbol })
 
-    await sleep(2500)
+    await sleep(3200)
 
     const orderbook = new OrderBookServer()
     const source = this.store[symbol]

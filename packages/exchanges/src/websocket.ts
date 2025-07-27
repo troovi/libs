@@ -78,7 +78,8 @@ export class WebsocketBase {
     })
 
     connection.on('unexpected-response', (e) => {
-      this.logger.error(`Unexpected response: ${JSON.stringify(e)}`, 'STREAM')
+      this.logger.error(`Unexpected response`, 'STREAM')
+      console.log(e)
     })
 
     connection.on('close', (closeEventCode, reason) => {

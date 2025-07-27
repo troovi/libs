@@ -1,4 +1,4 @@
-import { EventBroadcaster, generateCode, hash } from '@troovi/utils-js'
+import { EventBroadcaster, generateCode, hash, sleep } from '@troovi/utils-js'
 import { WebsocketBase } from './websocket'
 import { ExtractA, ExtractB, ExtractC, Info, StreamsManager, List } from './stream-manager'
 import { toArray } from './utils'
@@ -73,6 +73,7 @@ export class BaseStream<T extends StreamsManager, L extends List = ExtractA<T>, 
           await this.schema
             .unsubscribe(connection.stream, this.streams.getSubscriptions(channels))
             .then(() => {
+              console.log('close', channels)
               channels.forEach((channel) => {
                 connection.subscriptions.closeChannel(channel)
               })
