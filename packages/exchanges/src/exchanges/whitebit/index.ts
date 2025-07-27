@@ -13,7 +13,7 @@ export class WhiteBitPublicStream extends WebsocketBase {
   constructor({ keepAlive, callbacks }: Options) {
     super(`wss://api.whitebit.com/ws`, {
       service: 'whitebit',
-      pingInterval: 8000,
+      pingInterval: 5000,
       callbacks: {
         ...callbacks,
         onMessage: (data) => {

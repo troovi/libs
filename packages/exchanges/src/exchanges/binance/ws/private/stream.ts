@@ -34,7 +34,7 @@ export class BinancePrivateStream extends WebsocketBase {
   constructor({ market, net = 'main', apiKey, keepAlive, apiSecret, callbacks }: Options) {
     super(APIs[`${net}net`][market], {
       service: 'binance-private',
-      pingInterval: 8000,
+      pingInterval: 5000,
       callbacks: {
         ...callbacks,
         onMessage(data) {

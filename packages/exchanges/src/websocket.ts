@@ -22,40 +22,45 @@ export class WebsocketBase {
   public logger: Logger
 
   private ws: WebSocketClient
+  private pingInterval: number
   private closeInitiated: boolean = false
+  private reconnect: boolean = false
 
   constructor(private url: string, { pingInterval, callbacks, service }: Options) {
     this.logger = new Logger(service.toUpperCase())
-
+    this.pingInterval = pingInterval
     this.logger.log(`Connecting ...`, 'STREAM')
 
+    this.connect(callbacks)
+  }
+
+  private connect({ onOpen, onMessage, onBroken, onPing, onClosed }: Callbacks) {
     const connection = (this.ws = new WebSocketClient(this.url))
 
-    const timeout = setTimeout(() => {
-      this.logger.error(`Connection timeout`, 'STREAM')
-      this.ws.terminate()
+    setTimeout(() => {
+      if (!this.isConnected()) {
+        this.logger.error(`Connection timeout`, 'STREAM')
+        this.reconnect = true
+        this.ws.terminate()
+      }
     }, 10 * 1000)
 
     const ping = setInterval(() => {
       if (this.isConnected()) {
-        callbacks.onPing()
+        onPing()
       } else {
         this.logger.warn('Ping faild', 'PING')
       }
-    }, pingInterval)
+    }, this.pingInterval)
 
     connection.on('open', () => {
-      clearTimeout(timeout)
-
       this.logger.log(`Connection established`, 'STREAM')
-      callbacks.onOpen()
+      onOpen()
     })
 
-    // handle data message. Pass the data to the call back method from user
-    // It could be useful to store the original messages from server for debug
     connection.on('message', (data) => {
       if (!this.closeInitiated) {
-        callbacks.onMessage(data)
+        onMessage(data)
       }
     })
 
@@ -65,27 +70,33 @@ export class WebsocketBase {
     })
 
     connection.on('error', (err) => {
-      clearTimeout(timeout)
+      this.logger.error(`Error: ${JSON.stringify(err)}`, 'STREAM')
 
-      this.logger.error(`Received ERROR from server: ${JSON.stringify(err)}`, 'STREAM')
-      callbacks.onBroken?.()
+      if (!this.reconnect) {
+        onBroken()
+      }
     })
 
     connection.on('unexpected-response', (e) => {
-      this.logger.error(JSON.stringify(e), 'unexpected response')
+      this.logger.error(`Unexpected response: ${JSON.stringify(e)}`, 'STREAM')
     })
 
     connection.on('close', (closeEventCode, reason) => {
-      clearTimeout(timeout)
       clearInterval(ping)
 
-      if (this.closeInitiated) {
-        this.closeInitiated = false
-        this.logger.log(`Connection closed: ${closeEventCode}`, 'STREAM')
-        callbacks.onClosed?.()
+      if (this.reconnect) {
+        this.reconnect = false
+        this.logger.log('Reconnecting...', 'STREAM')
+        this.connect({ onBroken, onMessage, onPing, onOpen, onClosed })
       } else {
-        this.logger.error(`Connection broken due to ${closeEventCode}: ${reason}`, 'STREAM')
-        callbacks.onBroken?.()
+        if (this.closeInitiated) {
+          this.closeInitiated = false
+          this.logger.log(`Connection closed: ${closeEventCode}`, 'STREAM')
+          onClosed?.()
+        } else {
+          this.logger.error(`Connection broken due to ${closeEventCode}: ${reason}`, 'STREAM')
+          onBroken()
+        }
       }
     })
   }

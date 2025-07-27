@@ -27,7 +27,7 @@ export class CoinExStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(APIs[market], {
           service: `coinex:${market}:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onBroken,
             onPing: () => {

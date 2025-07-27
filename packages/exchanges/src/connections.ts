@@ -194,7 +194,7 @@ export class NetworkManager {
 
             const channels = subscriptions.getChannels()
 
-            console.log('broken:', channels)
+            console.log('channels:', channels)
 
             if (stream.isConnected()) {
               stream.disconnect()

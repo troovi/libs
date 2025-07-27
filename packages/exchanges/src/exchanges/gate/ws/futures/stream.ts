@@ -19,7 +19,7 @@ export class GateFuturesStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://fx-ws.gateio.ws/v4/ws/usdt`, {
           service: `gate:futures:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onOpen,
             onBroken,

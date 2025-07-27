@@ -20,12 +20,12 @@ export class ByBitStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://stream.bybit.com/v5/public/${market}`, {
           service: `bybit:${market}:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onOpen,
             onBroken,
             onPing: () => {
-              connection.ping()
+              connection.send({ op: 'ping' })
             },
             onMessage: (data) => {
               const response = JSON.parse(data.toString())
@@ -33,6 +33,10 @@ export class ByBitStream extends BaseStream<typeof streams> {
               if (response.req_id) {
                 connection.logger.log(`Interaction message: ${JSON.stringify(response)}`, 'STREAM')
                 this.responses.emit(response.req_id.toString(), response.success)
+                return
+              }
+
+              if (response.op) {
                 return
               }
 

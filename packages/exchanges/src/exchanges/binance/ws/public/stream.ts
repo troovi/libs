@@ -31,7 +31,7 @@ export class BinancePublicStream<M extends Market> extends BaseStream<typeof str
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(APIs[market], {
           service: `binance:${market}:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onOpen,
             onPing: () => {

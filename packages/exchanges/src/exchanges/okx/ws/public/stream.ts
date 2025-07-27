@@ -20,7 +20,7 @@ export class OKXPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://ws.okx.com:8443/ws/v5/public`, {
           service: `okx:public:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onOpen,
             onBroken,

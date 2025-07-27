@@ -22,7 +22,7 @@ export class BitgetPublicStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://ws.bitget.com/v2/ws/public`, {
           service: `bitget:public:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onBroken,
             onOpen,

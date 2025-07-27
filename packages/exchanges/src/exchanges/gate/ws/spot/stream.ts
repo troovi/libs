@@ -19,7 +19,7 @@ export class GateSpotStream extends BaseStream<typeof streams> {
       createConnection: (id, { onOpen, onBroken }) => {
         const connection = new WebsocketBase(`wss://api.gateio.ws/ws/v4/`, {
           service: `gate:spot:${id}`,
-          pingInterval: 8000,
+          pingInterval: 5000,
           callbacks: {
             onOpen,
             onBroken,
