@@ -31,6 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       data-accent={accent ?? 'none'}
       data-highlighted={attr(active)}
       {...buttonProps}
+      onClick={isLoading ? undefined : buttonProps.onClick}
     >
       {isLoading ? (
         <Spinner size={14} width={2} />

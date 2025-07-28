@@ -1,10 +1,11 @@
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
 import { getRandomIntString } from '../../../../utils'
 import { WebsocketBase } from '../../../../websocket'
 
 import { AnyBinanceMessage } from './messages'
 import { EventDispatcher } from '@troovi/utils-js'
 import { streams } from './subscriptions'
+import { BaseStream } from '../../../../stream-manager'
 
 type Market = 'spot' | 'futures'
 

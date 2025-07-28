@@ -7,7 +7,7 @@ import { KuCoinFuturesMessages } from './ws/futures/messages'
 import { KuCoinFuturesPublicStream } from './ws/futures/stream'
 import { KuCoinSpotMessages } from './ws/spot/messages'
 import { KuCoinSpotPublicStream } from './ws/spot/stream'
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 
 export const createKuCoinStream = (sapi: KuCoinSpotApi, fapi: KuCoinFuturesApi): ExchangeStream => {
   const [createSpot, createFutures] = [createKuCoinSpotStream(sapi), createKuCoinFuturesStream(fapi)]

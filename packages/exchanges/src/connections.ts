@@ -1,95 +1,5 @@
-import { EventBroadcaster, generateCode, hash, sleep } from '@troovi/utils-js'
+import { EventBroadcaster, contain, generateCode, hash } from '@troovi/utils-js'
 import { WebsocketBase } from './websocket'
-import { ExtractA, ExtractB, ExtractC, Info, StreamsManager, List } from './stream-manager'
-import { toArray } from './utils'
-
-interface Schema<S> {
-  subscribe: (connection: WebsocketBase, subscription: S) => Promise<void>
-  unsubscribe: (connection: WebsocketBase, subscription: S) => Promise<void>
-}
-
-type Tun<B> = B extends true ? string | string[] : string
-
-export class BaseStream<T extends StreamsManager, L extends List = ExtractA<T>, Is = ExtractC<T>> {
-  constructor(public network: NetworkManager, public streams: T, private schema: Schema<ExtractB<T>>) {}
-
-  reboot({ subscription, params }: Info<L>) {
-    return this.subscribe(subscription, (createStream) => createStream(params))
-  }
-
-  async subscribe<K extends keyof L>(subscription: K, getStreams: (createStream: L[K]) => Tun<Is>) {
-    const streams = toArray(getStreams(this.streams.streams[subscription]))
-
-    const fillChannels = async (createConnection?: boolean): Promise<void> => {
-      if (streams.length > 0) {
-        if (createConnection) {
-          await this.network.addConnection()
-        }
-
-        const distribution = this.network.distributeChannels(streams)
-
-        // Promise.all обеспечивает параллельное выполнение запросов на подписку по distribution подключениям,
-        // а также, в случае необходимости, создание нового подключения
-        await Promise.allSettled<void>([
-          ...distribution.map(({ connectionID, channels }) => {
-            const { stream, subscriptions } = this.network.connections[connectionID]
-            return new Promise<void>(async (resolve, reject) => {
-              await this.schema
-                .subscribe(stream, this.streams.getSubscriptions(channels))
-                .then(resolve)
-                .catch((e) => {
-                  // если в запросе на подписку был передан массив из множества streams, то при ошибке
-                  // некоторые биржи отклоняют весь запрос, а некоторые (bitmart) пропускают подписки на проблемные стримы, при этом оставляя успешные.
-
-                  // удаляя данные о стримах переданных в запросе, мы не можем быть точно уверены все ли стримы были отклонены, или только те в которых возникли проблемы
-                  channels.forEach((channel) => {
-                    subscriptions.closeChannel(channel)
-                  })
-
-                  // также, пока нет обрабатки reject после окончания allSettled. Даже при ошибках, subscribe проходит всегда успешно
-                  // непонятно по каким причинам подписка/отписка может быть отклонена, и что делать в случае если отказ произошел (пытаться переподписываться, или возвращать ошибки)
-                  reject(e)
-                })
-            })
-          }),
-          // если функция distributeChannels не смогла распределить channels между существующими подключениями, значит, они полностью используют свои лимиты,
-          // и необходимо создать новое подключение
-          await fillChannels(streams.length !== 0)
-        ])
-      }
-    }
-
-    await fillChannels()
-  }
-
-  async unsubscribe<K extends keyof L>(subscription: K, getStreams: (createStream: L[K]) => Tun<Is>) {
-    const streams = toArray(getStreams(this.streams.streams[subscription]))
-    const connections = this.network.getConnections(streams)
-    const fails: string[] = []
-
-    await Promise.allSettled(
-      connections.map(({ channels, connection }) => {
-        return new Promise<void>(async (resolve, reject) => {
-          await this.schema
-            .unsubscribe(connection.stream, this.streams.getSubscriptions(channels))
-            .then(() => {
-              console.log('close', channels)
-              channels.forEach((channel) => {
-                connection.subscriptions.closeChannel(channel)
-              })
-
-              resolve()
-            })
-            .catch(() => {
-              // отписка не произошла
-              fails.push(...channels)
-              reject()
-            })
-        })
-      })
-    )
-  }
-}
 
 interface ConnectionCallbacks {
   onOpen: () => void
@@ -104,22 +14,177 @@ interface ManagerOptions {
 
 interface Connection {
   stream: WebsocketBase
-  subscriptions: ChannelsControl
+  subscriptions: ChannelsService
 }
 
-interface Connections {
-  [connectionID: string]: Connection
+interface Request {
+  streams: string[]
+  request: (connection: WebsocketBase, channels: string[]) => Promise<void>
+}
+
+interface Distribution {
+  connectionID: string
+  channels: string[]
+}
+
+namespace Processes {
+  interface ActionOptions extends Request {
+    onResolved: () => void
+  }
+
+  interface Processing extends Distribution {
+    status: 'processing'
+    close: () => void
+  }
+
+  interface Finished extends Distribution {
+    status: 'finished'
+  }
+
+  /**
+   * Subscription process
+   */
+
+  export class Subscription {
+    private streams: string[] = []
+    private queries: (Processing | Finished)[] = []
+
+    private subscribe: (connection: WebsocketBase, channels: string[]) => Promise<void>
+
+    constructor(private network: NetworkManager, { streams, request, onResolved }: ActionOptions) {
+      this.streams = [...streams]
+      this.subscribe = request
+
+      const run = () => {
+        this.execute().then(() => {
+          if (this.streams.length === 0) {
+            // commit channels
+            const items = this.queries.map((query) => {
+              if (query.status !== 'finished') {
+                throw `query does not finished`
+              }
+
+              this.network.connections[query.connectionID].subscriptions.commitChannels(query.channels)
+
+              return query.channels
+            })
+            // checking
+            if (!isArrayEqual(streams, contain(items))) {
+              throw `Streams does not equal: ${streams.join(',')} != ${contain(items).join(',')}`
+            }
+            // finish
+            onResolved()
+          } else {
+            run()
+          }
+        })
+      }
+
+      run()
+    }
+
+    async execute(createConnection?: boolean) {
+      if (this.streams.length > 0) {
+        if (createConnection) {
+          await this.network.addConnection()
+        }
+
+        // распределение каналов по существующим подключениям
+        const distribution = this.network.distributeChannels(this.streams)
+
+        // Promise.all обеспечивает параллельное выполнение запросов на подписку по distribution подключениям,
+        // а также, в случае необходимости, создание нового подключения
+        await Promise.all<void>([
+          ...distribution.map(({ connectionID, channels }) => {
+            const { stream } = this.network.connections[connectionID]
+
+            return new Promise<void>(async (resolve) => {
+              const query: Processing = { status: 'processing', channels, connectionID, close: resolve }
+
+              this.queries.push(query)
+
+              await this.subscribe(stream, channels).then(() => {
+                this.queries = this.queries.filter((i) => i !== query)
+                this.queries.push({ status: 'finished', channels, connectionID })
+
+                resolve()
+              })
+            })
+          }),
+          // если функция distributeChannels не смогла распределить channels между существующими подключениями, значит, они полностью используют свои лимиты,
+          // и необходимо создать новое подключение
+          await this.execute(this.streams.length !== 0)
+        ])
+      }
+    }
+
+    abort(connectionID: string) {
+      ;[...this.queries].forEach((query) => {
+        if (query.connectionID === connectionID) {
+          this.queries = this.queries.filter((i) => i !== query)
+          this.streams.push(...query.channels)
+
+          if (query.status === 'processing') {
+            query.close() // разрешает промис позволяя выполниться execute
+          }
+        }
+      })
+    }
+  }
+
+  /**
+   * Unsubscription process
+   */
+
+  export class Unsubscription {
+    private queries: Processing[] = []
+
+    constructor(private network: NetworkManager, { streams, request, onResolved }: ActionOptions) {
+      const connections = this.network.getConnections(streams)
+
+      Promise.all(
+        connections.map(({ channels, connectionID }) => {
+          return new Promise<void>(async (resolve) => {
+            this.queries.push({ status: 'processing', connectionID, channels, close: resolve })
+
+            await request(this.network.connections[connectionID].stream, channels).then(() => {
+              channels.forEach((channel) => {
+                this.network.connections[connectionID].subscriptions.closeChannel(channel)
+              })
+
+              resolve()
+            })
+          })
+        })
+      ).then(() => {
+        onResolved()
+      })
+    }
+
+    // в случае если сбой подключения произойдет во время процесса отписки,
+    // отписка не нуждается в повторной обработки, и должна быть успешна возвращена
+    perform(connectionID: string) {
+      this.queries.forEach((query) => {
+        if (query.connectionID === connectionID) {
+          query.close()
+        }
+      })
+    }
+  }
 }
 
 export class NetworkManager {
-  public connections: Connections = {}
+  public connections: { [connectionID: string]: Connection } = {}
 
-  private connectionLimit: number
   private onBroken: (channels: string[]) => void
+  private connectionLimit: number
   private createConnection: ManagerOptions['createConnection']
 
   private isConnecting: boolean = false
   private onConnected = new EventBroadcaster<void>()
+
+  private subscriptions: Processes.Subscription[] = []
+  private unsubscriptions: Processes.Unsubscription[] = []
 
   constructor({ onBroken, connectionLimit, createConnection }: ManagerOptions) {
     this.onBroken = onBroken
@@ -127,7 +192,43 @@ export class NetworkManager {
     this.createConnection = createConnection
   }
 
-  // distribute channels by connections
+  async subscribe({ streams, request }: Request) {
+    await new Promise<void>((resolve) => {
+      const subscription = new Processes.Subscription(this, {
+        streams,
+        request,
+        onResolved: () => {
+          this.subscriptions = this.subscriptions.filter((item) => {
+            return item !== subscription
+          })
+
+          resolve()
+        }
+      })
+
+      this.subscriptions.push(subscription)
+    })
+  }
+
+  async unsubscribe({ streams, request }: Request) {
+    await new Promise<void>((resolve) => {
+      const unsubscription = new Processes.Unsubscription(this, {
+        streams,
+        request,
+        onResolved: () => {
+          this.unsubscriptions = this.unsubscriptions.filter((item) => {
+            return item !== unsubscription
+          })
+
+          resolve()
+        }
+      })
+
+      this.unsubscriptions.push(unsubscription)
+    })
+  }
+
+  // distribute channels by existing connections
   distributeChannels(channels: string[]) {
     const store: { connectionID: string; channels: string[] }[] = []
 
@@ -152,25 +253,40 @@ export class NetworkManager {
 
   // gets connections by channels
   getConnections(channels: string[]) {
-    const connections: { [connectionID: string]: string[] } = {}
+    const connections: Distribution[] = []
 
     for (const connectionID in this.connections) {
-      const connection = this.connections[connectionID]
+      const buffer: string[] = []
+      const { subscriptions } = this.connections[connectionID]
 
-      channels.forEach((channel) => {
-        if (connection.subscriptions.channels[channel]) {
-          if (!connections[connectionID]) {
-            connections[connectionID] = []
+      ;[...channels].forEach((channel) => {
+        if (subscriptions.channels[channel]) {
+          if (subscriptions.channels[channel] !== 'commited') {
+            throw `Channel "${channel}" should be commited`
           }
 
-          connections[connectionID].push(channel)
+          channels = channels.filter((i) => i !== channel)
+          buffer.push(channel)
         }
       })
+
+      if (buffer.length > 0) {
+        connections.push({ connectionID, channels: buffer })
+      }
     }
 
-    return Object.keys(connections).map((connectionID) => {
-      return { connection: this.connections[connectionID], channels: connections[connectionID] }
+    if (channels.length !== 0) {
+      throw `Channels are not fully distributed`
+    }
+
+    // помечаем каналы как 'processing' чтобы при onBroken событии, они не были переинициализированы
+    connections.forEach(({ connectionID, channels }) => {
+      channels.forEach((channel) => {
+        this.connections[connectionID].subscriptions.channels[channel] = 'processing'
+      })
     })
+
+    return connections
   }
 
   async addConnection() {
@@ -193,7 +309,7 @@ export class NetworkManager {
           if (this.connections[connectionID]) {
             const { stream, subscriptions } = this.connections[connectionID]
 
-            const channels = subscriptions.getChannels()
+            const channels = subscriptions.getCommitedChannels()
 
             console.log('channels:', channels)
 
@@ -203,13 +319,23 @@ export class NetworkManager {
 
             delete this.connections[connectionID]
 
+            // обработка нереализованных подписок
+            this.subscriptions.forEach((subscription) => {
+              subscription.abort(connectionID)
+            })
+            // обработка нереализованных отписок
+            this.unsubscriptions.forEach((unsubscription) => {
+              unsubscription.perform(connectionID)
+            })
+
+            // передаем реализованные каналы
             this.onBroken(channels)
           }
         },
         onOpen: () => {
           this.connections[connectionID] = {
             stream: connection,
-            subscriptions: new ChannelsControl()
+            subscriptions: new ChannelsService()
           }
 
           this.isConnecting = false
@@ -222,9 +348,9 @@ export class NetworkManager {
   }
 }
 
-class ChannelsControl {
+class ChannelsService {
   size: number = 0
-  channels: { [channel: string]: true } = {}
+  channels: { [channel: string]: 'commited' | 'processing' } = {}
 
   addChannels(channels: string[]) {
     channels.forEach((channel) => {
@@ -234,7 +360,17 @@ class ChannelsControl {
       }
 
       this.size++
-      this.channels[channel] = true
+      this.channels[channel] = 'processing'
+    })
+  }
+
+  commitChannels(channels: string[]) {
+    channels.forEach((channel) => {
+      if (this.channels[channel] !== 'processing') {
+        throw `commit exists: ${channel}`
+      }
+
+      this.channels[channel] = 'commited'
     })
   }
 
@@ -247,8 +383,16 @@ class ChannelsControl {
     delete this.channels[channel]
   }
 
-  getChannels() {
-    return Object.keys(this.channels)
+  getCommitedChannels() {
+    const channels: string[] = []
+
+    for (const channel in this.channels) {
+      if (this.channels[channel] === 'commited') {
+        channels.push(channel)
+      }
+    }
+
+    return channels
   }
 }
 
@@ -265,3 +409,7 @@ class ChannelsControl {
 //  CON-3: 5
 // +CON-4: 10
 // +CON-5: 3
+
+export const isArrayEqual = (a: string[], b: string[]) => {
+  return a.length === b.length && a.every((ai) => b.includes(ai))
+}

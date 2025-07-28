@@ -1,11 +1,12 @@
 import { streams } from './subscriptions'
-import { BaseStream, NetworkManager } from '../../../connections'
+import { NetworkManager } from '../../../connections'
 import { getRandomIntString } from '../../../utils'
 import { WebsocketBase } from '../../../websocket'
 
 import { CoinExMessages } from './messages'
 import { EventDispatcher } from '@troovi/utils-js'
 import { gunzip } from 'zlib'
+import { BaseStream } from '../../../stream-manager'
 
 const APIs = {
   spot: `wss://socket.coinex.com/v2/spot`,

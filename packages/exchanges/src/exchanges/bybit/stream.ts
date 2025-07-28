@@ -1,4 +1,4 @@
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { ByBitDepth } from './orderbook'
 import { ByBitStream } from './ws/public/stream'

@@ -6,7 +6,7 @@ import { MexcSpotDepth } from './orderbook.spot'
 import { MexcSpotPublicStream } from './ws/public-spot'
 import { MexcFuturesPublicStream } from './ws/public-futures'
 import { MexcMessages } from './ws/public-spot/messages'
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 
 export const createMexcStream = (sapi: MexcSpotApi, fapi: MexcFuturesApi): ExchangeStream => {
   const [createSpot, createFutures] = [createMexcSpotStream(sapi), createMexcFuturesStream(fapi)]

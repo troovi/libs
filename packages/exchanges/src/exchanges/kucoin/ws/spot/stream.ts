@@ -5,7 +5,8 @@ import { EventDispatcher } from '@troovi/utils-js'
 import { KuCoinSpotApi } from '../../api/spot/api'
 import { streams } from './subscriptions'
 import { AnyKuCoinSpotMessage } from './messages'
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
+import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   api: KuCoinSpotApi

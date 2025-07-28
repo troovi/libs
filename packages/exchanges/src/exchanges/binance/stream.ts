@@ -1,4 +1,4 @@
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { BinanceFuturesApi } from './api/futures/api'
 import { BinanceSpotApi } from './api/spot/api'

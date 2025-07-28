@@ -1,4 +1,4 @@
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { GateApi } from './api'
 import { GateFuturesDepth } from './orderbook.futures'

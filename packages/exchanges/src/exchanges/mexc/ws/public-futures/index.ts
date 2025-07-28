@@ -1,8 +1,9 @@
 import { sleep } from '@troovi/utils-js'
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
 import { WebsocketBase } from '../../../../websocket'
 import { MexcFuturesMessages } from './messages'
 import { streams } from './subscriptions'
+import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void

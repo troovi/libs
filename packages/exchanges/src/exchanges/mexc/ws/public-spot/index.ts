@@ -6,7 +6,8 @@ import { streams } from './subscriptions'
 import { resolve } from 'path'
 import { areArraysEqual, getRandomIntString } from '../../../../utils'
 import { EventDispatcher } from '@troovi/utils-js'
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
+import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void

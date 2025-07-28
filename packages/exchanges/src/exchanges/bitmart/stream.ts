@@ -1,4 +1,4 @@
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { BitmartFuturesDepth } from './orderbook.futures'
 import { BitmartSpotDepth } from './orderbook.spot'

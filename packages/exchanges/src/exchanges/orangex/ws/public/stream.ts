@@ -1,6 +1,7 @@
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
 import { areArraysEqual, getRandomIntString } from '../../../../utils'
 import { WebsocketBase } from '../../../../websocket'
+import { BaseStream } from '../../../../stream-manager'
 
 import { AnyOrangeXPubblicMessage } from './messages'
 import { streams } from './subscriptions'

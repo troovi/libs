@@ -1,9 +1,10 @@
 import { WebsocketBase } from '../../../../websocket'
 import { getRandomIntString } from '../../../../utils'
-import { BaseStream, NetworkManager } from '../../../../connections'
+import { NetworkManager } from '../../../../connections'
 import { EventDispatcher } from '@troovi/utils-js'
 import { streams } from './subscriptions'
 import { OKXMessages } from './messages'
+import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void

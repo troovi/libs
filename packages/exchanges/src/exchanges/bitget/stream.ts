@@ -1,4 +1,4 @@
-import { reboot } from '../../reboot'
+import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { BitgetDepth } from './orderbook'
 import { BitgetPublicStream } from './ws/public/stream'
