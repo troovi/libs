@@ -4,7 +4,10 @@ export const streams = new StreamsManager({
   combinable: true,
   streams: {
     orderbook: ({ symbol, level }: { symbol: string; level: 1 | 50 | 100 }) => {
-      return `orderbook.${level}.${symbol.toUpperCase()}`
+      return `orderbook.${level}.${symbol}`
+    },
+    kline: ({ symbol, interval }: { symbol: string; interval: 1 | 5 }) => {
+      return `kline.${interval}.${symbol}`
     }
   },
   getSubscriptions: (streams) => {
@@ -15,11 +18,14 @@ export const streams = new StreamsManager({
       const [, levelStr, symbol] = stream.split('.')
       const level = +levelStr as 1 | 50 | 100
 
-      if (level !== 1 && level !== 50 && level !== 100) {
-        throw `Invalid: ${stream}`
-      }
-
       return { subscription: 'orderbook', params: { symbol, level } }
+    }
+
+    if (stream.startsWith('kline')) {
+      const [, intervalStr, symbol] = stream.split('.')
+      const interval = +intervalStr as 1 | 5
+
+      return { subscription: 'kline', params: { symbol, interval } }
     }
 
     throw `invalid bybit stream: ${stream}`

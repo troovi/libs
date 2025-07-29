@@ -12,4 +12,21 @@ export namespace BitmartSpotMessages {
       }
     ]
   }
+
+  export interface Kline {
+    table: 'spot/kline1m'
+    data: [
+      {
+        candle: [
+          number, // timestamp (seconds)
+          string, // open
+          string, // high
+          string, // low
+          string, // close
+          string // volume
+        ]
+        symbol: string
+      }
+    ]
+  }
 }

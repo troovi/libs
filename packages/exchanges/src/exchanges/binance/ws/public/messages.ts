@@ -57,6 +57,31 @@ export namespace BinanceMessages {
     m: boolean // Is the buyer the market maker?
   }
 
+  export interface kline {
+    e: 'kline' // Event type
+    E: number // Event time
+    s: string // Symbol
+    k: {
+      t: number // Kline start time
+      T: number // Kline close time
+      s: string // Symbol
+      i: '1m' | '3m' | '5m' | '15m' | '30m' | '1h' // Interval
+      f: number // First trade ID
+      L: number // Last trade ID
+      o: string // Open price
+      c: string // Close price
+      h: string // High price
+      l: string // Low price
+      v: string // Base asset volume
+      n: number // Number of trades
+      x: boolean // Is this kline closed?
+      q: string // Quote asset volume
+      V: string // Taker buy base asset volume
+      Q: string // Taker buy quote asset volume
+      B: string // Ignore
+    }
+  }
+
   export interface BookTicker {
     u: number // order book updateId
     s: string // symbol
@@ -67,7 +92,11 @@ export namespace BinanceMessages {
   }
 }
 
-type Spot = BinanceMessages.aggTrade | BinanceMessages.SpotDepthUpdate | BinanceMessages.trade
-type Futures = BinanceMessages.aggTrade | BinanceMessages.FuturesDepthUpdate
+type Spot =
+  | BinanceMessages.aggTrade
+  | BinanceMessages.SpotDepthUpdate
+  | BinanceMessages.trade
+  | BinanceMessages.kline
+type Futures = BinanceMessages.aggTrade | BinanceMessages.FuturesDepthUpdate | BinanceMessages.kline
 
 export type AnyBinanceMessage<M extends 'spot' | 'futures'> = M extends 'spot' ? Spot : Futures

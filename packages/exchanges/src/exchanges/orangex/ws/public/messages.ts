@@ -9,6 +9,19 @@ export namespace OrangeXPublicMessages {
       instrument_name: string
     }
   }
+
+  export interface Kline {
+    channel: `chart.trades.${string}.${1 | 5}`
+    data: {
+      tick: string
+      open: string
+      high: string
+      low: string
+      close: string
+      volume: string
+      cost: string
+    }
+  }
 }
 
-export type AnyOrangeXPubblicMessage = OrangeXPublicMessages.OrderBook
+export type AnyOrangeXPubblicMessage = OrangeXPublicMessages.OrderBook | OrangeXPublicMessages.Kline

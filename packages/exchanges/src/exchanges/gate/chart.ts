@@ -1,12 +1,12 @@
 import { intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { GateApi } from './api'
 import { ChartApi } from '../../types'
 
 export const createGateChartApi = (api: GateApi): ChartApi => {
   const [spotFormatter, futuresFormatter] = [
     createGateSpotChartFormatter(api),
-    createGateSpotChartFormatter(api)
+    createGateFuturesChartFormatter(api)
   ]
 
   return (market, params) => {

@@ -17,4 +17,23 @@ export namespace BitgetPublicMessages {
       }
     ]
   }
+
+  export interface Candle {
+    ts: number
+    action: 'update' | 'snapshot'
+    arg: {
+      instType: 'SPOT' | 'USDT-FUTURES'
+      channel: `candle${'1m' | '5m'}`
+      instId: string
+    }
+    data: [
+      string, // timestamp
+      string, // open
+      string, // high
+      string, // low
+      string, // close
+      string, // volume
+      string // quoteVolume
+    ][]
+  }
 }

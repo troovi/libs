@@ -1,6 +1,6 @@
 import { KuCoinSpotApi } from './api/spot/api'
 import { fillMissingCandles, getCurrentCandleTime, getNextCandleTime, intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { KuCoinFuturesApi } from './api/futures/api'
 import { ChartApi } from '../../types'
 

@@ -81,7 +81,7 @@ export class BaseStream<T extends StreamsManager, L extends List = ExtractA<T>, 
 type ExtractT<S> = S extends BaseStream<infer T> ? T : never
 
 // prettier-ignore
-export const reboot = async <T extends BaseStream<M>, M extends StreamsManager = ExtractT<T>, L extends List = ExtractA<M>>(stream: T, channels: string[], check: (item: Info<L>) => void | false) => {
+export const reboot = async <T extends BaseStream<M>, M extends StreamsManager = ExtractT<T>, L extends List = ExtractA<M>>(stream: T, channels: string[], check: (item: Info<L>) => void | false = () => {}) => {
   const streams = channels.map((channel) => {
     const info = stream.streams.getStreamInfo(channel)
 

@@ -7,7 +7,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: BitmartFuturesMessages.OrderBook) => void
+  onMessage: (data: BitmartFuturesMessages.OrderBook | BitmartFuturesMessages.Kline) => void
 }
 
 export class BitmartFuturesStream extends BaseStream<typeof streams> {
@@ -31,15 +31,15 @@ export class BitmartFuturesStream extends BaseStream<typeof streams> {
               const raw = data.toString()
               const response = JSON.parse(raw)
 
-              if (response.action === 'subscribe' || response.action === 'unsubscribe') {
-                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
-                this.responses.emit(`${response.action}:${response.group}`, true)
+              if (response.error) {
+                connection.logger.error(`Error message: ${raw}`, 'STREAM')
+                this.responses.emit(`${response.action}:${response.group}`, false)
                 return
               }
 
-              if (response.error) {
-                connection.logger.log(`Error message: ${raw}`, 'STREAM')
-                this.responses.emit(`${response.action}:${response.group}`, false)
+              if (response.action === 'subscribe' || response.action === 'unsubscribe') {
+                connection.logger.log(`Interaction message: ${raw}`, 'STREAM')
+                this.responses.emit(`${response.action}:${response.group}`, true)
                 return
               }
 

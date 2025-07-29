@@ -14,4 +14,21 @@ export namespace GateFuturesMessages {
       l: '100' | '50' | '20'
     }
   }
+
+  export interface Candlestick {
+    time: number
+    time_ms: number
+    channel: 'futures.candlesticks'
+    event: 'update'
+    result: {
+      t: number // seconds
+      v: number // volume
+      c: string // close
+      h: string // high
+      l: string // low
+      o: string // open
+      n: string // '1m_BTC_USD'
+      a: string // amount (quote volume)
+    }[]
+  }
 }

@@ -8,6 +8,12 @@ export const streams = new StreamsManager({
         channel: 'futures.order_book_update',
         payload: [data.symbol, data.speed, data.level]
       })
+    },
+    candlestick: (data: { symbol: string; interval: '1m' | '5m' }) => {
+      return JSON.stringify({
+        channel: 'futures.candlesticks',
+        payload: [data.interval, data.symbol]
+      })
     }
   },
   getSubscriptions([stream]) {
@@ -30,6 +36,12 @@ export const streams = new StreamsManager({
       }
 
       return { subscription: 'orderbook', params: { symbol, speed, level } }
+    }
+
+    if (data.channel === 'futures.candlesticks') {
+      const [interval, symbol] = data.payload as ['1m' | '5m', string]
+
+      return { subscription: 'candlestick', params: { symbol, interval } }
     }
 
     throw `invalid gate stream: ${stream}`

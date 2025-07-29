@@ -2,6 +2,7 @@ import { reboot } from '../../stream-manager'
 import { ExchangeStream } from '../../broker'
 import { BitgetDepth } from './orderbook'
 import { BitgetPublicStream } from './ws/public/stream'
+import { BitgetPublicMessages } from './ws/public/messages'
 
 export const createBitgetStream = (): ExchangeStream => {
   return (onEvent) => {
@@ -30,7 +31,29 @@ export const createBitgetStream = (): ExchangeStream => {
         await depthService.initialize(futuresBooks, 'USDT-FUTURES')
       },
       onMessage: (message) => {
-        depthService.update(message)
+        if (message.arg.channel === 'books') {
+          depthService.update(message as BitgetPublicMessages.OrderBook)
+        }
+
+        if (message.arg.channel.startsWith('candle')) {
+          const update = message as BitgetPublicMessages.Candle
+
+          if (update.action === 'update') {
+            return onEvent(update.arg.instType === 'SPOT' ? 'spot' : 'futures', {
+              type: 'kline',
+              symbol: update.arg.instId,
+              event: {
+                time: +update.data[0],
+                high: +update.data[2],
+                open: +update.data[1],
+                low: +update.data[3],
+                close: +update.data[4],
+                volume: +update.data[5],
+                quoteVolume: +update.data[6]
+              }
+            })
+          }
+        }
       }
     })
 
@@ -41,24 +64,32 @@ export const createBitgetStream = (): ExchangeStream => {
     return {
       subscribe: async ({ market, ...data }) => {
         if (data.stream === 'depth') {
-          if (market === 'spot') {
-            return depthService.initialize(data.symbols, 'SPOT')
-          }
+          return depthService.initialize(data.symbols, market === 'spot' ? 'SPOT' : 'USDT-FUTURES')
+        }
 
-          if (market === 'futures') {
-            return depthService.initialize(data.symbols, 'USDT-FUTURES')
-          }
+        if (data.stream === 'kline') {
+          return stream.subscribe('candle', (createStream) => {
+            return createStream({
+              interval: data.interval,
+              instId: data.symbol,
+              instType: market === 'spot' ? 'SPOT' : 'USDT-FUTURES'
+            })
+          })
         }
       },
       unsubscribe: async ({ market, ...data }) => {
         if (data.stream === 'depth') {
-          if (market === 'spot') {
-            return depthService.stop(data.symbols, 'SPOT')
-          }
+          return depthService.stop(data.symbols, market === 'spot' ? 'SPOT' : 'USDT-FUTURES')
+        }
 
-          if (market === 'futures') {
-            return depthService.stop(data.symbols, 'USDT-FUTURES')
-          }
+        if (data.stream === 'kline') {
+          return stream.unsubscribe('candle', (createStream) => {
+            return createStream({
+              interval: data.interval,
+              instId: data.symbol,
+              instType: market === 'spot' ? 'SPOT' : 'USDT-FUTURES'
+            })
+          })
         }
       }
     }

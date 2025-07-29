@@ -7,7 +7,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: BitmartSpotMessages.OrderBook) => void
+  onMessage: (data: BitmartSpotMessages.OrderBook | BitmartSpotMessages.Kline) => void
 }
 
 // Each IP can maintain up to 20 connections with the Bitmart public channel server

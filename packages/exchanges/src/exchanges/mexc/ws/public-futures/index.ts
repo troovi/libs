@@ -7,7 +7,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: MexcFuturesMessages.Depth) => void
+  onMessage: (data: MexcFuturesMessages.Depth | MexcFuturesMessages.Kline) => void
 }
 
 export class MexcFuturesPublicStream extends BaseStream<typeof streams> {

@@ -3,6 +3,7 @@ import { ExchangeStream } from '../../broker'
 import { OrangeXApi } from './api'
 import { OrangeXDepth } from './orderbook'
 import { OrangeXPublicStream } from './ws/public/stream'
+import { OrangeXPublicMessages } from './ws/public/messages'
 
 export const createOrangeXStream = (api: OrangeXApi): ExchangeStream => {
   return (onEvent) => {
@@ -22,7 +23,28 @@ export const createOrangeXStream = (api: OrangeXApi): ExchangeStream => {
         await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        depthService.update(message.params)
+        if (message.params.channel.startsWith('book')) {
+          depthService.update(message.params as OrangeXPublicMessages.OrderBook)
+        }
+
+        if (message.params.channel.startsWith('chart.trades')) {
+          const update = message.params as OrangeXPublicMessages.Kline
+          const symbol = update.channel.split('.')[2]
+
+          onEvent(symbol.endsWith('-PERPETUAL') ? 'futures' : 'spot', {
+            type: 'kline',
+            symbol,
+            event: {
+              time: +update.data.tick * 1000,
+              open: +update.data.open,
+              high: +update.data.high,
+              low: +update.data.low,
+              close: +update.data.close,
+              volume: +update.data.volume,
+              quoteVolume: +update.data.close
+            }
+          })
+        }
       }
     })
 
@@ -35,10 +57,22 @@ export const createOrangeXStream = (api: OrangeXApi): ExchangeStream => {
         if (data.stream === 'depth') {
           return depthService.initialize(data.symbols)
         }
+
+        if (data.stream === 'kline') {
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: parseInt(data.interval) as 1 | 5 })
+          })
+        }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
           return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: parseInt(data.interval) as 1 | 5 })
+          })
         }
       }
     }

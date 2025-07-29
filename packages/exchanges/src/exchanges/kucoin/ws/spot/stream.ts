@@ -31,10 +31,10 @@ export class KuCoinSpotPublicStream extends BaseStream<typeof streams> {
           pingInterval: server.pingInterval,
           callbacks: {
             onBroken,
+            onOpen,
             onPing: () => {
               connection.send({ id: +getRandomIntString(8).toString(), type: 'ping' })
             },
-            onOpen,
             onMessage: (data) => {
               const raw = data.toString()
               const response = JSON.parse(raw)

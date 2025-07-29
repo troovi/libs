@@ -56,6 +56,22 @@ const createBinanceSpotStream = (api: BinanceSpotApi): ExchangeStream => {
         if (data.e === 'depthUpdate') {
           depthService.update(data)
         }
+
+        if (data.e === 'kline') {
+          return onEvent('spot', {
+            type: 'kline',
+            symbol: data.s,
+            event: {
+              time: data.k.t,
+              high: +data.k.h,
+              close: +data.k.c,
+              low: +data.k.l,
+              open: +data.k.o,
+              volume: +data.k.v,
+              quoteVolume: +data.k.q
+            }
+          })
+        }
       }
     })
 
@@ -68,10 +84,22 @@ const createBinanceSpotStream = (api: BinanceSpotApi): ExchangeStream => {
         if (data.stream === 'depth') {
           return depthService.initialize(data.symbols)
         }
+
+        if (data.stream === 'kline') {
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: data.interval })
+          })
+        }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
           return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: data.interval })
+          })
         }
       }
     }
@@ -99,6 +127,22 @@ const createBinanceFuturesStream = (api: BinanceFuturesApi): ExchangeStream => {
         if (data.e === 'depthUpdate') {
           depthService.update(data)
         }
+
+        if (data.e === 'kline') {
+          return onEvent('futures', {
+            type: 'kline',
+            symbol: data.s,
+            event: {
+              time: data.k.t,
+              high: +data.k.h,
+              close: +data.k.c,
+              low: +data.k.l,
+              open: +data.k.o,
+              volume: +data.k.v,
+              quoteVolume: +data.k.q
+            }
+          })
+        }
       }
     })
 
@@ -111,10 +155,22 @@ const createBinanceFuturesStream = (api: BinanceFuturesApi): ExchangeStream => {
         if (data.stream === 'depth') {
           return depthService.initialize(data.symbols)
         }
+
+        if (data.stream === 'kline') {
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: data.interval })
+          })
+        }
       },
       unsubscribe: async (data) => {
         if (data.stream === 'depth') {
           return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({ symbol: data.symbol, interval: data.interval })
+          })
         }
       }
     }

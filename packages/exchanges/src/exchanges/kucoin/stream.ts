@@ -57,8 +57,27 @@ const createKuCoinSpotStream = (api: KuCoinSpotApi): ExchangeStream => {
         await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        if (message.topic.startsWith('/spotMarket/level2Depth50')) {
+        if (message.topic.startsWith('/spotMarket/level2Depth50:')) {
           depthService.update(message as KuCoinSpotMessages.Depth50)
+        }
+
+        if (message.topic.startsWith('/market/candles:')) {
+          const { data } = message as unknown as KuCoinSpotMessages.Kline
+
+          onEvent('spot', {
+            type: 'kline',
+            symbol: data.symbol,
+            event: {
+              time: +data.candles[0] * 1000,
+              open: +data.candles[1],
+              close: +data.candles[2],
+              high: +data.candles[3],
+              low: +data.candles[4],
+              volume: +data.candles[5],
+              quoteVolume: +data.candles[6]
+            }
+          })
+
           return
         }
       }
@@ -69,14 +88,32 @@ const createKuCoinSpotStream = (api: KuCoinSpotApi): ExchangeStream => {
     })
 
     return {
-      subscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          return depthService.initialize(subscription.symbols)
+      subscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.initialize(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': '1min', '5m': '5min' } as const)[data.interval]
+            })
+          })
         }
       },
-      unsubscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          return depthService.stop(subscription.symbols)
+      unsubscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': '1min', '5m': '5min' } as const)[data.interval]
+            })
+          })
         }
       }
     }
@@ -102,8 +139,26 @@ const createKuCoinFuturesStream = (api: KuCoinFuturesApi): ExchangeStream => {
         await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        if (message.topic.startsWith('/contractMarket/level2Depth50')) {
+        if (message.topic.startsWith('/contractMarket/level2Depth50:')) {
           depthService.update(message as KuCoinFuturesMessages.Depth50)
+        }
+
+        if (message.topic.startsWith('/contractMarket/limitCandle:')) {
+          const { data } = message as KuCoinFuturesMessages.Kline
+
+          onEvent('futures', {
+            type: 'kline',
+            symbol: data.symbol,
+            event: {
+              time: +data.candles[0] * 1000,
+              open: +data.candles[1],
+              close: +data.candles[2],
+              high: +data.candles[3],
+              low: +data.candles[4],
+              volume: +data.candles[5],
+              quoteVolume: +data.candles[6]
+            }
+          })
         }
       }
     })
@@ -113,14 +168,32 @@ const createKuCoinFuturesStream = (api: KuCoinFuturesApi): ExchangeStream => {
     })
 
     return {
-      subscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          return depthService.initialize(subscription.symbols)
+      subscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.initialize(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.subscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': '1min', '5m': '5min' } as const)[data.interval]
+            })
+          })
         }
       },
-      unsubscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          return depthService.stop(subscription.symbols)
+      unsubscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          await stream.unsubscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': '1min', '5m': '5min' } as const)[data.interval]
+            })
+          })
         }
       }
     }

@@ -1,6 +1,6 @@
 import type { Candle } from '@troovi/chart'
 import { OrderBookEvent, TradeEvent, Exchange } from './types'
-import { ChartOptions } from './formatters'
+import { ChartOptions } from './chart-formatter'
 
 interface Meta {
   exchange: string

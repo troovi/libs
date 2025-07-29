@@ -10,4 +10,17 @@ export namespace BitmartFuturesMessages {
       type: 'update' | 'snapshot'
     }
   }
+
+  export interface Kline {
+    group: `futures/klineBin${'1m' | '5m'}:${string}`
+    data: {
+      symbol: string
+      o: string
+      h: string
+      l: string
+      c: string
+      v: string
+      ts: number // seconds
+    }
+  }
 }

@@ -16,4 +16,22 @@ export namespace GateSpotMessages {
       a: [string, string][]
     }
   }
+
+  export interface Candlestick {
+    time: number
+    time_ms: number
+    channel: 'spot.candlesticks'
+    event: 'update'
+    result: {
+      t: string // Unix timestamp in seconds
+      v: string // Total volume
+      c: string
+      h: string
+      l: string
+      o: string
+      n: string // Name of the subscription, in the format of <interval>_<cp>
+      a: string // Base currency trading amount
+      w: boolean
+    }
+  }
 }

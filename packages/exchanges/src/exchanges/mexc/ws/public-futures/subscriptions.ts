@@ -5,6 +5,9 @@ export const streams = new StreamsManager({
   streams: {
     orderbook: (symbol: string) => {
       return JSON.stringify({ method: 'depth', param: { symbol } })
+    },
+    kline: ({ symbol, interval }: { symbol: string; interval: 'Min1' | 'Min5' }) => {
+      return JSON.stringify({ method: 'kline', param: { symbol, interval } })
     }
   },
   getSubscriptions: ([stream]) => {

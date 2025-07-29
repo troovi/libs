@@ -1,5 +1,5 @@
 import { intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { BinanceSpotApi } from './api/spot/api'
 import { BinanceFuturesApi } from './api/futures/api'
 import { ChartApi } from '../../types'

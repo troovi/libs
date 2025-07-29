@@ -7,7 +7,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: BitgetPublicMessages.OrderBook) => void
+  onMessage: (data: BitgetPublicMessages.OrderBook | BitgetPublicMessages.Candle) => void
 }
 
 // Connection limit: 300 connection requests/IP/5min, Max 100 connections/IP

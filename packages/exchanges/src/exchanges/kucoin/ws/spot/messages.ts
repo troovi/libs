@@ -25,6 +25,28 @@ export namespace KuCoinSpotMessages {
       timestamp: number
     }
   }
+
+  export interface Kline {
+    type: 'message'
+    topic: `/market/candles:${string}`
+    subject: 'trade.candles.update'
+    data: {
+      symbol: string // symbol
+      candles: [
+        string, // Start time of the candle cycle (seconds)
+        string, // open price
+        string, // close price
+        string, // high price
+        string, // low price
+        string, // Transaction volume
+        string // Transaction amount
+      ]
+      time: number
+    }
+  }
 }
 
-export type AnyKuCoinSpotMessage = KuCoinSpotMessages.Depth50 | KuCoinSpotMessages.OrderBook
+export type AnyKuCoinSpotMessage =
+  | KuCoinSpotMessages.Depth50
+  | KuCoinSpotMessages.OrderBook
+  | KuCoinSpotMessages.Kline

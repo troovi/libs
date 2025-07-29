@@ -7,7 +7,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: GateFuturesMessages.OrderBookUpdate) => void
+  onMessage: (data: GateFuturesMessages.OrderBookUpdate | GateFuturesMessages.Candlestick) => void
 }
 
 export class GateFuturesStream extends BaseStream<typeof streams> {

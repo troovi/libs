@@ -3,7 +3,8 @@
   "version": "1.2.0",
   "scripts": {
     "build": "rm -rf dist && tsc && copyfiles -u 1 ./src/**/*.proto ./dist/",
-    "stream-test": "ts-node ./tests/stream-test.ts"
+    "stream-test": "ts-node ./tests/stream-test.ts",
+    "test": "ts-node ./tests/test.ts"
   },
   "publishConfig": {
     "@troovi:registry": "https://npm.pkg.github.com"

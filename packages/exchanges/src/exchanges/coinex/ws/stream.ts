@@ -15,7 +15,7 @@ const APIs = {
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: CoinExMessages.Depth) => void
+  onMessage: (data: CoinExMessages.Depth | CoinExMessages.State) => void
 }
 
 export class CoinExStream extends BaseStream<typeof streams> {
@@ -66,16 +66,24 @@ export class CoinExStream extends BaseStream<typeof streams> {
     })
 
     super(network, streams, {
-      subscribe: (connection, { method, subscriptions }) => {
-        return this.request(connection, `${method}.subscribe`, subscriptions)
+      subscribe: (connection, { method, markets }) => {
+        return this.request(connection, `${method}.subscribe`, markets)
       },
-      unsubscribe: (connection, { method, subscriptions }) => {
-        return this.request(connection, `${method}.unsubscribe`, [subscriptions[0][0]]) // without extra params, only symbol
+      unsubscribe: (connection, { method, markets }) => {
+        const value = (() => {
+          if (method === 'depth') {
+            return markets.map((item) => item[0])
+          }
+
+          return markets
+        })()
+
+        return this.request(connection, `${method}.unsubscribe`, value)
       }
     })
   }
 
-  private request(connection: WebsocketBase, method: string, markets: object[]) {
+  private request(connection: WebsocketBase, method: string, markets: unknown[]) {
     return new Promise<void>((resolve, reject) => {
       const id = Number(getRandomIntString(8)).toString()
       const list = markets.map((market) => {

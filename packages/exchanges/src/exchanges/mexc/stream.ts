@@ -105,15 +105,15 @@ const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
           await depthService.initialize(params.symbols)
         }
 
-        if (params.stream === 'trade') {
-          await stream.subscribe('trades', (createStream) => {
-            return createStream({ symbol: params.symbol, speed: 100 })
-          })
-        }
-
         if (params.stream === 'kline') {
           await stream.subscribe('kline', (createStream) => {
             return createStream({ symbol: params.symbol, interval: 'Min1' })
+          })
+        }
+
+        if (params.stream === 'trade') {
+          await stream.subscribe('trades', (createStream) => {
+            return createStream({ symbol: params.symbol, speed: 100 })
           })
         }
       },
@@ -122,15 +122,15 @@ const createMexcSpotStream = (api: MexcSpotApi): ExchangeStream => {
           await depthService.stop(params.symbols)
         }
 
-        if (params.stream === 'trade') {
-          await stream.unsubscribe('trades', (createStream) => {
-            return createStream({ symbol: params.symbol, speed: 100 })
-          })
-        }
-
         if (params.stream === 'kline') {
           await stream.unsubscribe('kline', (createStream) => {
             return createStream({ symbol: params.symbol, interval: 'Min1' })
+          })
+        }
+
+        if (params.stream === 'trade') {
+          await stream.unsubscribe('trades', (createStream) => {
+            return createStream({ symbol: params.symbol, speed: 100 })
           })
         }
       }
@@ -156,7 +156,25 @@ const createMexcFuturesStream = (api: MexcFuturesApi): ExchangeStream => {
         await depthService.initialize(orderbooks)
       },
       onMessage: (message) => {
-        depthService.update(message)
+        if (message.channel === 'push.depth') {
+          depthService.update(message)
+        }
+
+        if (message.channel === 'push.kline') {
+          return onEvent('futures', {
+            type: 'kline',
+            symbol: message.symbol,
+            event: {
+              time: message.data.t * 1000,
+              high: message.data.h,
+              open: message.data.o,
+              low: message.data.l,
+              close: message.data.c,
+              volume: message.data.q,
+              quoteVolume: message.data.a
+            }
+          })
+        }
       }
     })
 
@@ -165,14 +183,32 @@ const createMexcFuturesStream = (api: MexcFuturesApi): ExchangeStream => {
     })
 
     return {
-      subscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          await depthService.initialize(subscription.symbols)
+      subscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.initialize(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          return stream.subscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': 'Min1', '5m': 'Min5' } as const)[data.interval]
+            })
+          })
         }
       },
-      unsubscribe: async (subscription) => {
-        if (subscription.stream === 'depth') {
-          await depthService.stop(subscription.symbols)
+      unsubscribe: async (data) => {
+        if (data.stream === 'depth') {
+          return depthService.stop(data.symbols)
+        }
+
+        if (data.stream === 'kline') {
+          return stream.unsubscribe('kline', (createStream) => {
+            return createStream({
+              symbol: data.symbol,
+              interval: ({ '1m': 'Min1', '5m': 'Min5' } as const)[data.interval]
+            })
+          })
         }
       }
     }

@@ -1,5 +1,5 @@
 import { fillMissingCandles, getNextCandleTime, intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { BitmartSpotApi } from './api/spot/api'
 import { BitmartFuturesApi } from './api/futures/api'
 import { ChartApi } from '../../types'

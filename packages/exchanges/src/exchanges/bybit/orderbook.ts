@@ -1,6 +1,6 @@
 import { splitByChunks } from '@troovi/utils-js'
 import { ByBitStream } from './ws/public/stream'
-import { StreamMessages } from './ws/public/messages'
+import { ByBitMessages } from './ws/public/messages'
 import { toNumber } from '../../utils'
 import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
@@ -25,7 +25,7 @@ export class ByBitDepth {
     this.stream = stream
   }
 
-  update(event: StreamMessages.DepthEvent) {
+  update(event: ByBitMessages.DepthEvent) {
     const source = this.store[event.data.s]
 
     if (source.lastUpdateId !== -1 && source.lastUpdateId + 1 !== event.data.u) {

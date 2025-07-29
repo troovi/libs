@@ -3,15 +3,15 @@ import { getRandomIntString } from '../../../../utils'
 import { NetworkManager } from '../../../../connections'
 import { EventDispatcher } from '@troovi/utils-js'
 import { streams } from './subscriptions'
-import { OKXPublicMessages } from './messages'
+import { OKXBusinessMessages } from './messages'
 import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: OKXPublicMessages.Books) => void
+  onMessage: (data: OKXBusinessMessages.Candle) => void
 }
 
-export class OKXPublicStream extends BaseStream<typeof streams> {
+export class OKXBusinessStream extends BaseStream<typeof streams> {
   private responses = new EventDispatcher<{ event: string }>()
 
   constructor({ onBroken, onMessage }: Options) {
@@ -19,8 +19,8 @@ export class OKXPublicStream extends BaseStream<typeof streams> {
       onBroken,
       connectionLimit: 100,
       createConnection: (id, { onOpen, onBroken }) => {
-        const connection = new WebsocketBase(`wss://ws.okx.com:8443/ws/v5/public`, {
-          service: `okx:public:${id}`,
+        const connection = new WebsocketBase(`wss://ws.okx.com:8443/ws/v5/business`, {
+          service: `okx:business:${id}`,
           pingInterval: 5000,
           callbacks: {
             onOpen,

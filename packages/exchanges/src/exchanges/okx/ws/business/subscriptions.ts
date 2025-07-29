@@ -3,8 +3,8 @@ import { StreamsManager } from '../../../../stream-manager'
 export const streams = new StreamsManager({
   combinable: false,
   streams: {
-    orderbook: (instId: string) => {
-      return JSON.stringify({ channel: 'books', instId })
+    candlestick: ({ instId, interval }: { instId: string; interval: '1m' | '5m' }) => {
+      return JSON.stringify({ channel: `candle${interval}`, instId })
     }
   },
   getSubscriptions: ([stream]) => {
@@ -13,10 +13,13 @@ export const streams = new StreamsManager({
   getStreamInfo: (stream) => {
     const data = JSON.parse(stream) as { channel: string; instId: string }
 
-    if (data.channel === 'books') {
+    if (data.channel.startsWith('candle')) {
       return {
-        subscription: 'orderbook',
-        params: data.instId
+        subscription: 'candlestick',
+        params: {
+          instId: data.instId,
+          interval: data.channel.split('candle')[1] as '1m' | '5m'
+        }
       }
     }
 

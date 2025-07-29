@@ -1,5 +1,5 @@
 import { intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { ByBitApi } from './api/api'
 import { ChartApi } from '../../types'
 

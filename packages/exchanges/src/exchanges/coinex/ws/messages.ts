@@ -14,4 +14,25 @@ export namespace CoinExMessages {
       }
     }
   }
+
+  export interface State {
+    method: 'state.update'
+    data: {
+      state_list: {
+        // day metrics:
+        market: string
+        last: string
+        open: string
+        close: string
+        high: string
+        low: string
+        volume: string
+        value: string
+        volume_sell: string
+        volume_buy: string
+        period: 86400
+      }[]
+    }
+    id: null
+  }
 }

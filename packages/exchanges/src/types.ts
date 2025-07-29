@@ -1,5 +1,5 @@
 import { Candle } from '@troovi/chart'
-import { ChartOptions } from './formatters'
+import { ChartOptions } from './chart-formatter'
 import { ExchangeStream } from './broker'
 
 export interface Fee {

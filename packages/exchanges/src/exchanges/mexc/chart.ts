@@ -1,7 +1,7 @@
 import { MexcSpotApi } from './api/spot/api'
 import { MexcHandlers } from './api/api-handlers'
 import { getCurrentCandleTime, intervals } from '@troovi/chart'
-import { ChartOptions, createChartFormatter } from '../../formatters'
+import { ChartOptions, createChartFormatter } from '../../chart-formatter'
 import { MexcFuturesApi } from './api/futures/api'
 import { ChartApi } from '../../types'
 

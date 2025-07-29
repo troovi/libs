@@ -1,6 +1,6 @@
 import { sleep } from '@troovi/utils-js'
 import { OKXPublicStream } from './ws/public/stream'
-import { OKXMessages } from './ws/public/messages'
+import { OKXPublicMessages } from './ws/public/messages'
 import { OrderBookEvent } from '../../types'
 import { Logger } from '@troovi/utils-nodejs'
 
@@ -21,7 +21,7 @@ export class OKXDepth {
     this.stream = stream
   }
 
-  update(event: OKXMessages.Books) {
+  update(event: OKXPublicMessages.Books) {
     const source = this.store[event.arg.instId]
     const data = event.data[0]
 

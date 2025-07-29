@@ -1,4 +1,4 @@
-export namespace OKXMessages {
+export namespace OKXPublicMessages {
   export interface Books {
     arg: { channel: 'books'; instId: string }
     action: 'update' | 'snapshot'

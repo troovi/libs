@@ -1,5 +1,5 @@
 import { streams } from './subscriptions'
-import { StreamEvents } from './messages'
+import { ByBitStreamEvents } from './messages'
 import { WebsocketBase } from '../../../../websocket'
 import { getRandomIntString } from '../../../../utils'
 import { EventDispatcher } from '@troovi/utils-js'
@@ -8,7 +8,7 @@ import { BaseStream } from '../../../../stream-manager'
 
 interface Options {
   onBroken: (channels: string[]) => void
-  onMessage: (data: StreamEvents) => void
+  onMessage: (data: ByBitStreamEvents) => void
 }
 
 export class ByBitStream extends BaseStream<typeof streams> {

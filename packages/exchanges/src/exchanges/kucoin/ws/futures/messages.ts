@@ -20,6 +20,28 @@ export namespace KuCoinFuturesMessages {
       ts: number
     }
   }
+
+  export interface Kline {
+    type: 'message'
+    topic: `/contractMarket/limitCandle:${string}`
+    subject: 'candle.stick'
+    data: {
+      symbol: string // symbol
+      candles: [
+        string, // Start time of the candle cycle (seconds)
+        string, // open price
+        string, // close price
+        string, // high price
+        string, // low price
+        string, // Transaction volume (This value is incorrect, please do not use it, we will fix it in subsequent versions)
+        string // Transaction amount
+      ]
+      time: number
+    }
+  }
 }
 
-export type AnyKuCoinFuturesMessage = KuCoinFuturesMessages.Depth50 | KuCoinFuturesMessages.OrderBook
+export type AnyKuCoinFuturesMessage =
+  | KuCoinFuturesMessages.Depth50
+  | KuCoinFuturesMessages.OrderBook
+  | KuCoinFuturesMessages.Kline
