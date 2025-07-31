@@ -39,17 +39,19 @@ export const createBitgetStream = (): ExchangeStream => {
           const update = message as BitgetPublicMessages.Candle
 
           if (update.action === 'update') {
+            const data = update.data[0]
+
             return onEvent(update.arg.instType === 'SPOT' ? 'spot' : 'futures', {
               type: 'kline',
               symbol: update.arg.instId,
               event: {
-                time: +update.data[0],
-                high: +update.data[2],
-                open: +update.data[1],
-                low: +update.data[3],
-                close: +update.data[4],
-                volume: +update.data[5],
-                quoteVolume: +update.data[6]
+                time: +data[0],
+                high: +data[2],
+                open: +data[1],
+                low: +data[3],
+                close: +data[4],
+                volume: +data[5],
+                quoteVolume: +data[6]
               }
             })
           }

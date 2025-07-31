@@ -99,7 +99,7 @@ const createStream = (market: 'spot' | 'futures'): ExchangeStream => {
         }
 
         if (data.stream === 'kline') {
-          await stream.subscribe('kline', (createStream) => {
+          await stream.unsubscribe('kline', (createStream) => {
             return createStream({ symbol: data.symbol, interval: parseInt(data.interval) as 1 | 5 })
           })
         }

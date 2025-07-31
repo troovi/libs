@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "lightweight-charts": "^5.0.7",
-    "@troovi/utils-js": "file:../utils-js"
+    "@troovi/utils-js": "file:../utils-js",
+    "@troovi/transmit": "file:../transmit"
   },
   "devDependencies": {
     "@rollup/plugin-eslint": "^9.0.5",

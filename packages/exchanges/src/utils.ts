@@ -1,3 +1,6 @@
+import { getFloatDigits, normalize } from '@troovi/utils-js'
+import { Filters } from './types'
+
 export const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -80,4 +83,16 @@ export const getCoinFactor = (symbol: string) => {
   }
 
   return null
+}
+
+export const createPriceFormatter = ({ priceStep, priceFactor }: Filters) => {
+  if (priceFactor) {
+    const precision = getFloatDigits(priceStep.toString()) + Math.log10(priceFactor)
+
+    return (value: number) => {
+      return normalize(value / priceFactor, precision)
+    }
+  }
+
+  return (value: number) => value
 }

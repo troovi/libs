@@ -1,6 +1,6 @@
 import protobuf from 'protobufjs'
 
-import { WebSocketCallbacks, WebsocketBase } from '../../../../websocket'
+import { WebsocketBase } from '../../../../websocket'
 import { AnyMexcSecureResponse } from './messages'
 import { MexcPrivateSubscriptions as Subscriptions } from './subscriptions'
 import { resolve } from 'path'
@@ -9,7 +9,9 @@ import { EventDispatcher } from '@troovi/utils-js'
 
 interface Options {
   listenKey: string
-  callbacks: WebSocketCallbacks & {
+  callbacks: {
+    onBroken: () => void
+    onOpen: () => void
     onMessage: (data: AnyMexcSecureResponse) => void
   }
 }

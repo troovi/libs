@@ -1,6 +1,7 @@
 import { CandlestickData, LineData, Time, UTCTimestamp } from 'lightweight-charts'
 import { DateTimeFormatter } from './formatters/date-time-formatter'
 import { Candle } from './series'
+import { getFloatDigits } from '@troovi/utils-js'
 
 const formatTime = (time: number) => Math.round(time / 1000) as UTCTimestamp
 
@@ -35,6 +36,14 @@ const parseSeries = ({ time, close, low, high, open, customValues }: Candlestick
     open,
     volume: +(customValues?.volume as number) || 0,
     quoteVolume: +(customValues?.quoteVolume as number) || 0
+  }
+}
+
+export const createPriceFormatter = (priceStep: number) => {
+  const precision = getFloatDigits(priceStep.toString())
+
+  return (price: number) => {
+    return price.toFixed(precision)
   }
 }
 
