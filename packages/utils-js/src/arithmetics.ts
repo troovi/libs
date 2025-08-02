@@ -11,7 +11,12 @@ export const plus = (a: number, b: number) => {
 }
 
 export const multiply = (a: number, b: number) => {
-  return operators.multiply(big(a), big(b)).toNumber()
+  try {
+    return operators.multiply(big(a), big(b)).toNumber()
+  } catch (e) {
+    console.log({ a, b })
+    throw e
+  }
 }
 
 export const devide = (a: number, b: number) => {

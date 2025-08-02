@@ -46,12 +46,16 @@ namespace Processes {
    */
 
   export class Subscription {
+    public storeStreams: string[] = []
+    public onCommited = new EventBroadcaster<void>()
+
     private streams: string[] = []
     private queries: (Processing | Finished)[] = []
 
     private subscribe: (connection: WebsocketBase, channels: string[]) => Promise<void>
 
     constructor(private network: NetworkManager, { streams, request, onResolved }: ActionOptions) {
+      this.storeStreams = [...streams]
       this.streams = [...streams]
       this.subscribe = request
 
@@ -73,6 +77,7 @@ namespace Processes {
               throw `Streams does not equal: ${streams.join(',')} != ${contain(items).join(',')}`
             }
             // finish
+            this.onCommited.emit()
             onResolved()
           } else {
             run()
@@ -140,24 +145,24 @@ namespace Processes {
     private queries: Processing[] = []
 
     constructor(private network: NetworkManager, { streams, request, onResolved }: ActionOptions) {
-      const connections = this.network.getConnections(streams)
+      this.network.getConnections(streams).then((connections) => {
+        Promise.all(
+          connections.map(({ channels, connectionID }) => {
+            return new Promise<void>(async (resolve) => {
+              this.queries.push({ status: 'processing', connectionID, channels, close: resolve })
 
-      Promise.all(
-        connections.map(({ channels, connectionID }) => {
-          return new Promise<void>(async (resolve) => {
-            this.queries.push({ status: 'processing', connectionID, channels, close: resolve })
+              await request(this.network.connections[connectionID].stream, channels).then(() => {
+                channels.forEach((channel) => {
+                  this.network.connections[connectionID].subscriptions.closeChannel(channel)
+                })
 
-            await request(this.network.connections[connectionID].stream, channels).then(() => {
-              channels.forEach((channel) => {
-                this.network.connections[connectionID].subscriptions.closeChannel(channel)
+                resolve()
               })
-
-              resolve()
             })
           })
+        ).then(() => {
+          onResolved()
         })
-      ).then(() => {
-        onResolved()
       })
     }
 
@@ -252,8 +257,21 @@ export class NetworkManager {
   }
 
   // gets connections by channels
-  getConnections(channels: string[]) {
+  async getConnections(channels: string[]) {
     const connections: Distribution[] = []
+
+    await Promise.all(
+      this.subscriptions.map((subscription) => {
+        return new Promise<void>((resolve) => {
+          // в случае если подписка не завершена, необходимо дождаться ее завершения
+          if (subscription.storeStreams.some((stream) => channels.includes(stream))) {
+            subscription.onCommited.subscribe(resolve)
+          } else {
+            resolve()
+          }
+        })
+      })
+    )
 
     for (const connectionID in this.connections) {
       const buffer: string[] = []
