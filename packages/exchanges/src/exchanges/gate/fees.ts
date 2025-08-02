@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { GateApi } from './api'
 
@@ -10,8 +11,8 @@ export const createGateFees = (api: GateApi): FeesApi => {
 
           return {
             symbol,
-            takerCommission: +data.taker_fee,
-            makerCommission: +data.maker_fee
+            takerCommission: multiply(+data.taker_fee, 100),
+            makerCommission: multiply(+data.maker_fee, 100)
           }
         })
       )
@@ -24,8 +25,8 @@ export const createGateFees = (api: GateApi): FeesApi => {
 
           return {
             symbol,
-            takerCommission: +data.futures_taker_fee,
-            makerCommission: +data.futures_maker_fee
+            takerCommission: multiply(+data.futures_taker_fee, 100),
+            makerCommission: multiply(+data.futures_maker_fee, 100)
           }
         })
       )

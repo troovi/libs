@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { BitgetApi } from './api/api'
 
@@ -11,8 +12,8 @@ export const createBitgetFees = (api: BitgetApi): FeesApi => {
 
         return {
           symbol,
-          takerCommission: +data.takerFeeRate,
-          makerCommission: +data.makerFeeRate
+          takerCommission: multiply(+data.takerFeeRate, 100),
+          makerCommission: multiply(+data.makerFeeRate, 100)
         }
       })
     )

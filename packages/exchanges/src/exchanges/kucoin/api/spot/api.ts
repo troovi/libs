@@ -135,6 +135,8 @@ export class KuCoinSpotApi extends ApiClient<APIs> {
 
   handleRecvError<T>(request: () => Promise<T>): Promise<T> {
     return request().catch((e: AxiosError<{ code?: string }>) => {
+      console.log(e?.response?.data)
+
       if (e?.response?.data?.code === '400002') {
         console.log('recvWindow error, retry...')
         return this.handleRecvError(request)

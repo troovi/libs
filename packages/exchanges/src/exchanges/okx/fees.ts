@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { OKXApi } from './api'
 
@@ -12,8 +13,8 @@ export const createOKXFees = (api: OKXApi): FeesApi => {
 
           return {
             symbol,
-            takerCommission: +data[0].taker * -1,
-            makerCommission: +data[0].maker * -1
+            takerCommission: multiply(+data[0].taker * -1, 100),
+            makerCommission: multiply(+data[0].maker * -1, 100)
           }
         })
       )
@@ -28,8 +29,8 @@ export const createOKXFees = (api: OKXApi): FeesApi => {
 
           return {
             symbol,
-            takerCommission: +data[0].takerU * -1,
-            makerCommission: +data[0].makerU * -1
+            takerCommission: multiply(+data[0].takerU * -1, 100),
+            makerCommission: multiply(+data[0].makerU * -1, 100)
           }
         })
       )

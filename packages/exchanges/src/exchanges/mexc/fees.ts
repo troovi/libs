@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { MexcHandlers } from './api/api-handlers'
 import { MexcFuturesApi } from './api/futures/api'
@@ -14,8 +15,8 @@ export const createMexcFees = (sapi: MexcSpotApi, fapi: MexcFuturesApi): FeesApi
 
           return {
             symbol,
-            takerCommission: +data.takerCommission,
-            makerCommission: +data.makerCommission
+            takerCommission: multiply(+data.takerCommission, 100),
+            makerCommission: multiply(+data.makerCommission, 100)
           }
         })
       )
@@ -26,8 +27,8 @@ export const createMexcFees = (sapi: MexcSpotApi, fapi: MexcFuturesApi): FeesApi
 
       return data.map(({ symbol, takerFeeRate, makerFeeRate }) => ({
         symbol,
-        takerCommission: takerFeeRate,
-        makerCommission: makerFeeRate
+        takerCommission: multiply(takerFeeRate, 100),
+        makerCommission: multiply(makerFeeRate, 100)
       }))
     }
 

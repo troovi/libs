@@ -39,7 +39,7 @@ const parseSeries = ({ time, close, low, high, open, customValues }: Candlestick
   }
 }
 
-export const createPriceFormatter = (priceStep: number) => {
+const createPriceFormatter = (priceStep: number) => {
   const precision = getFloatDigits(priceStep.toString())
 
   return (price: number) => {
@@ -53,4 +53,4 @@ export const timeFormatter = (time: Time) => {
   return formatter.format(new Date(+time * 1000))
 }
 
-export { formatTime, createVolumeFormatter, formatSeries, parseSeries }
+export { formatTime, createVolumeFormatter, createPriceFormatter, formatSeries, parseSeries }

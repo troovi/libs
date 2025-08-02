@@ -27,8 +27,8 @@ export const broker = new Broker([
     apiSecret: '4311706db3f24f0f4f885a0e44c0499dc5cf19f1757bf56e53c2ed7482d457da'
   }),
   createByBitExchange({
-    apiKey: 'z7GhUhKHodvXGB1eqn',
-    apiSecret: 'ZcMCOqTvmkCLjbhnrJKSsBNroy8AUx6GENou'
+    apiKey: '0vuO1baak6kuf6ZWk1',
+    apiSecret: 'tFiKlxoSY5jWVY9AN4EOsYxQyxBVIELWEmAt'
   }),
   createCoinExExchange({
     apiKey: 'F7CB75171C174764923E91E76DE7BBC9',

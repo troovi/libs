@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { Fee, FeesApi } from '../../types'
 import { OrangeXApi } from './api'
 
@@ -12,8 +13,8 @@ export const createOrangeXFees = (api: OrangeXApi): FeesApi => {
         if (currency === 'SPOT' && symbols.includes(show_name)) {
           fees.push({
             symbol: show_name,
-            takerCommission: +taker_commission,
-            makerCommission: +maker_commission
+            takerCommission: multiply(+taker_commission, 100),
+            makerCommission: multiply(+maker_commission, 100)
           })
         }
       })
@@ -30,8 +31,8 @@ export const createOrangeXFees = (api: OrangeXApi): FeesApi => {
         if (currency === 'PERPETUAL' && symbols.includes(show_name)) {
           fees.push({
             symbol: show_name,
-            takerCommission: +taker_commission,
-            makerCommission: +maker_commission
+            takerCommission: multiply(+taker_commission, 100),
+            makerCommission: multiply(+maker_commission, 100)
           })
         }
       })

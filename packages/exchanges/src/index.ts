@@ -12,3 +12,5 @@ export * from './exchanges/coinex'
 
 export * from './types'
 export * from './broker'
+
+export { createPriceFormatter } from './utils'

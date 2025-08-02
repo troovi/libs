@@ -1,4 +1,4 @@
-import { splitByChunks } from '@troovi/utils-js'
+import { multiply, splitByChunks } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { KuCoinFuturesApi } from './api/futures/api'
 import { KuCoinSpotApi } from './api/spot/api'
@@ -17,8 +17,8 @@ export const createKuCoinFees = (sapi: KuCoinSpotApi, fapi: KuCoinFuturesApi): F
 
       return data.map(({ symbol, makerFeeRate, takerFeeRate }) => ({
         symbol,
-        takerCommission: +takerFeeRate,
-        makerCommission: +makerFeeRate
+        takerCommission: multiply(+takerFeeRate, 100),
+        makerCommission: multiply(+makerFeeRate, 100)
       }))
     }
 
@@ -27,8 +27,8 @@ export const createKuCoinFees = (sapi: KuCoinSpotApi, fapi: KuCoinFuturesApi): F
 
       return data.map(({ symbol, takerFeeRate, makerFeeRate }) => ({
         symbol,
-        takerCommission: takerFeeRate,
-        makerCommission: makerFeeRate
+        takerCommission: multiply(takerFeeRate, 100),
+        makerCommission: multiply(makerFeeRate, 100)
       }))
     }
 

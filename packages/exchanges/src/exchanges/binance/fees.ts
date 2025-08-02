@@ -1,3 +1,4 @@
+import { multiply } from '@troovi/utils-js'
 import { FeesApi } from '../../types'
 import { BinanceFuturesApi } from './api/futures/api'
 import { BinanceSpotApi } from './api/spot/api'
@@ -10,8 +11,8 @@ export const createBinanceFees = (sapi: BinanceSpotApi, fapi: BinanceFuturesApi)
       return rates.map(({ symbol, takerCommission, makerCommission }) => {
         return {
           symbol,
-          takerCommission: +takerCommission,
-          makerCommission: +makerCommission
+          takerCommission: multiply(+takerCommission, 100),
+          makerCommission: multiply(+makerCommission, 100)
         }
       })
     }
@@ -23,8 +24,8 @@ export const createBinanceFees = (sapi: BinanceSpotApi, fapi: BinanceFuturesApi)
 
           return {
             symbol: rate.symbol,
-            takerCommission: +rate.takerCommissionRate,
-            makerCommission: +rate.makerCommissionRate
+            takerCommission: multiply(+rate.takerCommissionRate, 100),
+            makerCommission: multiply(+rate.makerCommissionRate, 100)
           }
         })
       )
