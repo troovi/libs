@@ -36,12 +36,12 @@ export class OrderBookDeltaState implements OrderBookState {
   }
 
   update(data: OrderBookUpdate, onChange: (data: OrderBookChange) => void = () => {}) {
-    for (const side of orders) {
-      let isBestChanged = false
+    const changed: ('bids' | 'asks')[] = []
 
+    for (const side of orders) {
       if (data[side].length) {
         this.searchBest(data)[side](() => {
-          isBestChanged = true
+          changed.push(side)
         })
       }
 
@@ -65,15 +65,15 @@ export class OrderBookDeltaState implements OrderBookState {
 
         if (!this[side][index]) {
           this.updateBest(index)[side](() => {
-            isBestChanged = true
+            changed.push(side)
           })
         }
       }
-
-      if (isBestChanged) {
-        this[`onBest${onEvent[side]}Change`].emit(this.best[side])
-      }
     }
+
+    changed.forEach((side) => {
+      this[`onBest${onEvent[side]}Change`].emit(this.best[side])
+    })
   }
 
   searchBest(data: Omit<OrderBookUpdate, 'updateId'>) {

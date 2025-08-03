@@ -1,6 +1,7 @@
 import type { Candle } from '@troovi/chart'
 import { OrderBookEvent, TradeEvent, Exchange } from './types'
 import { ChartOptions } from './chart-formatter'
+import { EventBroadcaster } from '@troovi/utils-js'
 
 interface Meta {
   exchange: string
@@ -68,12 +69,12 @@ export namespace APIsParams {
 export class Broker {
   private streams: { [exchange: string]: ReturnType<ExchangeStream> } = {}
   private apis: { [exchange: string]: Pick<Exchange, 'getChart' | 'getFees' | 'getSymbols'> } = {}
-  private emitter: (data: StreamEvent) => void = () => {}
+  private emitter = new EventBroadcaster<StreamEvent>()
 
   constructor(private exchanges: Exchange[]) {
     exchanges.forEach(({ name, createStream, getChart, getFees, getSymbols }) => {
       this.streams[name] = createStream((market, event) => {
-        this.emitter({ market, exchange: name, ...event } as StreamEvent)
+        this.emitter.emit({ market, exchange: name, ...event } as StreamEvent)
       })
 
       this.apis[name] = { getChart, getFees, getSymbols }
@@ -87,7 +88,7 @@ export class Broker {
   // stream
 
   onEvent(callback: (data: StreamEvent) => void) {
-    this.emitter = callback
+    this.emitter.subscribe(callback)
   }
 
   subscribe(data: StreamTopic) {

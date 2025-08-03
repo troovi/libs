@@ -43,16 +43,16 @@ export class OrderBookFrameState implements OrderBookState {
   }
 
   update(data: OrderBookUpdate, onChange: (data: OrderBookChange) => void = () => {}) {
+    const changed: ('bids' | 'asks')[] = []
+
     for (const side of orders) {
       const nextCurrent: { [price: number]: true } = {}
-
-      let isBestChanged = false
 
       const best = Math[math[side]](data[side][0][0], data[side][data[side].length - 1][0])
 
       if (this.best[side] !== best) {
         this.best[side] = best
-        isBestChanged = true
+        changed.push(side)
       }
 
       for (const [price, quantity] of data[side]) {
@@ -76,10 +76,10 @@ export class OrderBookFrameState implements OrderBookState {
       }
 
       this.current[side] = nextCurrent
-
-      if (isBestChanged) {
-        this[`onBest${onEvent[side]}Change`].emit(this.best[side])
-      }
     }
+
+    changed.forEach((side) => {
+      this[`onBest${onEvent[side]}Change`].emit(this.best[side])
+    })
   }
 }
