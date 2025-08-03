@@ -53,7 +53,6 @@
     "rollup-plugin-auto-external": "^2.0.0",
     "sass": "1.77.6",
     "sass-embedded": "1.77.5",
-    "shared-types": "../../../x-arbitrage/shared-types",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.20.3",
     "vite": "^7.0.0",

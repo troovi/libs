@@ -260,10 +260,11 @@ export class NetworkManager {
   async getConnections(channels: string[]) {
     const connections: Distribution[] = []
 
+    // возможно получение запроса на отписку от потока, который все еще является частью неисполненного запроса на подписку,
+    // в таком случае, сначала необходимо дождаться завершения процесса подписки, и после этого приступить к процессу выполнения отписки
     await Promise.all(
       this.subscriptions.map((subscription) => {
         return new Promise<void>((resolve) => {
-          // в случае если подписка не завершена, необходимо дождаться ее завершения
           if (subscription.storeStreams.some((stream) => channels.includes(stream))) {
             subscription.onCommited.subscribe(resolve)
           } else {

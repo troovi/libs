@@ -11,6 +11,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
     "outDir": "./dist",
     "baseUrl": "./"
   },

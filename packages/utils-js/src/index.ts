@@ -11,3 +11,4 @@ export * from './utils'
 
 export * from './api/io'
 export * from './api/stream-api'
+export * from './api/http-api'
