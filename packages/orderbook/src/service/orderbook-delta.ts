@@ -3,11 +3,6 @@ import { OrderBookChange, OrderBookState, OrderBookUpdate } from './orderbook'
 
 const orders = ['bids', 'asks'] as const
 
-const onEvent = {
-  bids: 'Bid' as const,
-  asks: 'Ask' as const
-}
-
 // OrderBookState принимает реальный шаг цены, даже если factor 1000.
 // Так как при поиске best ордеров, пришлось бы выполнять по 1000/10000+ лишних операций обхода по пустыи индексам
 
@@ -36,12 +31,12 @@ export class OrderBookDeltaState implements OrderBookState {
   }
 
   update(data: OrderBookUpdate, onChange: (data: OrderBookChange) => void = () => {}) {
-    const changed: ('bids' | 'asks')[] = []
+    const isBestChanged = { bids: false, asks: false }
 
     for (const side of orders) {
       if (data[side].length) {
         this.searchBest(data)[side](() => {
-          changed.push(side)
+          isBestChanged[side] = true
         })
       }
 
@@ -65,15 +60,19 @@ export class OrderBookDeltaState implements OrderBookState {
 
         if (!this[side][index]) {
           this.updateBest(index)[side](() => {
-            changed.push(side)
+            isBestChanged[side] = true
           })
         }
       }
     }
 
-    changed.forEach((side) => {
-      this[`onBest${onEvent[side]}Change`].emit(this.best[side])
-    })
+    if (isBestChanged.asks) {
+      this.onBestAskChange.emit(this.best.asks)
+    }
+
+    if (isBestChanged.bids) {
+      this.onBestBidChange.emit(this.best.bids)
+    }
   }
 
   searchBest(data: Omit<OrderBookUpdate, 'updateId'>) {

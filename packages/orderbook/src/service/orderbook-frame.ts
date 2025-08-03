@@ -3,11 +3,6 @@ import { OrderBookChange, OrderBookState, OrderBookUpdate } from './orderbook'
 
 const orders = ['bids', 'asks'] as const
 
-const onEvent = {
-  bids: 'Bid' as const,
-  asks: 'Ask' as const
-}
-
 const math = {
   bids: 'max' as const,
   asks: 'min' as const
@@ -43,7 +38,7 @@ export class OrderBookFrameState implements OrderBookState {
   }
 
   update(data: OrderBookUpdate, onChange: (data: OrderBookChange) => void = () => {}) {
-    const changed: ('bids' | 'asks')[] = []
+    const isBestChanged = { bids: false, asks: false }
 
     for (const side of orders) {
       const nextCurrent: { [price: number]: true } = {}
@@ -52,7 +47,7 @@ export class OrderBookFrameState implements OrderBookState {
 
       if (this.best[side] !== best) {
         this.best[side] = best
-        changed.push(side)
+        isBestChanged[side] = true
       }
 
       for (const [price, quantity] of data[side]) {
@@ -78,8 +73,12 @@ export class OrderBookFrameState implements OrderBookState {
       this.current[side] = nextCurrent
     }
 
-    changed.forEach((side) => {
-      this[`onBest${onEvent[side]}Change`].emit(this.best[side])
-    })
+    if (isBestChanged.asks) {
+      this.onBestAskChange.emit(this.best.asks)
+    }
+
+    if (isBestChanged.bids) {
+      this.onBestBidChange.emit(this.best.bids)
+    }
   }
 }

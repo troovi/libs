@@ -5,6 +5,6 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "push": "rsync -av --exclude='.git' --exclude='node_modules' '/Users/pavel/Documents/XemoResearch/@libs' root@5.129.228.160:/root/xemo"
+    "push": "rsync -av --exclude='.git' --exclude='node_modules' '/Users/pavel/Documents/XemoResearch/@libs' root@77.73.132.139:/root/xemo"
   }
 }
