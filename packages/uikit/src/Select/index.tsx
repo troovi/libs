@@ -66,16 +66,18 @@ export const Select = <T,>({
             className="select-popup"
             transition
             style={{
-              ['--prev-button' as string]: getWidthValue(),
+              ['--button-w' as string]: getWidthValue(),
               ['--prev-left' as string]: getLeftValue()
             }}
           >
             <OptionsList maxHeight={300}>
-              {options.map(({ value, title }, i) => (
+              {options.map(({ value, title, icon }, i) => (
                 <Headless.ListboxOption
                   key={`select-option-${value}-${i}`}
                   value={value}
                   title={title}
+                  // @ts-ignore
+                  icon={icon}
                   as={Item}
                 />
               ))}

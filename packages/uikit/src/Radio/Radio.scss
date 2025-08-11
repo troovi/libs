@@ -1,0 +1,19 @@
+.radio-icon {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 1px solid #ffffff75;
+  border-radius: 100px;
+
+  &[data-checked] {
+    background-color: #fff;
+  }
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  outline: none;
+  cursor: pointer;
+  gap: 6px;
+}

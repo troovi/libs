@@ -51,7 +51,7 @@ export const PopoverMinimal = ({ children, content, popoverClassName }: PopoverP
           <Headless.PopoverPanel
             ref={popoverRef}
             style={{
-              ['--prev-button' as string]: getWidthValue(),
+              ['--button-w' as string]: getWidthValue(),
               ['--prev-left' as string]: getLeftValue()
             }}
             anchor="bottom"

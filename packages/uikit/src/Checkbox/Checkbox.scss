@@ -1,13 +1,13 @@
-.checkbox-container {
-  max-width: max-content;
-}
-
 .checkbox-icon-container {
   width: 16px;
   height: 16px;
   background-color: transparent;
   border: 1px solid #ffffff75;
   border-radius: 4px;
+
+  &[data-checked] {
+    background-color: #fff;
+  }
 }
 
 .checkbox {
@@ -31,5 +31,5 @@
 
 .checkbox-icon {
   visibility: hidden;
-  color: #4bc310;
+  color: #2a2a2a;
 }
