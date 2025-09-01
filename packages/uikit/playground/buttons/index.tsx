@@ -1,5 +1,5 @@
-import { Reset } from "@blueprintjs/icons";
-import { Button } from "@/Button";
+import { Reset } from '@blueprintjs/icons'
+import { Button } from '@/Button'
 
 export const ButtonsExample = () => {
   return (
@@ -10,9 +10,7 @@ export const ButtonsExample = () => {
           Button
         </Button>
         <Button size="md">Button</Button>
-        <Button size="md" isLoading>
-          Button
-        </Button>
+        <Button size="md">Button</Button>
         <Button size="sm">Button</Button>
       </div>
       <div className="row-group">
@@ -25,7 +23,7 @@ export const ButtonsExample = () => {
         <Button size="md" accent="danger">
           Button
         </Button>
-        <Button size="md" accent="danger" isLoading>
+        <Button size="md" accent="danger">
           Button
         </Button>
         <Button size="sm" accent="danger">
@@ -42,7 +40,7 @@ export const ButtonsExample = () => {
         <Button size="md" accent="success">
           Button
         </Button>
-        <Button size="md" accent="success" isLoading>
+        <Button size="md" accent="success">
           Button
         </Button>
         <Button size="sm" accent="success">
@@ -50,5 +48,5 @@ export const ButtonsExample = () => {
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}

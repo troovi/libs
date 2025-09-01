@@ -4,6 +4,10 @@ import { IOpattern } from './io'
 
 // requests
 
+export type StreamApiResponse<T> =
+  | { status: 'resolve'; data: T }
+  | { status: 'reject'; message: string }
+
 export type MakeStreamRequests<T extends IOpattern<T>> = {
   [type in keyof T]: {
     id: string
@@ -18,7 +22,7 @@ export type MakeStreamResponses<T extends IOpattern<T>> = {
   [type in keyof T]: {
     id: string
     type: type
-    response: { status: 'resolve'; data: T[type]['answer'] } | { status: 'reject'; error: string }
+    response: StreamApiResponse<T[type]['answer']>
   }
 }[keyof T]
 
@@ -45,7 +49,7 @@ class StreamAPI<T extends IOpattern<T>, R extends MakeStreamResponses<T> = MakeS
           }
 
           if (message.response.status === 'reject') {
-            reject(message.response.error)
+            reject(message.response.message)
           }
         }
 

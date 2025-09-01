@@ -8,6 +8,7 @@ export interface NumberInputOptions {
   minValue?: number
 }
 
+// TODO: если onChange будет меньше minValue произойдет ошибка
 export const useNumberInput = ({ minValue, value, onChange, step = 1 }: NumberInputOptions) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
