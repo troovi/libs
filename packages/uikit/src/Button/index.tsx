@@ -15,11 +15,24 @@ interface ButtonProps extends Headless.ButtonProps {
   isLoading?: boolean
   children?: React.ReactNode
   active?: boolean
+  minimal?: boolean
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, fill, icon, accent, isLoading, size, active, className, iconRight, ...buttonProps },
+    {
+      children,
+      fill,
+      minimal,
+      icon,
+      accent,
+      isLoading,
+      size,
+      active,
+      className,
+      iconRight,
+      ...buttonProps
+    },
     ref
   ) => (
     <Headless.Button
@@ -30,6 +43,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       data-loading={attr(isLoading)}
       data-accent={accent ?? 'none'}
       data-highlighted={attr(active)}
+      data-minimal={attr(minimal)}
       {...buttonProps}
       onClick={isLoading ? undefined : buttonProps.onClick}
     >

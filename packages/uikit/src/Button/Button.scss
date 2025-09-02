@@ -20,12 +20,16 @@
     background: #101010;
     border: 1px solid #686868;
 
+    &[data-minimal] {
+      background: transparent;
+    }
+
     &:hover {
       background: #1d1d1d;
     }
 
     &[data-highlighted] {
-      background: #3d3d3d;
+      background: #383838;
     }
 
     &:active,
@@ -50,18 +54,18 @@
   }
 
   &[data-accent='primary'] {
-    background: #38c4ed;
+    background: #27c281;
 
     &:hover {
-      background: #3dadd0;
+      background: #158f5c;
     }
 
     &[data-active] {
-      background: #2e89a4;
+      background: #0b7449;
     }
 
     &[data-disabled] {
-      border-color: #4d717c;
+      border-color: #256b4e;
     }
   }
 
