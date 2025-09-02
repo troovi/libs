@@ -8,6 +8,7 @@ import { NumberInputs } from './number-inputs'
 import { Button } from '@/Button'
 import { useState } from 'react'
 import { Drawer } from '@/Drawer'
+import { Popup } from '@/Popup'
 
 export const App = () => {
   return (
@@ -21,8 +22,9 @@ export const App = () => {
       </div>
       <ButtonsExample />
       <SelectExample />
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-10">
         <DrawerApp />
+        <PopupApp />
       </div>
       <PopupExample />
       <TextInput />
@@ -36,15 +38,30 @@ const DrawerApp = () => {
 
   return (
     <>
-      <Drawer
-        onClosed={() => console.log('CLOSED')}
-        onClose={() => setOpen(false)}
-        isOpen={isOpen}
-        size="60%"
-      >
-        <div onClick={() => setOpen(false)}>App: click to close</div>
+      <Drawer onClose={() => setOpen(false)} isOpen={isOpen} size="60%">
+        <Content close={() => setOpen(false)} />
       </Drawer>
       <Button onClick={() => setOpen((value) => !value)}>{isOpen ? 'Close' : 'Open'} drawer</Button>
+    </>
+  )
+}
+
+const Content = ({ close }: { close: () => void }) => {
+  console.log('RENDER')
+  return <div onClick={close}>App: click to close</div>
+}
+
+const PopupApp = () => {
+  const [isOpen, setOpen] = useState(false)
+
+  return (
+    <>
+      <Popup onClose={() => setOpen(false)} isOpen={isOpen} className="popup-1">
+        <div style={{ padding: '10px' }}>
+          <Button onClick={() => setOpen(false)}>App: click to close</Button>
+        </div>
+      </Popup>
+      <Button onClick={() => setOpen((value) => !value)}>{isOpen ? 'Close' : 'Open'} popup</Button>
     </>
   )
 }

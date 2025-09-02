@@ -24,6 +24,7 @@
     "classnames": "^2.5.1"
   },
   "devDependencies": {
+    "@blueprintjs/core": "^6.2.1",
     "@blueprintjs/icons": "5.0.0-alpha.5",
     "@react-aria/interactions": "^3.25.3",
     "@rollup/plugin-eslint": "^9.0.5",

@@ -9,7 +9,7 @@ import { attr } from '@troovi/utils-browser'
 interface ButtonProps extends Headless.ButtonProps {
   icon?: React.ReactNode
   iconRight?: React.ReactNode
-  accent?: 'primary' | 'success' | 'danger'
+  accent?: 'primary' | 'light' | 'success' | 'danger'
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
   isLoading?: boolean

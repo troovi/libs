@@ -2,7 +2,7 @@
 
 .button {
   @include button-layout();
-  @include items-spacing(6px);
+  @include items-spacing(8px);
 
   color: #ffffff;
   outline: none;
@@ -37,6 +37,31 @@
     &[data-disabled] {
       border-color: #d0d0d0;
       color: #afafaf;
+    }
+  }
+
+  &[data-accent='light'] {
+    color: #000;
+    background: #fff;
+
+    &[data-disabled] {
+      border-color: #8c8c8c;
+    }
+  }
+
+  &[data-accent='primary'] {
+    background: #38c4ed;
+
+    &:hover {
+      background: #3dadd0;
+    }
+
+    &[data-active] {
+      background: #2e89a4;
+    }
+
+    &[data-disabled] {
+      border-color: #4d717c;
     }
   }
 

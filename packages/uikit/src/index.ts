@@ -14,6 +14,7 @@ export { ButtonGroup } from './ButtonGroup'
 export { Checkbox } from './Checkbox'
 export { Radio } from './Radio'
 export { Drawer } from './Drawer'
+export { Popup } from './Popup'
 
 // hooks
 export * from './__hooks/use-local-storage'
