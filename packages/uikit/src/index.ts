@@ -18,3 +18,4 @@ export { Popup } from './Popup'
 
 // hooks
 export * from './__hooks/use-local-storage'
+export * from './__utils/other/getNumberValue'
