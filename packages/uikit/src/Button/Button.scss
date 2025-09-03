@@ -54,18 +54,19 @@
   }
 
   &[data-accent='primary'] {
-    background: #27c281;
+    background: #278dc2;
 
     &:hover {
-      background: #158f5c;
+      background: #257dad;
     }
 
     &[data-active] {
-      background: #0b7449;
+      background: #1d6a93;
     }
 
     &[data-disabled] {
-      border-color: #256b4e;
+      opacity: 0.5;
+      pointer-events: none;
     }
   }
 

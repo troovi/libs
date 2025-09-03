@@ -14,7 +14,6 @@ export const Drawer = ({ children, size, style, className, ...overlayProps }: Dr
     <Overlay {...overlayProps}>
       <div
         style={{ width: size, ...style }}
-        data-info={22}
         className={cn('drawer drawer-right overlay-content', className)}
       >
         {children}
