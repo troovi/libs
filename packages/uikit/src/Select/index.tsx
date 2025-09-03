@@ -55,7 +55,7 @@ export const Select = <T,>({
             as={hasMouse ? ClickTrap : undefined}
           >
             {icon}
-            <div className="select-text" data-placeholder={attr(currentOption === undefined)}>
+            <div className="select-label" data-placeholder={attr(currentOption === undefined)}>
               {currentOption ? currentOption.title : placeholder ?? 'Не выбрано'}
             </div>
             <div className="select-arrow">{open ? <ChevronUp /> : <ChevronDown />}</div>

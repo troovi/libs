@@ -31,7 +31,7 @@
     border-color: var(--color-error);
   }
 
-  &-text {
+  &-label {
     @include truncate-text();
 
     flex: 1 1 auto;
