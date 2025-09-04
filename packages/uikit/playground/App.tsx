@@ -9,6 +9,7 @@ import { Button } from '@/Button'
 import { useState } from 'react'
 import { Drawer } from '@/Drawer'
 import { Popup } from '@/Popup'
+import { PopoversExample } from './popovers'
 
 export const App = () => {
   return (
@@ -22,6 +23,7 @@ export const App = () => {
       </div>
       <ButtonsExample />
       <SelectExample />
+      <PopoversExample />
       <div className="flex flex-col gap-10">
         <DrawerApp />
         <PopupApp />

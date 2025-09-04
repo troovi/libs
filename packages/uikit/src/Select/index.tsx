@@ -26,6 +26,8 @@ interface SelectProps<T> {
   className?: string
   icon?: React.ReactNode
   size?: 'sm' | 'md' | 'lg'
+  error?: boolean
+  disabled?: boolean
 }
 
 export const Select = <T,>({
@@ -33,6 +35,8 @@ export const Select = <T,>({
   className,
   onChange,
   value,
+  disabled,
+  error,
   size,
   icon,
   placeholder
@@ -52,6 +56,8 @@ export const Select = <T,>({
             ref={buttonRef}
             className={cn('select', className)}
             data-size={size ?? 'md'}
+            data-error={attr(error)}
+            data-disabled={attr(disabled)}
             as={hasMouse ? ClickTrap : undefined}
           >
             {icon}

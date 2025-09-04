@@ -12,14 +12,16 @@ interface PopoverProps {
   content: ({ close }: { close: () => void }) => React.ReactNode
   placement?: AnchorTo
   popoverClassName?: string
+  className?: string
   arrows?: boolean
 }
 
-export const Popover = ({ children, content, popoverClassName, placement, arrows }: PopoverProps) => {
+export const Popover = (props: PopoverProps) => {
+  const { children, className, content, popoverClassName, placement, arrows } = props
   const { popoverRef, getLeftValue } = usePopoverLeftValue()
 
   return (
-    <Headless.Popover>
+    <Headless.Popover className={className}>
       {({ close }) => (
         <>
           <Headless.PopoverButton as={children as () => JSX.Element} />

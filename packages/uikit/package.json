@@ -12,23 +12,29 @@
   "publishConfig": {
     "@troovi:registry": "https://npm.pkg.github.com"
   },
+  "sideEffects": [
+    "./dist/uikit.css"
+  ],
   "license": "ISC",
   "peerDependencies": {
+    "@headlessui/react": "2.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "dependencies": {
+    "@blueprintjs/icons": "5.0.0-alpha.5",
     "@headlessui/react": "2.2.3",
     "@troovi/utils-browser": "file:../utils-browser",
     "@troovi/utils-js": "file:../utils-js",
-    "@blueprintjs/icons": "5.0.0-alpha.5",
-    "classnames": "^2.5.1"
+    "classnames": "^2.5.1",
+    "rollup-plugin-scss": "^4.0.1"
   },
   "devDependencies": {
     "@blueprintjs/core": "^6.2.1",
     "@react-aria/interactions": "^3.25.3",
     "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@tailwindcss/vite": "^4.1.12",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/parser": "^5.62.0",

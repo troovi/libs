@@ -1,15 +1,15 @@
 import { useRef, useState, useMemo, useCallback, useLayoutEffect } from 'react'
 import { normalize, truncateNumber, getFloatDigits } from '@troovi/utils-js'
 
-export interface NumberInputOptions {
+export interface StepperInputOptions {
   value: number
   onChange: (value: number) => void
-  step?: number
+  step: number
   minValue?: number
 }
 
 // TODO: если onChange будет меньше minValue произойдет ошибка
-export const useNumberInput = ({ minValue, value, onChange, step = 1 }: NumberInputOptions) => {
+export const useStepperInput = ({ minValue, value, onChange, step }: StepperInputOptions) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const precision = useMemo(() => {

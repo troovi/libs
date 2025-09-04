@@ -61,3 +61,139 @@
 .spinner-border {
   animation: none;
 }
+
+.w-full {
+  width: 100%;
+}
+
+.docs-popover-placement-example {
+  display: flex;
+  justify-content: center;
+}
+
+.docs-popover-placement-example .docs-example-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr 2fr 1fr;
+  justify-content: stretch;
+  margin: 0;
+  width: 500px;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-1 {
+  grid-column: 1/2;
+  grid-row: 1/2;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-2 {
+  grid-column: 2/3;
+  grid-row: 1/2;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-3 {
+  grid-column: 3/4;
+  grid-row: 1/2;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-1 {
+  grid-column: 1/2;
+  grid-row: 2/3;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-2 {
+  grid-column: 2/3;
+  grid-row: 2/3;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-3 {
+  grid-column: 3/4;
+  grid-row: 2/3;
+}
+
+.docs-popover-placement-example .docs-example-grid-3-1 {
+  grid-column: 1/2;
+  grid-row: 3/4;
+}
+
+.docs-popover-placement-example .docs-example-grid-3-2 {
+  grid-column: 2/3;
+  grid-row: 3/4;
+}
+
+.docs-popover-placement-example .docs-example-grid-3-3 {
+  grid-column: 3/4;
+  grid-row: 3/4;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-1 {
+  align-self: end;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-2,
+.docs-popover-placement-example .docs-example-grid-2-1 {
+  align-self: stretch;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-3,
+.docs-popover-placement-example .docs-example-grid-3-1 {
+  align-self: start;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-2,
+.docs-popover-placement-example .docs-example-grid-2-1 {
+  align-self: end;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-2 {
+  align-self: stretch;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-3,
+.docs-popover-placement-example .docs-example-grid-3-2 {
+  align-self: start;
+}
+
+.docs-popover-placement-example .docs-example-grid-1-3,
+.docs-popover-placement-example .docs-example-grid-3-1 {
+  align-self: end;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-3,
+.docs-popover-placement-example .docs-example-grid-3-2 {
+  align-self: stretch;
+}
+
+.docs-popover-placement-example .docs-example-grid-3-3 {
+  align-self: start;
+}
+
+.docs-popover-placement-example .docs-example-grid-2-2 {
+  align-self: center;
+  text-align: center;
+}
+
+.docs-popover-placement-example em {
+  display: inline-block;
+  max-width: 250px;
+}
+
+.bp6-dark .docs-popover-placement-example em {
+  color: #abb3bf;
+}
+
+.docs-popover-placement-example-content .bp6-popover-content {
+  line-height: 2;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.docs-popover-placement-example-content code {
+  font-weight: 600;
+}
+
+.docs-popover-placement-value-code-block {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}

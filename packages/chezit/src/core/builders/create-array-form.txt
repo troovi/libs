@@ -1,0 +1,37 @@
+import { Remove } from '@blueprintjs/icons'
+import { createLayout } from 'chezit'
+import { MessageForm } from 'formkit/forms'
+import { Label } from 'formkit/layouts'
+import { Button } from 'uikit'
+
+const createArrayForm = <T,>(props: {
+  getItem: (index: number, remove: () => void) => {}
+  getAppendElement: (append: () => void) => React.ReactNode
+}) => {}
+
+const Removable = createLayout((handleClick: () => void) => {
+  return ({ children }) => {
+    return (
+      <div className="flex gap-6">
+        {children}
+        <Button className="quieter-style" intent="danger" onClick={handleClick} icon={<Remove />} />
+      </div>
+    )
+  }
+})
+
+// array elements must be of the same type
+export const OptionsForm = createArrayForm<string>({
+  getItem(index, remove) {
+    return Label('Описание')(
+      Removable(remove)(
+        MessageForm(`${index}`, {
+          placeholder: 'Введите описание'
+        })
+      )
+    )
+  },
+  getAppendElement(append) {
+    return <button onClick={append}>Добавить данные</button>
+  }
+})

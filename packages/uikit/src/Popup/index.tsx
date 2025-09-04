@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { Overlay, OverlayProps } from '../Overlay'
 import { Cross } from '@blueprintjs/icons'
 import { box } from '@troovi/utils-browser'
-import { Scrollable } from '..'
+import { Scrollable } from '../Scrollable'
 
 interface PopupProps extends OverlayProps {
   children: React.ReactNode

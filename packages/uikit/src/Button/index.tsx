@@ -6,10 +6,12 @@ import { Spinner } from '../Spinner'
 import { forwardRef } from 'react'
 import { attr } from '@troovi/utils-browser'
 
-interface ButtonProps extends Headless.ButtonProps {
+export type Accent = 'primary' | 'light' | 'success' | 'danger'
+
+export interface ButtonProps extends Headless.ButtonProps {
   icon?: React.ReactNode
   iconRight?: React.ReactNode
-  accent?: 'primary' | 'light' | 'success' | 'danger'
+  accent?: Accent
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
   isLoading?: boolean
@@ -18,7 +20,7 @@ interface ButtonProps extends Headless.ButtonProps {
   minimal?: boolean
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, any>(
   (
     {
       children,
@@ -34,28 +36,30 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ...buttonProps
     },
     ref
-  ) => (
-    <Headless.Button
-      ref={ref}
-      className={classNames('button', className)}
-      data-size={size ?? 'md'}
-      data-fill={attr(fill)}
-      data-loading={attr(isLoading)}
-      data-accent={accent ?? 'none'}
-      data-highlighted={attr(active)}
-      data-minimal={attr(minimal)}
-      {...buttonProps}
-      onClick={isLoading ? undefined : buttonProps.onClick}
-    >
-      {isLoading ? (
-        <Spinner size={14} width={2} />
-      ) : (
-        <>
-          {icon}
-          {children && <span className="button-text">{children}</span>}
-          {iconRight}
-        </>
-      )}
-    </Headless.Button>
-  )
+  ) => {
+    return (
+      <Headless.Button
+        ref={ref}
+        className={classNames('button', className)}
+        data-size={size ?? 'md'}
+        data-fill={attr(fill)}
+        data-loading={attr(isLoading)}
+        data-accent={accent ?? 'none'}
+        data-highlighted={attr(active)}
+        data-minimal={attr(minimal)}
+        {...buttonProps}
+        onClick={isLoading ? undefined : buttonProps.onClick}
+      >
+        {isLoading ? (
+          <Spinner size={14} width={2} />
+        ) : (
+          <>
+            {icon}
+            {children && <span className="button-text">{children}</span>}
+            {iconRight}
+          </>
+        )}
+      </Headless.Button>
+    )
+  }
 )

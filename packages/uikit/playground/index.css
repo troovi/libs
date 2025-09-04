@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@config "../tailwind.config.js";
+
+.center {
+  @apply flex items-center justify-center;
+}
+
+.full {
+  @apply h-full w-full;
+}
+
+.image {
+  @apply h-full w-full bg-cover bg-center;
+  background-color: #3d3d3d17;
+}
+
+.quiet {
+  @apply opacity-75;
+}
+
+.quieter {
+  @apply opacity-50;
+}
+
+.all-0 {
+  @apply bottom-0 left-0 right-0 top-0;
+}
