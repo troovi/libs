@@ -21,4 +21,8 @@
   &:focus {
     border-color: #3787e9;
   }
+
+  &[data-error] {
+    border-color: #e92c2c;
+  }
 }

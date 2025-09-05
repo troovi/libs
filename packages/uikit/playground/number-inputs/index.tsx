@@ -36,9 +36,15 @@ const NumbInput2 = () => {
 }
 
 const NumbInput3 = () => {
-  const [value, onChange] = useState(0)
+  const [value, onChange] = useState<number | null>(0)
 
   console.log(value)
 
-  return <NumberInput value={value} onChange={onChange} />
+  return (
+    <div>
+      <NumberInput value={value} onChange={onChange} />
+      <div onClick={() => onChange(1122)}>Set 1122</div>
+      <div onClick={() => onChange(null)}>Set null</div>
+    </div>
+  )
 }

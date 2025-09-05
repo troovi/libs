@@ -33,6 +33,7 @@ export interface FormManager<FlattenValues, ClonedValues> {
   getForm: (name: string) => FormItem
   onChange: (name: string, value: any) => void
   setFocus: (name: keyof FlattenValues) => void
+  setValue: <K extends keyof FlattenValues>(name: K, value: FlattenValues[K]) => void
   setError: SetError<FlattenValues>
   reset: (v: DeepPartial<ClonedValues>) => void
   getValues: () => DeepPartial<ClonedValues>
@@ -108,6 +109,13 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(
 
       if (form && form.focus) {
         form.focus()
+      }
+    },
+    setValue(name, value) {
+      const form = this.getForm(name as string)
+
+      if (form && form.value !== value) {
+        this.onChange(name as string, value)
       }
     },
     getValues() {
@@ -187,7 +195,6 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(
 
         if (forms[name].value !== nextValue) {
           updated_names.push(name)
-
           this.onChange(name, nextValue)
         }
       })

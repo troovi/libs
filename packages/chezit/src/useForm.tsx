@@ -57,6 +57,9 @@ const useForm = <
     setError: (name: keyof FlattenValues, error: { message: string }) => {
       manager.setError(name, error)
     },
+    setValue: <K extends keyof FlattenValues>(name: K, value: FlattenValues[K]) => {
+      manager.setValue(name, value)
+    },
     getValues: () => {
       return manager.getValues()
     },

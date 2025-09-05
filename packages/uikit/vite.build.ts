@@ -24,7 +24,9 @@ export default defineConfig({
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'], // vite работает поверх rollup, и использует @rollup/plugin-node-resolve как встроенную часть загрузки модулей, в результате чего код 'react/jsx-runtime' дублируется в бандл
       output: {
-        preserveModules: true,
+        preserveModules: true, // без указанного sideEffects в бандле клиента оказались бы компоненты обернутые в forwardRef,
+        //                        поскольку webpack не мог бы определить является ли forwardRef side-эффект функцией воздействующей на окружение.
+        //                        Модульная сборка + sideEffects: false позволяют клиенту получать код только явно импортируемых функций
         globals: { react: 'React', 'react-dom': 'ReactDOM' }
       },
       plugins: [autoExternal()]

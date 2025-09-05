@@ -6,10 +6,10 @@ interface Params {
   placeholder: string
 }
 
-export const NumberFormInput = createForm<number, Params>({
-  defaultValue: 0,
+export const NumberFormInput = createForm<number | null, Params>({
+  defaultValue: null,
   getRequireCheck: () => (value) => {
-    if (value <= 0 || isNaN(Number(value))) {
+    if (value === null) {
       throw ''
     }
   },
