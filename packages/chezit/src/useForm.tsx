@@ -6,6 +6,7 @@ import { SchemeItems } from './core/types'
 import { FormManager, createFormManager } from './manager/manager'
 import { FormContext } from './context'
 import { DeepPartial, FieldValues } from './types'
+import { useValue } from './useValue'
 
 export type Copy<T> = { [K in keyof T]: T[K] }
 export type ChangeEvent<T> = Required<{ [K in keyof T]: { name: K; value: T[K] } }[keyof T]>
@@ -48,6 +49,9 @@ const useForm = <
   const manager = managerRef.current
 
   return {
+    useValue: <K extends keyof FlattenValues>(name: K): FlattenValues[K] => {
+      return useValue(name as string)
+    },
     reset: (values: DeepPartial<Cloned>) => {
       manager.reset(values)
     },
