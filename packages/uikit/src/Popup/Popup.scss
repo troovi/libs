@@ -29,6 +29,7 @@
     height: 100%;
     overflow: hidden;
     pointer-events: none;
+    outline: none;
 
     // initial - начальное состояние (перед появлением)
     &[data-closed][data-enter] {

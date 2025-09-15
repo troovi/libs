@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { Drawer } from '@/Drawer'
 import { Popup } from '@/Popup'
 import { PopoversExample } from './popovers'
+import { Tabs } from '@/Tabs'
 
 export const App = () => {
   return (
@@ -21,6 +22,7 @@ export const App = () => {
           <Test2CompletedAnimation />
         </div>
       </div>
+      <TabsApp />
       <ButtonsExample />
       <SelectExample />
       <PopoversExample />
@@ -31,6 +33,20 @@ export const App = () => {
       <PopupExample />
       <TextInput />
       <NumberInputs />
+    </div>
+  )
+}
+
+const TabsApp = () => {
+  const [tab, setTab] = useState('tab-1')
+
+  return (
+    <div>
+      <Tabs onChange={setTab} value={tab}>
+        <Tabs.Tab value="tab-1">Tab1</Tabs.Tab>
+        <Tabs.Tab value="tab-2">Tab2</Tabs.Tab>
+      </Tabs>
+      Active: {tab}
     </div>
   )
 }

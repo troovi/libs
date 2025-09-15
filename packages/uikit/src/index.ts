@@ -17,6 +17,7 @@ export { Radio } from './Radio'
 export { Drawer } from './Drawer'
 export { Popup } from './Popup'
 export { LoadButton } from './LoadButton'
+export { Tabs } from './Tabs'
 
 // hooks
 export * from './__hooks/use-local-storage'

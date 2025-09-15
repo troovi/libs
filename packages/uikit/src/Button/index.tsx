@@ -20,7 +20,7 @@ export interface ButtonProps extends Headless.ButtonProps {
   minimal?: boolean
 }
 
-export const Button = forwardRef<HTMLButtonElement, any>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,

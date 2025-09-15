@@ -8,6 +8,7 @@ interface LimiterOptions {
   threshold?: number
 }
 
+// todo: disable parralels
 export class FrequencyLimiter {
   private readonly logger: Logger
 

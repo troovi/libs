@@ -24,6 +24,7 @@
   "dependencies": {
     "@blueprintjs/icons": "5.0.0-alpha.5",
     "@headlessui/react": "2.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@troovi/utils-browser": "file:../utils-browser",
     "@troovi/utils-js": "file:../utils-js",
     "classnames": "^2.5.1",

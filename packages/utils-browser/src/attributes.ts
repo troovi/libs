@@ -1,3 +1,3 @@
-export const attr = (bool?: boolean) => {
+export const attr = (bool?: boolean | null) => {
   return bool ? '' : undefined
 }
