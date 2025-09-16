@@ -11,22 +11,19 @@ export class QueueManager {
   add<T>(target: () => Promise<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       this.queue.push({ resolve, reject, target })
-      this.run()
-    })
-  }
 
-  private async run() {
-    if (!this.active) {
-      this.active = true
-      await this.next()
-      this.active = false
-    }
+      if (!this.active) {
+        this.next()
+      }
+    })
   }
 
   private async next() {
     const subject = this.queue[0]
 
     if (subject) {
+      this.active = true
+
       await subject
         .target()
         .then((data) => subject.resolve(data))
@@ -34,6 +31,8 @@ export class QueueManager {
         .finally(() => this.queue.shift())
 
       await this.next()
+    } else {
+      this.active = false
     }
   }
 }

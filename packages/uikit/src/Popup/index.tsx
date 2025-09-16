@@ -20,7 +20,7 @@ export const Popup = ({ children, className, ...overlayProps }: PopupProps) => {
   )
 }
 
-Popup.Header = ({ title, close }: { title: string; close: () => void }) => {
+Popup.Header = ({ title, close }: { title: React.ReactNode; close: () => void }) => {
   return (
     <div className="popup-header flex items-center justify-between">
       <div className="text-lg font-semibold">{title}</div>
