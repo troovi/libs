@@ -2,6 +2,8 @@ import Big from 'big.js'
 
 export const big = (n: number) => new Big(n)
 
+export const normalizeNumber = (n: number) => big(n).toFixed()
+
 export const minus = (a: number, b: number) => {
   return operators.minus(big(a), big(b)).toNumber()
 }

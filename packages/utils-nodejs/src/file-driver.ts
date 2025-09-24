@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from 'fs'
+import { existsSync, rmSync, writeFileSync } from 'fs'
 import { getFileData } from './fs'
 
 export class FileDriver<T> {
@@ -19,5 +19,13 @@ export class FileDriver<T> {
   change(mutate: (value: T) => void) {
     mutate(this.file)
     writeFileSync(this.path, JSON.stringify(this.file))
+  }
+
+  save() {
+    writeFileSync(this.path, JSON.stringify(this.file))
+  }
+
+  remove() {
+    rmSync(this.path)
   }
 }
