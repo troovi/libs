@@ -9,7 +9,7 @@ interface CacheOptions<T> {
   fetchData: () => Promise<T>
 }
 
-interface CacheFile<T> {
+export interface CacheFile<T> {
   timestamp: number
   data: T
 }
