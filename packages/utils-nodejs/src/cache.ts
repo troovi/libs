@@ -9,6 +9,11 @@ interface CacheOptions<T> {
   fetchData: () => Promise<T>
 }
 
+interface CacheFile<T> {
+  timestamp: number
+  data: T
+}
+
 export class LocalCache<T> {
   private path: string
   private rotation: number | null
@@ -54,27 +59,32 @@ export class LocalCache<T> {
 
   getCache() {
     if (existsSync(this.path)) {
-      const cache = getFileData<{ timestamp: number; data: T }>(this.path)
+      const cache = getFileData<CacheFile<T>>(this.path)
 
       if (cache) {
         if (this.rotation && Date.now() > cache.timestamp + this.rotation) {
           return null
         }
 
-        return cache.data
+        return cache
       }
     }
   }
 
   async resetCache() {
-    const data = await this.getData()
-
-    this.setCache(data)
-
-    return data
+    return this.getData().then((data) => {
+      return this.setCache(data)
+    })
   }
 
   private setCache(data: T) {
-    writeFileSync(this.path, JSON.stringify({ timestamp: Date.now(), data }))
+    const cache: CacheFile<T> = {
+      timestamp: Date.now(),
+      data
+    }
+
+    writeFileSync(this.path, JSON.stringify(cache))
+
+    return cache
   }
 }
