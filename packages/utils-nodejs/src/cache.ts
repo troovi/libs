@@ -48,16 +48,16 @@ export class LocalCache<T> {
   }
 
   async get() {
-    const cache = this.getCache()
+    const cache = this.getCacheValue()
 
     if (cache) {
       return cache
     }
 
-    return this.resetCache()
+    return this.reset()
   }
 
-  getCache() {
+  getCacheValue() {
     if (existsSync(this.path)) {
       const cache = getFileData<CacheFile<T>>(this.path)
 
@@ -69,22 +69,20 @@ export class LocalCache<T> {
         return cache
       }
     }
+
+    return null
   }
 
-  async resetCache() {
+  async reset() {
     return this.getData().then((data) => {
-      return this.setCache(data)
+      const cache: CacheFile<T> = {
+        timestamp: Date.now(),
+        data
+      }
+
+      writeFileSync(this.path, JSON.stringify(cache))
+
+      return cache
     })
-  }
-
-  private setCache(data: T) {
-    const cache: CacheFile<T> = {
-      timestamp: Date.now(),
-      data
-    }
-
-    writeFileSync(this.path, JSON.stringify(cache))
-
-    return cache
   }
 }
