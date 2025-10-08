@@ -1,6 +1,6 @@
 import { existsSync, writeFileSync } from 'fs'
 import { getFileData } from './fs'
-import { CommonRequest } from './common-request'
+import { commonQuery } from './common-request'
 
 interface CacheOptions<T> {
   cacheDir?: string
@@ -18,7 +18,7 @@ export class LocalCache<T> {
   private path: string
   private rotation: number | null
   private fetchData: () => Promise<T>
-  private getData = CommonRequest<T>(() => this.fetchData())
+  private getData = commonQuery<T>(() => this.fetchData())
 
   constructor({ source, cacheDir = 'caches', rotation, fetchData }: CacheOptions<T>) {
     this.path = `${cacheDir}/${source}`

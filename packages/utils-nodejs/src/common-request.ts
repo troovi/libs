@@ -1,6 +1,6 @@
 import { EventBroadcaster } from '@troovi/utils-js'
 
-export const CommonRequest = <T>(request: () => Promise<T>) => {
+export const commonQuery = <T>(request: () => Promise<T>) => {
   const state = { isLoading: false }
   const subscribers = new EventBroadcaster<T>()
 
