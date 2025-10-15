@@ -9,6 +9,10 @@ export class EventDispatcher<T> {
 
   on(event: string, callback: (data: T) => void) {
     this.store[event] = callback
+
+    return () => {
+      this.rm(event)
+    }
   }
 
   rm(event: string) {
