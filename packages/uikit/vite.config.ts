@@ -17,6 +17,14 @@ export default defineConfig({
       }
     })
   ],
+  css: {
+    preprocessorOptions: {
+      sass: {
+        silenceDeprecations: ['import', 'new-global', 'css-function-mixin'],
+        quietDeps: true
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')

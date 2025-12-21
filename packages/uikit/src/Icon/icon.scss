@@ -1,0 +1,18 @@
+@use '../mixins.scss';
+
+$icon-sizes: xxxs, xxs, xs, s, m, l, xl, xxl, xxxl;
+
+@each $size in $icon-sizes {
+  .icon-size-#{$size} {
+    @include mixins.use-size(icon, size, $size);
+  }
+}
+
+:where(svg:not([fill])) {
+  fill: currentcolor;
+}
+
+.icon {
+  // display: inline-block;
+  flex-shrink: 0;
+}

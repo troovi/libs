@@ -1,35 +1,115 @@
-.checkbox-icon-container {
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  border: 1px solid #ffffff75;
-  border-radius: 4px;
-
-  &[data-checked] {
-    background-color: #fff;
-  }
-}
+@use '../mixins.scss';
 
 .checkbox {
-  display: flex;
-  align-items: center;
-  outline: none;
-  gap: 6px;
+  display: inline-table;
+  user-select: none;
+  touch-action: manipulation;
+  max-width: max-content;
 
-  cursor: pointer;
+  @include mixins.use-styles(checkbox);
 
-  label {
-    cursor: pointer;
-  }
-
-  &[data-checked] {
-    .checkbox-icon {
-      visibility: visible;
+  &:not([data-disabled]):not([data-required]):hover {
+    .checkbox-box[data-state='unchecked'] {
+      @include mixins.use-styles(checkbox, box, hover);
     }
   }
-}
 
-.checkbox-icon {
-  visibility: hidden;
-  color: #2a2a2a;
+  &:not([data-disabled]):not([data-required]):active {
+    .checkbox-box[data-state='unchecked'] {
+      @include mixins.use-styles(checkbox, box, active);
+    }
+  }
+
+  &:not([data-disabled]) {
+    .checkbox-box[data-state='checked'] {
+      @include mixins.use-styles(checkbox, box, checked);
+    }
+  }
+
+  &[data-disabled] {
+    @include mixins.use-styles(checkbox, disabled);
+  }
+
+  &[data-required] {
+    @include mixins.use-styles(checkbox, required);
+
+    .checkbox-box::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+
+      @include mixins.use-styles(checkbox, required, box);
+
+      border-radius: mixins.get-var-name(checkbox, box, border-radius);
+    }
+  }
+
+  &[data-size='sm'] {
+    @include mixins.use-styles(checkbox, size, sm);
+
+    .checkbox-box {
+      @include mixins.use-size(checkbox, size, sm, box);
+    }
+  }
+
+  &[data-size='md'] {
+    @include mixins.use-styles(checkbox, size, md);
+
+    .checkbox-box {
+      @include mixins.use-size(checkbox, size, md, box);
+    }
+  }
+
+  &-box {
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.1s linear;
+    display: inline-block;
+    position: relative;
+    z-index: 0;
+
+    @include mixins.use-styles(checkbox, box);
+
+    &[data-disabled] {
+      cursor: default;
+    }
+
+    &:after {
+      visibility: hidden;
+      content: '\00A0';
+    }
+  }
+
+  &-label {
+    cursor: pointer;
+    display: table-cell;
+    word-break: break-word;
+
+    &[data-disabled] {
+      cursor: default;
+    }
+
+    @include mixins.use-styles(checkbox, label);
+  }
+
+  &-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+
+    &[data-state='checked'] {
+      @include mixins.use-styles(checkbox, icon, in);
+    }
+
+    &[data-state='unchecked'] {
+      @include mixins.use-styles(checkbox, icon, out);
+    }
+  }
 }

@@ -1,36 +1,42 @@
-import './Button.scss'
-
 import classNames from 'classnames'
-import * as Headless from '@headlessui/react'
 import { Spinner } from '../Spinner'
 import { forwardRef } from 'react'
 import { attr } from '@troovi/utils-browser'
 
-export type Accent = 'primary' | 'light' | 'success' | 'danger'
+export type Appearance = 'primary' | 'neutral' | 'positive' | 'negative'
+export type Mode = 'default' | 'outline' | 'minimal'
+export type Size = 'sm' | 'md' | 'lg'
 
-export interface ButtonProps extends Headless.ButtonProps {
+export interface InternButtonProps {
   icon?: React.ReactNode
   iconRight?: React.ReactNode
-  accent?: Accent
-  size?: 'sm' | 'md' | 'lg'
+  appearance?: Appearance
+  mode?: Mode
+  size?: Size
   fill?: boolean
-  isLoading?: boolean
-  children?: React.ReactNode
+  align?: 'left' | 'center' | 'right'
+  loading?: boolean
   active?: boolean
-  minimal?: boolean
+  text?: React.ReactNode
+  children?: React.ReactNode
+  className?: string
 }
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, InternButtonProps {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
       fill,
-      minimal,
-      icon,
-      accent,
-      isLoading,
-      size,
+      text,
       active,
+      mode = 'default',
+      appearance = 'neutral',
+      size = 'md',
+      align,
+      icon,
+      loading,
       className,
       iconRight,
       ...buttonProps
@@ -38,28 +44,29 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     return (
-      <Headless.Button
+      <button
         ref={ref}
         className={classNames('button', className)}
-        data-size={size ?? 'md'}
+        data-size={size}
+        data-loading={attr(loading)}
+        data-align={loading ? 'center' : align ?? (icon && iconRight ? 'left' : 'center')}
+        data-appearance={appearance}
+        data-mode={mode}
         data-fill={attr(fill)}
-        data-loading={attr(isLoading)}
-        data-accent={accent ?? 'none'}
-        data-highlighted={attr(active)}
-        data-minimal={attr(minimal)}
+        data-active={attr(active)}
         {...buttonProps}
-        onClick={isLoading ? undefined : buttonProps.onClick}
+        onClick={loading ?? buttonProps.disabled ? undefined : buttonProps.onClick}
       >
-        {isLoading ? (
+        {loading ? (
           <Spinner size={14} width={2} />
         ) : (
           <>
             {icon}
-            {children && <span className="button-text">{children}</span>}
+            {(children ?? text) && <span className="button-text">{text ?? children}</span>}
             {iconRight}
           </>
         )}
-      </Headless.Button>
+      </button>
     )
   }
 )

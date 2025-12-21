@@ -1,42 +1,33 @@
-import * as React from "react";
-
-import * as Headless from "@headlessui/react";
-import { HoverTrap } from "./HoverTrap";
-import { AnchorTo } from "../Popover";
+import { useState } from 'react'
+import { Popover } from '..'
+import { Side } from '@/Popover'
 
 interface TooltipProps {
-  children: (props: { "aria-expanded": boolean }) => React.ReactNode;
-  content: ({ close }: { close: () => void }) => React.ReactNode;
-  placement?: AnchorTo;
-  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode
+  content: React.ReactNode
+  side?: Side
 }
 
-export const Tooltip = ({
-  children,
-  onOpenChange,
-  content,
-  placement,
-}: TooltipProps) => {
-  return (
-    <Headless.Popover>
-      {({ open, close }) => {
-        onOpenChange?.(open);
+export const Tooltip = ({ children, content, side }: TooltipProps) => {
+  const [open, setOpen] = useState(false)
 
-        return (
-          <>
-            <HoverTrap
-              isOpen={open}
-              close={close}
-              debounce={100}
-              children={children as () => JSX.Element}
-            />
-            <Headless.PopoverPanel anchor={{ to: placement, gap: "11px" }}>
-              <div className="popover-arrow" />
-              {content({ close })}
-            </Headless.PopoverPanel>
-          </>
-        );
+  return (
+    <Popover
+      showArrows
+      className="tooltip"
+      open={open}
+      side={side}
+      content={() => content}
+      triggerProps={{
+        onMouseEnter: () => {
+          setOpen(true)
+        },
+        onMouseLeave: () => {
+          setOpen(false)
+        }
       }}
-    </Headless.Popover>
-  );
-};
+    >
+      {children}
+    </Popover>
+  )
+}

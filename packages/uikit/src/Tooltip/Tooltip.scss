@@ -1,0 +1,28 @@
+@use '../mixins.scss';
+
+.tooltip .popover {
+  &-content {
+    @include mixins.use-styles(tooltip);
+    max-height: none;
+  }
+
+  &-arrow {
+    &-fill {
+      fill: mixins.get-var-name(tooltip, background);
+    }
+  }
+}
+
+.tooltip {
+  &[data-appearance='default'] {
+    &[data-state='open'] {
+      transform-origin: var(--radix-popover-content-transform-origin);
+      @include mixins.use-styles(tooltip, in);
+    }
+
+    &[data-state='closed'] {
+      transform-origin: var(--radix-popover-content-transform-origin);
+      @include mixins.use-styles(tooltip, out);
+    }
+  }
+}

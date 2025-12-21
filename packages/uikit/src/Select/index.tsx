@@ -1,103 +1,134 @@
-import cn from 'classnames'
-
-import { ChevronDown, ChevronUp } from '@blueprintjs/icons'
-import './Select.scss'
-import * as Headless from '@headlessui/react'
-import { useMemo, forwardRef } from 'react'
-import { attr } from '@troovi/utils-browser'
-import { hasMouse } from '../__utils/device'
-import { ClickTrap } from './ClickTrap'
+import { useEffect, useMemo } from 'react'
 import { OptionsList } from '../OptionItem/OptionsList'
 import { OptionItem } from '../OptionItem/OptionItem'
-import { useButtonWidth, usePopoverLeftValue } from '../__hooks/use-popover-position'
+import { Popover } from '..'
+import { useFroozeClosing } from '../__hooks/use-frooze-closing'
+import { FormProps } from '@/Form'
+import type { Option } from '@/types'
+import { SelectInput } from './SelectInput'
+import { useScrollListController } from '@/__hooks/use-scrollbox'
 
-export interface Option<T> {
-  title: string
-  value: T
-  icon?: JSX.Element
-  label?: string
-}
-
-interface SelectProps<T> {
+interface SelectProps<T> extends Omit<FormProps, 'value' | 'onChange' | 'rightElement'> {
   options: Option<T>[]
-  onChange: (event: T) => void
-  value: T | null
+  onChange: (event: T | null) => void
   placeholder?: string
-  className?: string
-  fill?: boolean
-  icon?: React.ReactNode
-  size?: 'sm' | 'md' | 'lg'
-  error?: boolean
-  disabled?: boolean
+  clearButton?: boolean
+  clearButtonIcon?: boolean
+  value: T | null
+  children?: React.ReactNode
+  minimalOptions?: boolean
+  matchTarget?: 'width' | 'min-width'
 }
 
-export const Select = <T,>({
-  options,
-  className,
-  onChange,
-  value,
-  disabled,
-  fill,
-  error,
-  size,
-  icon,
-  placeholder
-}: SelectProps<T>) => {
-  const { buttonRef, getWidthValue } = useButtonWidth()
-  const { popoverRef, getLeftValue } = usePopoverLeftValue()
+export const Select = <T,>(props: SelectProps<T>) => {
+  const {
+    options,
+    onChange,
+    minimalOptions,
+    clearButton,
+    clearButtonIcon,
+    matchTarget = 'width',
+    value,
+    children,
+    disabled,
+    ...inputProps
+  } = props
 
   const currentOption = useMemo(() => {
-    return options.find((o) => o.value === value)
+    const index = options.findIndex((o) => o.value === value)
+
+    return {
+      index,
+      option: options[index] as Option<T> | undefined
+    }
   }, [options, value])
 
+  const active = currentOption.option?.value ?? null
+
+  const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
+  const { scrollToElement, optionsWrapperRef, scrollBoxRef } = useScrollListController()
+
+  const handleChange = (value: T, close: () => void) => {
+    froozePopoverPosition()
+    onChange(value)
+    close()
+  }
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onChange(null)
+  }
+
+  const onOpened = () => {
+    if (currentOption.index !== -1) {
+      scrollToElement(currentOption.index, true)
+    }
+  }
+
   return (
-    <Headless.Listbox value={currentOption?.value ?? null} onChange={onChange}>
-      {({ open }) => (
-        <>
-          <Headless.ListboxButton
-            ref={buttonRef}
-            className={cn('select', className)}
-            data-size={size ?? 'md'}
-            data-fill={attr(fill)}
-            data-error={attr(error)}
-            data-disabled={attr(disabled)}
-            as={hasMouse ? ClickTrap : undefined}
-          >
-            {icon}
-            <div className="select-label" data-placeholder={attr(currentOption === undefined)}>
-              {currentOption ? currentOption.title : placeholder ?? 'Не выбрано'}
-            </div>
-            <div className="select-arrow">{open ? <ChevronUp /> : <ChevronDown />}</div>
-          </Headless.ListboxButton>
-          <Headless.ListboxOptions
-            ref={popoverRef}
-            anchor="bottom"
-            className="select-popup"
-            transition
-            style={{
-              ['--button-w' as string]: getWidthValue(),
-              ['--prev-left' as string]: getLeftValue()
-            }}
-          >
-            <OptionsList maxHeight={300}>
-              {options.map(({ value, title, icon }, i) => (
-                <Headless.ListboxOption
-                  key={`select-option-${value}-${i}`}
-                  value={value}
-                  title={title}
-                  // @ts-ignore
-                  icon={icon}
-                  as={Item}
-                />
-              ))}
-            </OptionsList>
-          </Headless.ListboxOptions>
-        </>
+    <Popover
+      minimal
+      ref={popoverRef}
+      sideOffset={0}
+      matchTarget={matchTarget}
+      onAnimationEnd={handleAnimationEnd}
+      onOpenAutoFocus={(e) => e.preventDefault()}
+      onCloseAutoFocus={(e) => e.preventDefault()}
+      disabled={disabled}
+      content={({ close }) => (
+        <SelectPopover<T>
+          options={options}
+          active={active}
+          scrollboxRef={scrollBoxRef}
+          optionsWrapperRef={optionsWrapperRef}
+          minimalOptions={minimalOptions}
+          onOpened={onOpened}
+          onSelect={(value) => handleChange(value, close)}
+        />
       )}
-    </Headless.Listbox>
+    >
+      {children ?? (
+        <SelectInput
+          {...inputProps}
+          disabled={disabled}
+          value={currentOption.option?.title ?? ''}
+          onClear={handleClear}
+          clearButton={clearButton}
+          clearButtonIcon={clearButtonIcon}
+        />
+      )}
+    </Popover>
   )
 }
 
-const Item = forwardRef<HTMLDivElement, { title: string }>((props, ref) => {
-  return <OptionItem ref={ref} {...props} />
-})
+interface SelectPopoverProps<T> {
+  scrollboxRef?: React.Ref<HTMLDivElement>
+  optionsWrapperRef?: React.RefObject<HTMLDivElement>
+  options: Option<T>[]
+  minimalOptions?: boolean
+  active?: T | null
+  onSelect?: (value: T) => void
+  onOpened?: () => void
+}
+
+const SelectPopover = <T,>(props: SelectPopoverProps<T>) => {
+  const { active, onOpened, scrollboxRef, optionsWrapperRef, options, onSelect, minimalOptions } = props
+
+  useEffect(() => {
+    onOpened?.()
+  }, [])
+
+  return (
+    <OptionsList scrollboxRef={scrollboxRef} optionsWrapperRef={optionsWrapperRef} maxHeight={300}>
+      {options.map((option, i) => (
+        <OptionItem
+          key={`option-item-${option.value}-${i}`}
+          active={active === option.value}
+          onClick={() => onSelect?.(option.value)}
+          minimal={minimalOptions}
+          {...option}
+        />
+      ))}
+    </OptionsList>
+  )
+}

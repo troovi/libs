@@ -1,0 +1,102 @@
+@use '../mixins.scss';
+
+.switch {
+  display: inline-table;
+  user-select: none;
+  touch-action: manipulation;
+  max-width: max-content;
+
+  &[data-disabled] {
+    @include mixins.use-styles(switch, disabled);
+  }
+
+  &-track {
+    cursor: pointer;
+    outline: none;
+    position: relative;
+
+    &:after {
+      visibility: hidden;
+      content: '\00A0';
+    }
+
+    &[data-disabled] {
+      cursor: default;
+      @include mixins.use-styles(switch, track, disabled);
+    }
+
+    &[data-state='checked'] {
+      @include mixins.use-styles(switch, track, checked);
+    }
+
+    &[data-state='unchecked'] {
+      @include mixins.use-styles(switch, track, unchecked);
+    }
+
+    @include mixins.use-styles(switch, track);
+  }
+
+  &-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    @include mixins.use-styles(switch, thumb);
+    @include mixins.use-size(switch, thumb, size);
+
+    border-radius: 9999px;
+
+    &[data-state='unchecked'] {
+      transform: translate(
+        var(--switch_track_outline_width),
+        calc(var(--switch_track_height) - var(--switch_thumb_size) - var(--switch_track_outline_width))
+      );
+
+      .switch-thumb-icon {
+        @include mixins.use-styles(switch, icon, unchecked);
+      }
+    }
+
+    &[data-state='checked'] {
+      transform: translate(
+        calc(var(--switch_track_width) - var(--switch_thumb_size) - var(--switch_track_outline_width)),
+        calc(var(--switch_track_height) - var(--switch_thumb_size) - var(--switch_track_outline_width))
+      );
+
+      .switch-thumb-icon {
+        @include mixins.use-styles(switch, icon, checked);
+      }
+    }
+
+    &-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      inset: 0;
+
+      @include mixins.use-styles(switch, icon);
+
+      &[data-visible] {
+        @include mixins.use-styles(switch, icon, visible);
+      }
+
+      svg {
+        @include mixins.use-size(switch, icon, size);
+      }
+    }
+  }
+
+  &-label {
+    cursor: pointer;
+    display: table-cell;
+    word-break: break-word;
+
+    &[data-disabled] {
+      cursor: default;
+      @include mixins.use-styles(switch, label, disabled);
+    }
+
+    @include mixins.use-styles(switch, label);
+  }
+}

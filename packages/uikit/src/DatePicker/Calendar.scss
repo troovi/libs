@@ -1,0 +1,125 @@
+@use '../mixins.scss';
+
+.calendar {
+  @include mixins.use-styles(calendar);
+
+  &-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mixins.use-styles(calendar, header);
+  }
+
+  &-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    outline: none;
+    cursor: pointer;
+
+    @include mixins.use-styles(calendar, navigation);
+    @include mixins.use-size(calendar, navigation, size);
+
+    &[data-side='left'] {
+      left: 0;
+    }
+
+    &[data-side='right'] {
+      right: 0;
+    }
+
+    &:hover {
+      @include mixins.use-styles(calendar, navigation, hover);
+    }
+
+    &:active {
+      @include mixins.use-styles(calendar, navigation, active);
+    }
+
+    svg {
+      @include mixins.use-size(calendar, navigation, icon, size);
+    }
+  }
+
+  &-pickers {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &-names {
+    display: flex;
+  }
+
+  &-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mixins.use-styles(calendar, name);
+  }
+
+  &-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  &-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    @include mixins.use-styles(calendar, day);
+
+    &:not([data-disabled]) {
+      cursor: pointer;
+
+      &:hover {
+        @include mixins.use-styles(calendar, day, hover);
+      }
+
+      &[data-active] {
+        @include mixins.use-styles(calendar, day, active);
+      }
+
+      &[data-selected] {
+        @include mixins.use-styles(calendar, day, selected);
+
+        .calendar-day-number::after {
+          background-color: #ffffff;
+        }
+      }
+
+      &[data-void] {
+        background-color: unset;
+        cursor: default;
+      }
+    }
+
+    &[data-disabled] {
+      @include mixins.use-styles(calendar, day, disabled);
+    }
+
+    &[data-today] {
+      .calendar-day-number {
+        position: relative;
+
+        &::after {
+          position: absolute;
+          height: 2px;
+          border-radius: 10px;
+          content: '';
+          display: block;
+          width: 100%;
+          bottom: 0px;
+          right: 0;
+          background-color: #529ef4;
+        }
+      }
+    }
+  }
+}

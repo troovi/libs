@@ -1,0 +1,24 @@
+.form-input-base {
+  padding: 0px var(--form_space, 0);
+  border-radius: var(--form_border-radius);
+
+  &-left-element {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+  }
+
+  &-right-element {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+  }
+}

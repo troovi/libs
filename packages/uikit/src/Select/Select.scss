@@ -1,85 +1,80 @@
-@import '../mixins.scss';
-
-:root {
-  --select-background: #141414;
-}
+@use '../mixins.scss';
 
 .select {
-  @include button-layout();
-  @include items-spacing(10px);
-
-  color: var(--color-text);
-  outline: none;
-  display: flex;
-  align-items: center;
   cursor: pointer;
-  text-align: left;
-  font-family: inherit;
+  max-width: 100%;
 
-  background: #101010;
-  border: 1px solid #686868;
-
-  &[data-hover] {
-    background: #2e2e2e;
+  &-layout {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: inherit;
   }
 
-  &:active {
-    background: #212121;
+  &-placeholder {
+    user-select: none;
+
+    @include mixins.use-styles(form, placeholder);
   }
 
-  &[data-error] {
-    border-color: var(--color-error);
-  }
+  &-content {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    align-self: stretch;
+    overflow: hidden;
 
-  &-label {
-    @include truncate-text();
+    &:first-child {
+      padding-left: var(--form_space, 0);
+    }
 
-    flex: 1 1 auto;
-
-    &[data-placeholder] {
-      opacity: 0.6;
+    &-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
-  &-arrow {
-    margin-left: 10px;
+  &-element {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
 
-    svg {
-      opacity: 0.6;
+  &-close-button {
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 0px var(--form_space, 0);
+    height: 100%;
+    outline: none;
+    color: var(--select_clean_color);
+
+    &:hover {
+      color: var(--select_clean_hover_color);
+    }
+  }
+
+  &-expand {
+    margin-right: var(--form_space, 0);
+
+    &:first-child {
+      margin-left: var(--form_space, 0);
     }
   }
 }
 
-.select-popup {
-  @include popover();
+// expand icon
 
-  flex-direction: column;
+.expand-icon {
+  color: var(--select_expand_color);
+  transition: transform 0.2s;
+}
 
-  min-width: var(--button-w);
-  background: var(--popover-background);
-  box-shadow: var(--popover-shadow);
-  box-shadow: 0px 20px 14px 2px #0000007d;
-  border-radius: var(--forms-radius);
-
-  &[data-enter][data-closed] {
-    opacity: 0;
-  }
-
-  &[data-enter] {
-    opacity: 1;
-    transition-delay: 0;
-    transition-duration: 0.1s;
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 1, 0.75, 0.9);
-  }
-
-  &[data-leave] {
-    opacity: 0;
-    transition-delay: 0;
-    transition-duration: 0.1s;
-    transition-property: opacity;
-    min-width: var(--button-w);
-    left: var(--prev-left) !important;
-    transition-timing-function: cubic-bezier(0.4, 1, 0.75, 0.9);
+.form {
+  &[data-state='open'] {
+    .expand-icon {
+      transform: rotate(180deg);
+    }
   }
 }

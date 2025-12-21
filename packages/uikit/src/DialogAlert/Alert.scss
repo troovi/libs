@@ -1,0 +1,52 @@
+@use '../mixins.scss';
+
+.alert {
+  max-height: max-content;
+
+  @include mixins.use-styles(alert);
+
+  &-container {
+    @include mixins.use-styles(alert, container);
+  }
+
+  &-overlay {
+    @include mixins.use-styles(alert, overlay);
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: row;
+
+    @include mixins.use-styles(alert, body);
+  }
+
+  &-title {
+    @include mixins.use-styles(alert, title);
+  }
+
+  &-description {
+    @include mixins.use-styles(alert, description);
+  }
+
+  &-icon {
+    @include mixins.use-styles(alert, icon);
+
+    svg {
+      @include mixins.use-size(alert, icon, size);
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+
+    @include mixins.use-styles(alert, content);
+  }
+
+  &-footer {
+    display: flex;
+    justify-content: end;
+
+    @include mixins.use-styles(alert, footer);
+  }
+}

@@ -1,21 +1,68 @@
-import './Radio.scss'
-
-import cn from 'classnames'
-import * as Headless from '@headlessui/react'
+import { useId } from 'react'
+import * as RadioPrimitive from '@radix-ui/react-radio-group'
 import { attr } from '@troovi/utils-browser'
 
-interface RadioProps {
-  checked: boolean
-  className?: string
-  setChecked: (checked: boolean) => void
-  label?: React.ReactNode
+interface RadioOption<T> {
+  value: T
+  label: React.ReactNode
 }
 
-export const Radio = ({ className, checked, setChecked, label }: RadioProps) => {
+interface RadioGroupProps<T> {
+  options: RadioOption<T>[]
+  onChange: (event: T) => void
+  value: T | null
+  disabled?: boolean
+  required?: boolean
+  size?: 'sm' | 'md'
+}
+
+export const RadioGroup = <T extends string>(props: RadioGroupProps<T>) => {
+  const { options, value, onChange, disabled, required, size } = props
+
   return (
-    <div onClick={() => setChecked(!checked)} className={cn('radio', className)}>
-      <div className="radio-icon" data-checked={attr(checked)} />
-      {label && <Headless.Label>{label}</Headless.Label>}
-    </div>
+    <RadioPrimitive.Root
+      className="radio-group"
+      disabled={disabled}
+      data-required={attr(required && !value)}
+      data-v={value}
+      value={value}
+      onValueChange={(e) => onChange(e as T)}
+    >
+      {options.map((option, i) => (
+        <Radio
+          key={`radio-${option.value}-${i}`}
+          {...option}
+          size={size}
+          disabled={disabled}
+          required={required && !value}
+        />
+      ))}
+    </RadioPrimitive.Root>
+  )
+}
+
+interface RadioProps extends RadioOption<string> {
+  size?: 'sm' | 'md'
+  disabled?: boolean
+  required?: boolean
+}
+
+export const Radio = ({ value, label, size = 'md', disabled, required }: RadioProps) => {
+  const id = useId()
+
+  return (
+    <span
+      className="radio"
+      data-disabled={attr(disabled)}
+      data-size={size}
+      data-required={attr(required)}
+    >
+      <RadioPrimitive.Item className="radio-box" value={value} disabled={disabled} id={id}>
+        <RadioPrimitive.Indicator className="radio-mark" />
+      </RadioPrimitive.Item>
+      <label className="radio-label" htmlFor={id} data-disabled={attr(disabled)}>
+        {label}
+      </label>
+    </span>
   )
 }

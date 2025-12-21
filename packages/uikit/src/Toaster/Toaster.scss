@@ -1,0 +1,151 @@
+@use '../mixins.scss';
+
+@mixin use-appearance($appearance) {
+  &[data-appearance='#{$appearance}'] {
+    @include mixins.use-styles(toaster, $appearance);
+
+    .toaster {
+      &-icon {
+        @include mixins.use-styles(toaster, $appearance, icon);
+      }
+
+      &-title {
+        @include mixins.use-styles(toaster, $appearance, title);
+      }
+
+      &-description {
+        @include mixins.use-styles(toaster, $appearance, description);
+      }
+    }
+  }
+}
+
+.toaster {
+  pointer-events: all;
+  position: absolute;
+  outline: none;
+  opacity: 1;
+  transition: transform 0.4s, opacity 0.4s, height 0.4s, box-shadow 0.2s;
+  transform: var(--y);
+  display: flex;
+  align-items: center;
+
+  @include mixins.use-styles(toaster);
+
+  // appearance
+
+  @include use-appearance(primary);
+  @include use-appearance(neutral);
+  @include use-appearance(negative);
+  @include use-appearance(positive);
+  @include use-appearance(warning);
+
+  &[data-expanded]:not([data-mounted]) {
+    opacity: 0;
+    --y: translateY(calc(var(--lift) * -100% - var(--toaster_viewport_offset, 0)));
+  }
+
+  &[data-expanded][data-mounted] {
+    --y: translateY(calc(var(--lift) * var(--offset)));
+  }
+
+  &[data-state='closed'] {
+    animation: toastOut 400ms, toastFadeOut 400ms;
+  }
+
+  &-viewport {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    left: var(--toaster_viewport_offset);
+    right: var(--toaster_viewport_offset);
+    z-index: 40;
+    outline: none;
+    pointer-events: none;
+    gap: var(--toasters-gap, 0);
+
+    &[data-side='top'] {
+      top: var(--toaster_viewport_offset);
+
+      .toaster {
+        --lift: 1;
+        top: 0;
+      }
+    }
+
+    &[data-side='bottom'] {
+      bottom: var(--toaster_viewport_offset);
+      top: auto;
+
+      .toaster {
+        --lift: -1;
+        bottom: 0;
+      }
+    }
+
+    &[data-align='center'] {
+      align-items: center;
+    }
+
+    &[data-align='right'] {
+      align-items: flex-end;
+    }
+
+    &[data-align='left'] {
+      align-items: flex-start;
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+
+    @include mixins.use-styles(toaster, content);
+  }
+
+  &-title {
+    @include mixins.use-styles(toaster, title);
+  }
+
+  &-description {
+    @include mixins.use-styles(toaster, description);
+  }
+
+  &-close {
+    cursor: pointer;
+    top: var(--toaster_close_space, 0);
+    right: var(--toaster_close_space, 0);
+    position: absolute;
+    transition: color 0.2s;
+
+    @include mixins.use-styles(toaster, close);
+
+    &:hover {
+      @include mixins.use-styles(toaster, close, hover);
+    }
+
+    svg {
+      @include mixins.use-size(toaster, close, size);
+    }
+  }
+
+  &-icon {
+    @include mixins.use-styles(toaster, icon);
+
+    svg {
+      @include mixins.use-size(toaster, icon, size);
+    }
+  }
+}
+
+@keyframes toastOut {
+  to {
+    transform: translateY(calc(var(--lift) * -100% - var(--toaster_viewport_offset)));
+  }
+}
+
+@keyframes toastFadeOut {
+  to {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,25 @@
+@use '../mixins.scss';
+
+.dialog {
+  &-container {
+    @include mixins.use-styles(dialog, container);
+  }
+
+  &-overlay {
+    @include mixins.use-styles(dialog, overlay);
+  }
+
+  @include mixins.use-styles(dialog);
+}
+
+.dialog-container {
+  @each $size, $v in (xxs, xs, s, m, l, xl, xxl, full) {
+    &[data-size='#{$size}'] {
+      @include mixins.use-styles(dialog, size, $size, container);
+
+      .dialog {
+        @include mixins.use-styles(dialog, size, $size);
+      }
+    }
+  }
+}

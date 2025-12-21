@@ -1,7 +1,7 @@
 import './StepperInput.scss'
 
 import { ChevronDown, ChevronUp } from '@blueprintjs/icons'
-import { Input } from '../Input'
+import { Form } from '../Form'
 import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-input'
 import { usePress } from '@react-aria/interactions'
 import { Button } from '../Button'
@@ -18,7 +18,7 @@ export const StepperInput = ({ inputStyle, placeholder, buttons, ...options }: S
 
   return (
     <div className="number-input-container">
-      <Input
+      <Form
         ref={inputRef}
         placeholder={placeholder}
         style={inputStyle}

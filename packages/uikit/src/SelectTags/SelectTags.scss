@@ -1,0 +1,66 @@
+@use '../mixins.scss';
+
+.select-tags {
+  display: flex;
+  flex-direction: column;
+
+  .form-input {
+    padding-left: var(--form_space, 0);
+  }
+
+  &-empty {
+    @include mixins.use-styles(tag, empty);
+  }
+
+  &-container {
+    display: flex;
+    align-items: center;
+    cursor: text;
+
+    .expand-icon {
+      margin: 0px var(--form_space, 0);
+    }
+  }
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+
+  @include mixins.use-styles(tag);
+
+  &-name {
+    @include mixins.use-styles(tag, name);
+  }
+
+  &-close-button {
+    cursor: pointer;
+    @include mixins.use-styles(tag, close);
+
+    &:hover {
+      @include mixins.use-styles(tag, close, hover);
+    }
+  }
+
+  &-close-icon {
+    @include mixins.use-size(tag, close, size);
+  }
+
+  &-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+    flex-wrap: wrap;
+    min-width: 0;
+    position: relative;
+
+    @include mixins.use-styles(tag, container);
+
+    &:not([data-readonly]) {
+      padding-bottom: 0;
+    }
+  }
+}

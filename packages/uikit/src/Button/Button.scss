@@ -1,114 +1,128 @@
-@import '../mixins.scss';
+@use '../mixins.scss';
+
+// scheme: bth-[appearance]-[mode]-[property]--[state]
+//
+// appearance:  primary, neutral, positive, negative
+// mode: default, outline, minimal
+// state: enabled, hovered, pressed, disabled, loading
+// property: text, background, shadow, border
+
+@mixin use-mode($appearance, $mode) {
+  @include mixins.use-styles(button, $appearance, $mode, enabled);
+
+  &:hover {
+    @include mixins.use-styles(button, $appearance, $mode, hovered);
+  }
+
+  &[data-active],
+  &:active {
+    @include mixins.use-styles(button, $appearance, $mode, pressed);
+  }
+
+  &[data-loading] {
+    @include mixins.use-styles(button, $appearance, $mode, loading);
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    @include mixins.use-styles(button, $appearance, $mode, disabled);
+  }
+}
+
+@mixin use-appearance($appearance) {
+  &[data-appearance='#{$appearance}'] {
+    &[data-mode='default'] {
+      @include use-mode($appearance, default);
+    }
+
+    &[data-mode='outline'] {
+      @include use-mode($appearance, outline);
+    }
+
+    &[data-mode='minimal'] {
+      @include use-mode($appearance, minimal);
+    }
+  }
+}
 
 .button {
-  @include button-layout();
-  @include items-spacing(8px);
-
-  color: #ffffff;
+  overflow: visible;
+  box-sizing: border-box;
+  -moz-user-focus: ignore;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-decoration: none;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-family: inherit;
+
+  @include mixins.use-styles(button);
+  @include mixins.items-spacing(8px);
+
+  // fill
+
+  &[data-fill] {
+    width: 100%;
+  }
+
+  // align
+
+  &[data-align='center'] {
+    justify-content: center;
+
+    & > .button-text {
+      text-align: center;
+    }
+  }
+
+  &[data-align='left'] {
+    justify-content: left;
+
+    & > .button-text {
+      flex: 1 1 auto;
+      text-align: left;
+    }
+  }
+
+  &[data-align='right'] {
+    justify-content: right;
+
+    & > .button-text {
+      flex: 1 1 auto;
+      text-align: right;
+    }
+  }
+
+  // sizes
+
+  &[data-size='sm'] {
+    @include mixins.use-styles(button, size, sm);
+  }
+
+  &[data-size='md'] {
+    @include mixins.use-styles(button, size, md);
+  }
+
+  &[data-size='lg'] {
+    @include mixins.use-styles(button, size, lg);
+  }
+
+  // text
 
   &-text {
-    @include truncate-text();
+    @include mixins.truncate-text();
   }
 
-  &[data-accent='none'] {
-    background: #101010;
-    border: 1px solid #686868;
+  // appearance
 
-    &[data-minimal] {
-      background: transparent;
-    }
-
-    &:hover {
-      background: #1d1d1d;
-    }
-
-    &[data-highlighted] {
-      background: #383838;
-    }
-
-    &:active,
-    &[data-pressed] {
-      box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
-      background: #2b2b2b;
-    }
-
-    &[data-disabled] {
-      border-color: #d0d0d0;
-      color: #afafaf;
-    }
-  }
-
-  &[data-accent='light'] {
-    color: #000;
-    background: #fff;
-
-    &[data-disabled] {
-      border-color: #8c8c8c;
-    }
-  }
-
-  &[data-accent='primary'] {
-    background: #278dc2;
-
-    &:hover {
-      background: #257dad;
-    }
-
-    &[data-active] {
-      background: #1d6a93;
-    }
-
-    &[data-disabled] {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-  }
-
-  &[data-accent='danger'] {
-    background: #3c0a03;
-    border: 1px solid #ff371894;
-
-    &:hover {
-      background: #c52735;
-      border: 1px solid #c52735;
-    }
-
-    &[data-active] {
-      box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
-      background: #ac212c;
-      border-color: #ac212c;
-    }
-
-    &[data-disabled] {
-      border-color: #d0d0d0;
-      color: #afafaf;
-    }
-  }
-
-  &[data-accent='success'] {
-    background: #0b9923;
-    border: 1px solid #0b9923;
-
-    &:hover {
-      background: #0b791d;
-      border: 1px solid #0b791d;
-    }
-
-    &[data-active] {
-      box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
-      background: #096b19;
-      border-color: #096b19;
-    }
-
-    &[data-disabled] {
-      border-color: #2e7a3b;
-      color: #2e7a3b;
-    }
-  }
+  @include use-appearance(primary);
+  @include use-appearance(neutral);
+  @include use-appearance(negative);
+  @include use-appearance(positive);
 }

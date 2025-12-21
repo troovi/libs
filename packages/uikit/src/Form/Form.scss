@@ -1,0 +1,70 @@
+@use '../mixins.scss';
+
+@mixin use-size($size) {
+  &[data-size='#{$size}'] {
+    .form-input {
+      @include mixins.use-styles(form, size, $size);
+    }
+  }
+}
+
+.form {
+  position: relative;
+
+  @include mixins.use-styles(form);
+
+  @include use-size(sm);
+  @include use-size(md);
+  @include use-size(lg);
+
+  &-space-margin {
+    margin: 0px var(--form_space, 0);
+  }
+
+  &:hover {
+    @include mixins.use-styles(form, hover);
+  }
+
+  &:active {
+    @include mixins.use-styles(form, active);
+  }
+
+  &[data-fill] {
+    width: 100%;
+
+    .form-input {
+      width: 100%;
+    }
+  }
+
+  &[data-required] {
+    @include mixins.use-styles(form, required);
+  }
+
+  &[data-disabled] {
+    @include mixins.use-styles(form, disabled);
+
+    .form-input {
+      cursor: inherit;
+    }
+  }
+
+  &:focus-within {
+    @include mixins.use-styles(form, focus);
+  }
+}
+
+.form-input {
+  outline: none;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  &::placeholder {
+    user-select: none;
+
+    @include mixins.use-styles(form, placeholder);
+  }
+}

@@ -1,5 +1,13 @@
+export const keys = (object: object) => {
+  return Object.keys(object)
+}
+
+export const keysLength = (object: object) => {
+  return keys(object).length
+}
+
 export const isEmpthy = (object: object) => {
-  return Object.keys(object).length === 0
+  return keysLength(object) === 0
 }
 
 export const omit = <T extends object>(object: T, key: keyof T) => {

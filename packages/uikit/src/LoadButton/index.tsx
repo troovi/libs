@@ -3,14 +3,14 @@ import { UseLoadingProps, useLoading } from '../__hooks/use-loading'
 
 export interface LoadButtonProps extends UseLoadingProps, Omit<ButtonProps, 'onClick'> {}
 
-export const LoadButton = ({ onClick, accent = 'primary', ...rest }: LoadButtonProps) => {
+export const LoadButton = ({ onClick, appearance = 'primary', ...rest }: LoadButtonProps) => {
   const { isLoading, isError, handleClick } = useLoading({ onClick })
 
   return (
     <Button
-      accent={isError ? 'danger' : accent}
+      appearance={isError ? 'negative' : appearance}
       {...rest}
-      isLoading={isLoading}
+      loading={isLoading}
       onClick={handleClick}
     />
   )

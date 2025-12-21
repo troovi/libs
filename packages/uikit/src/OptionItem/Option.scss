@@ -1,0 +1,89 @@
+@use '../mixins.scss';
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+
+  @include mixins.use-styles(option, list);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+
+  @include mixins.use-styles(option);
+
+  &-icon {
+    @include mixins.use-styles(option, icon);
+
+    svg {
+      @include mixins.use-size(option, icon, size);
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 100%;
+
+    &-inner {
+      @include mixins.use-styles(option, content, layout);
+    }
+  }
+
+  &-title {
+    word-break: break-word;
+  }
+
+  &-label {
+    @include mixins.use-styles(option, label);
+  }
+
+  &-check {
+    @include mixins.use-styles(option, check);
+
+    svg {
+      @include mixins.use-size(option, check, size);
+    }
+  }
+
+  & > * {
+    margin-right: 8px;
+  }
+
+  & > :last-child {
+    margin-right: 0;
+  }
+
+  &:not([data-disabled]) {
+    cursor: pointer;
+
+    &:hover {
+      @include mixins.use-styles(option, hover);
+    }
+
+    &:active {
+      @include mixins.use-styles(option, active);
+    }
+  }
+
+  &[data-selected] {
+    @include mixins.use-styles(option, selected);
+  }
+
+  &[data-disabled] {
+    user-select: none;
+
+    @include mixins.use-styles(option, disabled);
+  }
+
+  &[data-minimal] {
+    @include mixins.use-styles(option, minimal);
+
+    &[data-selected] {
+      @include mixins.use-styles(option, minimal, selected);
+    }
+  }
+}

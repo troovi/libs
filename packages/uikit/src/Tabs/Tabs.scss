@@ -1,44 +1,58 @@
-.TabsRoot {
+@use '../mixins.scss';
+
+.tabs {
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  position: relative;
+
+  @include mixins.use-styles(tab, container);
 }
 
-.TabsList {
-  flex-shrink: 0;
-  display: flex;
-  box-shadow: inset 0 -1px 0 0 #222222;
+.tab-indicator-container {
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+
+  @include mixins.use-styles(tab, indicator, container);
 }
 
-.TabsTrigger {
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  @include mixins.use-styles(tab, indicator);
+}
+
+.tab {
   outline: none;
   font-family: inherit;
-  padding: 0 20px;
-  height: 45px;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  color: #fff;
   background-color: transparent;
   user-select: none;
   position: relative;
   cursor: pointer;
-  font-size: inherit;
   font-family: inherit;
 
-  &[data-state='active'] {
-    color: #2d72d2;
+  @include mixins.use-styles(tab);
 
-    &:before {
-      box-sizing: border-box;
-      content: '';
-      height: 2px;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: #2d72d2;
-    }
+  &[data-disabled] {
+    cursor: not-allowed;
+    @include mixins.use-styles(tab, disabled);
+  }
+
+  &:not([data-disabled]):not([data-state='active']):hover {
+    @include mixins.use-styles(tab, hover);
+  }
+
+  &[data-state='active'] {
+    @include mixins.use-styles(tab, active);
   }
 }

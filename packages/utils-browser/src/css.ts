@@ -40,7 +40,7 @@ export const setCssVariable = (property: string, value: string) => {
   document.documentElement.style.setProperty(property, value)
 }
 
-export const varToStyle = (props: Record<string, string>) => {
+export const varToStyle = (props: Record<string, string | number>) => {
   return props as React.CSSProperties
 }
 

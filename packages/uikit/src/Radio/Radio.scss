@@ -1,19 +1,148 @@
-.radio-icon {
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  border: 1px solid #ffffff75;
-  border-radius: 100px;
+@use '../mixins.scss';
 
-  &[data-checked] {
-    background-color: #fff;
+.radio {
+  display: inline-table;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  max-width: max-content;
+
+  @include mixins.use-styles(radio);
+
+  &:not([data-required]):not([data-disabled]):hover {
+    .radio-box[data-state='unchecked'] {
+      @include mixins.use-styles(radio, box, hover);
+    }
+  }
+
+  &:not([data-required]):not([data-disabled]):active {
+    .radio-box[data-state='unchecked'] {
+      @include mixins.use-styles(radio, box, active);
+    }
+  }
+
+  &[data-disabled] {
+    @include mixins.use-styles(radio, disabled);
+  }
+
+  &[data-required] {
+    @include mixins.use-styles(radio, required);
+
+    .radio-box {
+      &::before {
+        content: ' ';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+
+        @include mixins.use-styles(radio, required, box);
+        border-radius: mixins.get-var-name(radio, box, border-radius);
+      }
+    }
+  }
+
+  &[data-size='sm'] {
+    @include mixins.use-styles(radio, size, sm);
+
+    .radio-box {
+      @include mixins.use-size(radio, size, sm, box);
+    }
+
+    .radio-mark {
+      @include mixins.use-size(radio, size, sm, mark);
+    }
+  }
+
+  &[data-size='md'] {
+    @include mixins.use-styles(radio, size, md);
+
+    .radio-box {
+      @include mixins.use-size(radio, size, md, box);
+    }
+
+    .radio-mark {
+      @include mixins.use-size(radio, size, md, mark);
+    }
+  }
+
+  &-box {
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.1s linear;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mixins.use-styles(radio, box);
+
+    &[data-disabled] {
+      cursor: default;
+    }
+
+    &:after {
+      visibility: hidden;
+      content: '\00A0';
+    }
+
+    &[data-state='checked'] {
+      @include mixins.use-styles(radio, box, checked);
+    }
+  }
+
+  &-mark {
+    position: absolute;
+    @include mixins.use-styles(radio, mark);
+
+    &[data-state='checked'] {
+      @include mixins.use-styles(radio, mark, in);
+    }
+
+    &[data-state='unchecked'] {
+      @include mixins.use-styles(radio, mark, out);
+    }
+  }
+
+  &-label {
+    cursor: pointer;
+    display: table-cell;
+    word-break: break-word;
+
+    &[data-disabled] {
+      cursor: default;
+    }
+
+    @include mixins.use-styles(radio, label);
   }
 }
 
-.radio {
+.radio-group {
   display: flex;
-  align-items: center;
-  outline: none;
-  cursor: pointer;
-  gap: 6px;
+  flex-direction: column;
+  @include mixins.use-styles(radio, group);
 }
+
+// .radio-icon {
+//   width: 16px;
+//   height: 16px;
+//   background-color: transparent;
+//   border: 1px solid #ffffff75;
+//   border-radius: 100px;
+
+//   &[data-checked] {
+//     background-color: #fff;
+//   }
+// }
+
+// .radio {
+//   display: flex;
+//   align-items: center;
+//   outline: none;
+//   cursor: pointer;
+//   gap: 6px;
+// }

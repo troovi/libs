@@ -1,18 +1,102 @@
-:root {
-  --forms-radius: 4px;
-  --forms-size-sm: 24px;
-  --forms-size-md: 30px;
-  --forms-size-lg: 40px;
+@use 'sass:map';
+@use 'sass:string';
+@use 'sass:list';
 
-  --border-color: #8f8f8f;
-  --color-error: #e92c2c;
-  --color-text: #e1e3e6;
+$button-appearances: ();
+
+$tokens: ();
+
+@function str-split($string, $delimiter) {
+  $result: ();
+  $buffer: '';
+
+  @for $i from 1 through string.length($string) {
+    $char: string.slice($string, $i, $i);
+
+    @if ($char == $delimiter) {
+      $result: list.append($result, $buffer);
+      $buffer: '';
+    } @else {
+      $buffer: $buffer + $char;
+    }
+  }
+
+  $result: list.append($result, $buffer);
+
+  @return $result;
 }
 
-.h-full {
-  height: 100%;
+@function list-slice($list, $start, $end: list.length($list)) {
+  $new: ();
+
+  @for $i from $start through $end {
+    $new: list.append($new, list.nth($list, $i));
+  }
+
+  @return $new;
 }
 
-.overflow-y-scroll {
-  overflow-y: scroll;
+/// Добавляет значение в многоуровневую карту
+@function map-deep-set($map, $keys, $value) {
+  $current: $map;
+  $key: list.nth($keys, 1);
+
+  @if list.length($keys) == 1 {
+    @return map.merge(
+      $current,
+      (
+        $key: $value
+      )
+    );
+  }
+
+  $nested: map.get($current, $key);
+
+  @if $nested == null {
+    $nested: ();
+  }
+
+  $nested: map-deep-set($nested, list-slice($keys, 2), $value);
+
+  @return map.merge(
+    $current,
+    (
+      $key: $nested
+    )
+  );
+}
+
+@mixin use-button-properties($vars) {
+  @each $full-name, $v in $vars {
+    // Разбиваем путь: primary-default-enabled-background → ('primary', 'default', 'enabled', 'background')
+    $parts: str-split($full-name, '_');
+    // Создаём CSS переменную:
+    $css-var: string.unquote('var(--btn_#{$full-name})');
+    // Глубоко добавляем значение в структуру
+    $button-appearances: map-deep-set($button-appearances, $parts, $css-var) !global;
+  }
+}
+
+@mixin use-tokens($components) {
+  @each $component-name, $v in $components {
+    $component-vars: map.get($components, $component-name);
+
+    @each $path, $v in $component-vars {
+      $name: #{$component-name}_#{$path};
+      // Разбиваем путь: primary_default_enabled_background → ('primary', 'default', 'enabled', 'background')
+      $keys: str-split($name, '_');
+      // Создаём CSS переменную:
+      $css-var: string.unquote('var(--#{$name})');
+      // Глубоко добавляем значение в структуру
+      $tokens: map-deep-set($tokens, $keys, $css-var) !global;
+      // set scss var
+      --#{$name}: #{map.get($component-vars, $path)};
+    }
+  }
+}
+
+@mixin use-css-vars($prefix, $map) {
+  @each $name, $value in $map {
+    --#{$prefix}_#{$name}: #{$value};
+  }
 }

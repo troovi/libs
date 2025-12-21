@@ -1,43 +1,46 @@
 import { Button } from '@/Button'
-import { AnchorTo, Popover } from '@/Popover'
-import { RefObject, forwardRef } from 'react'
+import { Popover, PopoverProps } from '@/Popover'
+import { useState } from 'react'
 
 export const PopoversExample = () => {
+  const [minimal] = useState(false)
+  const [arrows] = useState(true)
+
   return (
     <div className="docs-popover-placement-example">
       <div className="docs-example-grid">
         <div className="docs-example-grid-1-1" />
         <div className="docs-example-grid-1-2">
-          <div style={{ display: 'flex' }}>
-            <PlacementPopover placement="bottom start" />
-            <PlacementPopover placement="bottom" />
-            <PlacementPopover placement="bottom end" />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <PlacementPopover side="bottom" align="start" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="bottom" align="center" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="bottom" align="end" minimal={minimal} showArrows={arrows} />
           </div>
         </div>
         <div className="docs-example-grid-1-3" />
         <div className="docs-example-grid-2-1">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <PlacementPopover placement="right start" />
-            <PlacementPopover placement="right" />
-            <PlacementPopover placement="right end" />
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+            <PlacementPopover side="right" align="start" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="right" align="center" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="right" align="end" minimal={minimal} showArrows={arrows} />
           </div>
         </div>
         <div className="docs-example-grid-2-2">
           <em>Button positions are flipped here so that all popovers open inward.</em>
         </div>
         <div className="docs-example-grid-2-3">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <PlacementPopover placement="left start" />
-            <PlacementPopover placement="left" />
-            <PlacementPopover placement="left end" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <PlacementPopover side="left" align="start" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="left" align="center" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="left" align="end" minimal={minimal} showArrows={arrows} />
           </div>
         </div>
         <div className="docs-example-grid-3-1" />
         <div className="docs-example-grid-3-2">
-          <div style={{ display: 'flex' }}>
-            <PlacementPopover placement="top start" />
-            <PlacementPopover placement="top" />
-            <PlacementPopover placement="top end" />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <PlacementPopover side="top" align="start" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="top" align="center" minimal={minimal} showArrows={arrows} />
+            <PlacementPopover side="top" align="end" minimal={minimal} showArrows={arrows} />
           </div>
         </div>
         <div className="docs-example-grid-3-3" />
@@ -46,26 +49,22 @@ export const PopoversExample = () => {
   )
 }
 
-const PlacementPopover = ({ placement }: { placement: AnchorTo }) => {
+const PlacementPopover = (props: Omit<PopoverProps, 'content' | 'children'>) => {
   return (
     <Popover
-      className="w-full"
-      arrows
-      placement={placement}
+      {...props}
+      // sideOffset={0}
+
       content={() => (
-        <div className="text-white p-12">
-          <div>Popover content 1</div>
-          <div>Popover content 2</div>
+        <div className="p-12">
+          <div>Popover content: {props.align}</div>
+          <div>Popover content: {props.side}</div>
         </div>
       )}
     >
-      {forwardRef((props, ref) => {
-        return (
-          <Button fill {...props} ref={ref as RefObject<HTMLButtonElement>}>
-            {placement}
-          </Button>
-        )
-      })}
+      <Button fill>
+        {props.side} {props.align}
+      </Button>
     </Popover>
   )
 }

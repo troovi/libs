@@ -111,6 +111,9 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
       ref={ref}
       onWheel={onWheel}
       onScroll={onScroll}
+      onMouseDown={(e) => {
+        e.preventDefault()
+      }}
       style={{
         ...style,
         ...props.style,

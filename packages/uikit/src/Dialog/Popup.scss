@@ -1,0 +1,55 @@
+@use '../mixins.scss';
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  z-index: 1000;
+  outline: none;
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+
+  @include mixins.use-styles(popup);
+
+  &-overlay {
+    inset: 0;
+    overflow: auto;
+    position: fixed;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+    z-index: 9999;
+
+    @include mixins.use-styles(popup, overlay);
+
+    &[data-state='open'] {
+      @include mixins.use-styles(popup, overlay, in);
+    }
+
+    &[data-state='closed'] {
+      @include mixins.use-styles(popup, overlay, out);
+    }
+  }
+
+  &-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none !important;
+    outline: none;
+
+    &[data-state='open'] {
+      @include mixins.use-styles(popup, in);
+    }
+
+    &[data-state='closed'] {
+      @include mixins.use-styles(popup, out);
+    }
+  }
+}
