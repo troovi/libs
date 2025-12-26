@@ -22,6 +22,7 @@ fs.readdirSync(packagesDir).forEach((packageName) => {
     update(packageContent.devDependencies)
     update(packageContent.dependencies)
 
+    // WARNING: every package must have this "types" path after compilation:
     packageContent.types = './dist/index.d.ts'
 
     fs.writeFileSync(packagePath, JSON.stringify(packageContent, null, 2))

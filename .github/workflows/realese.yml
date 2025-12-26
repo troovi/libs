@@ -35,6 +35,7 @@ jobs:
               - 'packages/formkit/package.json'
             uikit:
               - 'packages/uikit/package.json'
+      - run: echo '${{ toJson(github.event.head_commit.modified) }}'
 
   utils-js:
     needs: changes
@@ -101,7 +102,7 @@ jobs:
 
   utils-math:
     needs: changes
-    if: ${{ needs.changes.outputs.utils-math == 'true' }}
+    if: contains(github.event.head_commit.modified, 'packages/utils-math/package.json')
     runs-on: ubuntu-latest
     permissions:
       packages: write

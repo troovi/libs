@@ -16,7 +16,7 @@ export const multiply = (a: number, b: number) => {
   try {
     return operators.multiply(big(a), big(b)).toNumber()
   } catch (e) {
-    console.log({ a, b })
+    console.log(a, b)
     throw e
   }
 }
