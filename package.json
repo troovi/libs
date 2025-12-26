@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "github:setup": "node ./setup.js",
     "build": "npm run build -w=@troovi/utils-js -w=@troovi/utils-browser -w=@troovi/utils-nodejs -w=@troovi/state-agent -w=@troovi/formkit -w=@troovi/uikit"
   }
 }

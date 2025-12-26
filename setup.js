@@ -1,10 +1,27 @@
 const fs = require('fs')
 
-const packageJsonPath = './package.json'
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+const packagesDir = `packages`
+
+const update = (packages) => {
+  for (const package in packages) {
+    if (package.startsWith('@troovi')) {
+      packages[package] = '*'
+    }
+  }
+}
 
 console.log('Setup GitHub Packages...')
 
-packageJson.dependencies['@troovi/utils'] = '*'
+fs.readdirSync(packagesDir).forEach((packageName) => {
+  const packageDir = `${packagesDir}/${packageName}`
+  const packagePath = `${packageDir}/package.json`
 
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
+  if (fs.lstatSync(packageDir) && fs.existsSync(packagePath)) {
+    const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
+
+    update(packageContent.devDependencies)
+    update(packageContent.dependencies)
+
+    fs.writeFileSync(packagePath, JSON.stringify(packageContent, null, 2))
+  }
+})

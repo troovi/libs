@@ -18,9 +18,11 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - run: ls
       - run: npm i
-      - run: ls
-        working-directory: packages/utils-js
-      - run: ls
+      - run: npm run build
+      - run: npm run github:setup
+      - run: cat package.json
+        working-directory: packages/uikit
+      # - run: ls
       # - run: cat package.json
       # - run: npm i
       #   working-directory: utils
