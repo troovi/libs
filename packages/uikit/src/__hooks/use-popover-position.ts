@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { px } from '@troovi/utils-browser'
+import { px } from '@companix/utils-browser'
 
 export const usePopoverLeftValue = () => {
   const popoverRef = useRef<HTMLDivElement>(null)

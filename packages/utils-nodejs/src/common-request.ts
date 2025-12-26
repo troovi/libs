@@ -1,4 +1,4 @@
-import { EventBroadcaster } from '@troovi/utils-js'
+import { EventBroadcaster } from '@companix/utils-js'
 
 export const commonQuery = <T>(request: () => Promise<T>) => {
   const state = { isLoading: false }

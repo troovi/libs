@@ -1,5 +1,5 @@
 import * as SwitchPrimitive from '@radix-ui/react-switch'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import { useId } from 'react'
 
 export interface SwitchProps {

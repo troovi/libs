@@ -22,8 +22,6 @@ jobs:
       - run: npm run github:setup
       - run: npm publish
         working-directory: packages/utils-js
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   # exchange-client:
   #   needs: utils

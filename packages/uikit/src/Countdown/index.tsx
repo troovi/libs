@@ -1,4 +1,4 @@
-import { getNextCandleTime, getTimes, sleep } from '@troovi/utils-js'
+import { getNextCandleTime, getTimes, sleep } from '@companix/utils-js'
 import { useState, useEffect, useRef } from 'react'
 
 const formatTime = (num: number) => String(num).padStart(2, '0')

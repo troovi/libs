@@ -1,7 +1,7 @@
 import './ButtonGroup.scss'
 import { forwardRef } from 'react'
 import cn from 'classnames'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 
 interface ButtonGroupProps {
   children: React.ReactNode

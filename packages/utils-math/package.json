@@ -1,14 +1,12 @@
 {
-  "name": "@troovi/fintech",
-  "version": "1.2.0",
+  "name": "@companix/utils-math",
+  "version": "0.0.1",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./src/index.ts",
+  "author": "Pavel Victorov",
   "scripts": {
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs"
-  },
-  "publishConfig": {
-    "@troovi:registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
     "big.js": "^7.0.1"

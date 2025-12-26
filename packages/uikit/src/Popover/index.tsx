@@ -1,5 +1,5 @@
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import classNames from 'classnames'
 import { forwardRef, useRef } from 'react'
 

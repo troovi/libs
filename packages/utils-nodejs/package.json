@@ -1,17 +1,15 @@
 {
-  "name": "@troovi/utils-nodejs",
+  "name": "@companix/utils-nodejs",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "./src/index.ts",
+  "author": "Pavel Victorov",
   "scripts": {
     "build": "rm -rf dist && tsc"
   },
-  "publishConfig": {
-    "@troovi:registry": "https://npm.pkg.github.com"
-  },
   "dependencies": {
     "chalk": "^5.4.1",
-    "@troovi/utils-js": "file:../utils-js"
+    "@companix/utils-js": "file:../utils-js"
   },
   "devDependencies": {
     "@types/node": "^22.13.9"

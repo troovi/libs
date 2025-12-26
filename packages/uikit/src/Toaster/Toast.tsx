@@ -1,5 +1,5 @@
 import * as ToasterPrimitive from '@radix-ui/react-toast'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ToastOptions } from '.'
 import { RemoveListener } from './RemoveListener'

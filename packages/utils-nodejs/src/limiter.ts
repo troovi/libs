@@ -1,5 +1,5 @@
 import { JSLogger } from './logger'
-import { generateCode, sleep } from '@troovi/utils-js'
+import { generateCode, sleep } from '@companix/utils-js'
 
 interface LimiterOptions {
   name: string

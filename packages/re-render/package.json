@@ -1,16 +1,14 @@
 {
-  "name": "@troovi/re-render",
+  "name": "@companix/re-render",
   "version": "0.0.1",
   "description": "",
   "main": "./dist/bundle.cjs.js",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
+  "author": "Pavel Victorov",
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-  },
-  "publishConfig": {
-    "@troovi:registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "echo": "echo \"re-render\"",

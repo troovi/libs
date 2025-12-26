@@ -1,4 +1,4 @@
-import { clamp } from '@troovi/utils-browser'
+import { clamp } from '@companix/utils-browser'
 import { DateFormat, Option } from '..'
 
 export const getMonthMaxDay = (month: number, year: number) => {

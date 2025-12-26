@@ -1,16 +1,14 @@
 {
-  "name": "@troovi/uikit",
+  "name": "@companix/uikit",
   "version": "0.0.1",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
+  "author": "Pavel Victorov",
   "scripts": {
     "echo": "echo \"uikit\"",
     "dev": "vite --config vite.config.ts",
     "build": "rm -rf dist && vite build --config vite.build.ts"
-  },
-  "publishConfig": {
-    "@troovi:registry": "https://npm.pkg.github.com"
   },
   "sideEffects": [
     "./dist/uikit.css"
@@ -21,8 +19,8 @@
     "react-dom": "^18.3.1"
   },
   "dependencies": {
-    "@troovi/utils-browser": "file:../utils-browser",
-    "@troovi/utils-js": "file:../utils-js",
+    "@companix/utils-browser": "file:../utils-browser",
+    "@companix/utils-js": "file:../utils-js",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.15",

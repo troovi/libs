@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import { forwardRef, useCallback, useRef } from 'react'
 import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'

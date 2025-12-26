@@ -8,7 +8,7 @@ import {
 } from '../__utils/utils'
 import { CalendarHeader } from './CalendarHeader'
 import { useCalendar } from '../__hooks/useCalendar'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import { isSameDate } from '../__libs/calendar'
 import { useLayoutEffect } from 'react'
 

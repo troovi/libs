@@ -4,7 +4,7 @@ import { Form } from '../Form'
 import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-input'
 import { usePress } from '@react-aria/interactions'
 import { Button } from '../Button'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 import { Icon } from '../Icon'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import { useRef, useLayoutEffect, useMemo, useCallback, useEffect } from 'react'
-import { getContainers, pc, px } from '@troovi/utils-browser'
+import { getContainers, pc, px } from '@companix/utils-browser'
 
 interface Props {
   children: React.ReactNode

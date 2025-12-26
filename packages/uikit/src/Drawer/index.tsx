@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { varToStyle } from '@troovi/utils-browser'
+import { varToStyle } from '@companix/utils-browser'
 
 export interface DrawerProps {
   open: boolean

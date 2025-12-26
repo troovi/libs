@@ -5,7 +5,7 @@ import { Icon } from '../Icon'
 import { useRef, useState } from 'react'
 import { Calendar, CalendarProps } from './Calendar'
 import { useDayDisableCheker } from '../__libs/calendar'
-import { formatTime, getNum } from '@troovi/utils-js'
+import { formatTime, getNum } from '@companix/utils-js'
 
 interface DatePickerProps
   extends Omit<CalendarProps, 'onChange'>,

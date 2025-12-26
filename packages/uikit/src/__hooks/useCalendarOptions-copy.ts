@@ -1,5 +1,5 @@
 import { DefaultMonths, getMonthMaxDay } from '../__utils/utils'
-import { range } from '@troovi/utils-js'
+import { range } from '@companix/utils-js'
 import { useMemo } from 'react'
 
 export const defaultMax = new Date(2050, 0, 1)

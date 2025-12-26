@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useCallback, useLayoutEffect } from 'react'
-import { normalize, truncateNumber, getFloatDigits } from '@troovi/utils-js'
+import { normalize, truncateNumber, getFloatDigits } from '@companix/utils-js'
 
 export interface StepperInputOptions {
   value: number

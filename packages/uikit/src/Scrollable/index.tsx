@@ -2,7 +2,7 @@ import './Scrollable.scss'
 
 import classNames from 'classnames'
 import { forwardRef } from 'react'
-import { px, varToStyle } from '@troovi/utils-browser'
+import { px, varToStyle } from '@companix/utils-browser'
 
 interface OuterImplementation {
   implementation: 'outer'

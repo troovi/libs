@@ -1,6 +1,6 @@
 import { useId } from 'react'
 import * as RadioPrimitive from '@radix-ui/react-radio-group'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 
 interface RadioOption<T> {
   value: T

@@ -1,4 +1,4 @@
-import { hash } from '@troovi/utils-js'
+import { hash } from '@companix/utils-js'
 import { Viewport, ViewportProps, ViewportRef } from './Viewport'
 import { useMemo, useRef } from 'react'
 

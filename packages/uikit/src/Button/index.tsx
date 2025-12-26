@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { Spinner } from '../Spinner'
 import { forwardRef } from 'react'
-import { attr } from '@troovi/utils-browser'
+import { attr } from '@companix/utils-browser'
 
 export type Appearance = 'primary' | 'neutral' | 'positive' | 'negative'
 export type Mode = 'default' | 'outline' | 'minimal'

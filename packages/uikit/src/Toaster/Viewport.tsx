@@ -1,5 +1,5 @@
 import * as ToasterPrimitive from '@radix-ui/react-toast'
-import { varToStyle } from '@troovi/utils-browser'
+import { varToStyle } from '@companix/utils-browser'
 import { useCallback, useMemo, useState, useImperativeHandle, forwardRef } from 'react'
 import { Toast } from './Toast'
 import { InnerToast } from '.'

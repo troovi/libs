@@ -1,22 +1,15 @@
 {
-  "name": "@troovi/form-scheme",
+  "name": "@companix/formkit",
   "version": "0.0.1",
-  "description": "",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
-  "keywords": [
-    "react-scheme"
-  ],
+  "author": "Pavel Victorov",
   "scripts": {
     "echo": "echo \"form-scheme\"",
     "dev": "vite --config vite.config.ts",
     "build": "vite build --config vite.build.ts"
   },
-  "publishConfig": {
-    "@troovi:registry": "https://npm.pkg.github.com"
-  },
-  "author": "",
   "license": "ISC",
   "peerDependencies": {
     "react": "^18.3.1",

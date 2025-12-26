@@ -4,7 +4,7 @@ import { OptionItem, OptionsList, Popover } from '..'
 import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
-import { attr, contains, getActiveElementByAnotherElement } from '@troovi/utils-browser'
+import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]

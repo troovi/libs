@@ -1,4 +1,4 @@
-import { hash } from '@troovi/utils-js'
+import { hash } from '@companix/utils-js'
 import { useMemo, useRef } from 'react'
 import { AlertDialogProps } from './Alert'
 import { AlertBaseProps, Viewport, ViewportRef } from './Viewport'
