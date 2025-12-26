@@ -1,6 +1,6 @@
 {
   "name": "@troovi/utils-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./src/index.ts",
@@ -8,6 +8,7 @@
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs"
   },
   "publishConfig": {
+    "access": "public",
     "@troovi:registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
