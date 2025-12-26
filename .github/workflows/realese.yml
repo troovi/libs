@@ -12,7 +12,7 @@ jobs:
       utils-browser: ${{ steps.filter.outputs.utils-browser }}
       utils-nodejs: ${{ steps.filter.outputs.utils-nodejs }}
       utils-math: ${{ steps.filter.outputs.utils-math }}
-      re-render: ${{ steps.filter.outputs.re-render }}
+      repulse: ${{ steps.filter.outputs.repulse }}
       formkit: ${{ steps.filter.outputs.formkit }}
       uikit: ${{ steps.filter.outputs.uikit }}
     steps:
@@ -29,13 +29,13 @@ jobs:
               - 'packages/utils-nodejs/package.json'
             utils-math:
               - 'packages/utils-math/package.json'
-            re-render:
-              - 'packages/re-render/package.json'
+            repulse:
+              - 'packages/repulse/package.json'
             formkit:
               - 'packages/formkit/package.json'
             uikit:
               - 'packages/uikit/package.json'
-      - run: echo '${{ toJson(github.event.head_commit.modified) }}'
+      - run: echo '${{ toJson(github.event) }}'
 
   utils-js:
     needs: changes
@@ -121,9 +121,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  re-render:
+  repulse:
     needs: changes
-    if: ${{ needs.changes.outputs.re-render == 'true' }}
+    if: contains(github.event.head_commit.modified, 'packages/repulse/package.json')
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -135,10 +135,10 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
       - run: npm ci
-      - run: npm run build --workspace=@companix/re-render
+      - run: npm run build --workspace=@companix/repulse
       - run: npm run github:setup
       - run: npm publish --access public
-        working-directory: packages/re-render
+        working-directory: packages/repulse
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

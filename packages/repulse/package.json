@@ -1,6 +1,6 @@
 {
   "name": "@companix/repulse",
-  "version": "0.0.01",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/bundle.cjs.js",
   "module": "./dist/bundle.es.js",
