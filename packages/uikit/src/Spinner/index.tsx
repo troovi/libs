@@ -1,4 +1,3 @@
-import './Spinner.scss'
 import cn from 'classnames'
 
 interface Props {

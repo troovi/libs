@@ -3,10 +3,8 @@
 @use 'sass:list';
 
 $button-appearances: ();
-
 $tokens: ();
 
-// changes
 @function str-split($string, $delimiter) {
   $result: ();
   $buffer: '';

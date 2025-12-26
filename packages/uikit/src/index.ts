@@ -1,12 +1,10 @@
-import './theme.scss'
-
 export { Button } from './Button'
 export { Spinner } from './Spinner'
 export { Scrollable } from './Scrollable'
 export { ImitateScroll } from './Scrollable/ImitateScroll'
 export { Popover } from './Popover'
 export { Tooltip } from './Tooltip'
-export { StepperInput } from './Stepper'
+// export { StepperInput } from './Stepper'
 export { Select } from './Select'
 export { Form } from './Form'
 export { OptionItem } from './OptionItem/OptionItem'

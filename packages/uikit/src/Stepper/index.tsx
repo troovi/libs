@@ -1,4 +1,4 @@
-import './StepperInput.scss'
+// import './StepperInput.scss'
 
 import { Form } from '../Form'
 import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-input'

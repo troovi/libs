@@ -1,4 +1,3 @@
-import './ButtonGroup.scss'
 import { forwardRef } from 'react'
 import cn from 'classnames'
 import { attr } from '@companix/utils-browser'

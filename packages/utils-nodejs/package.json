@@ -1,9 +1,12 @@
 {
   "name": "@companix/utils-nodejs",
-  "version": "0.0.1",
+  "version": "0.0.01",
   "main": "dist/index.js",
   "types": "./src/index.ts",
   "author": "Pavel Victorov",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rm -rf dist && tsc"
   },

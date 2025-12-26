@@ -1,10 +1,13 @@
 {
   "name": "@companix/formkit",
-  "version": "0.0.1",
+  "version": "0.0.01",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
   "author": "Pavel Victorov",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "echo": "echo \"form-scheme\"",
     "dev": "vite --config vite.config.ts",

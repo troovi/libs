@@ -1,5 +1,6 @@
 @use './theme.scss';
-@use './css.scss';
+@use './css-properties.scss';
+
 @use 'sass:map';
 @use 'sass:list';
 @use 'sass:meta';
@@ -64,7 +65,7 @@
 @mixin use-styles($component, $keys...) {
   $source: map.get(theme.$tokens, $component);
 
-  @each $property, $v in css.$properties {
+  @each $property, $v in css-properties.$properties {
     @include set-style($property, $source, $keys...);
   }
 }
@@ -74,7 +75,7 @@
 
   @debug $source;
 
-  @each $property, $v in css.$properties {
+  @each $property, $v in css-properties.$properties {
     @include set-style($property, $source, $keys...);
   }
 }

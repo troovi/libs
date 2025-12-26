@@ -1,11 +1,14 @@
 {
   "name": "@companix/re-render",
-  "version": "0.0.1",
+  "version": "0.0.01",
   "description": "",
   "main": "./dist/bundle.cjs.js",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "author": "Pavel Victorov",
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
