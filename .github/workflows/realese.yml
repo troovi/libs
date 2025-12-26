@@ -1,11 +1,44 @@
 name: publish-packages
 on:
   push:
-    branch:
+    branches:
       - master
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      utils-js: ${{ steps.filter.outputs.utils-js }}
+      utils-browser: ${{ steps.filter.outputs.utils-browser }}
+      utils-nodejs: ${{ steps.filter.outputs.utils-nodejs }}
+      utils-math: ${{ steps.filter.outputs.utils-math }}
+      re-render: ${{ steps.filter.outputs.re-render }}
+      formkit: ${{ steps.filter.outputs.formkit }}
+      uikit: ${{ steps.filter.outputs.uikit }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            utils-js:
+              - 'packages/utils-js/**'
+            utils-browser:
+              - 'packages/utils-browser/**'
+            utils-nodejs:
+              - 'packages/utils-nodejs/**'
+            utils-math:
+              - 'packages/utils-math/**'
+            re-render:
+              - 'packages/re-render/**'
+            formkit:
+              - 'packages/formkit/**'
+            uikit:
+              - 'packages/uikit/**'
+
   utils-js:
+    needs: changes
+    if: ${{ needs.changes.outputs.utils-js == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -16,47 +49,136 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
-      - run: ls
-      - run: npm i
-      - run: npm run build
+      - run: npm ci
+      - run: npm run build --workspace=@companix/utils-js
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: packages/utils-js
         env:
-          NODE_AUTH_TOKEN: ${{ secrets. NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # exchange-client:
-  #   needs: utils
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     packages: write
-  #     contents: read
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  utils-browser:
+    needs: changes
+    if: ${{ needs.changes.outputs.utils-browser == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/utils-browser
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/utils-browser
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #         registry-url: https://npm.pkg.github.com/
+  utils-nodejs:
+    needs: changes
+    if: ${{ needs.changes.outputs.utils-nodejs == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/utils-nodejs
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/utils-nodejs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  #     - name: Setup npm authentication for GitHub Packages
-  #       run: printf "\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-  #       working-directory: exchange-client
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.GLOBAL_TOKEN }}
+  utils-math:
+    needs: changes
+    if: ${{ needs.changes.outputs.utils-math == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/utils-math
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/utils-math
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  #     - name: Show .npmrc
-  #       working-directory: exchange-client
-  #       run: cat .npmrc
+  re-render:
+    needs: changes
+    if: ${{ needs.changes.outputs.re-render == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/re-render
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/re-render
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  #     - run: node ./setup.js
-  #       working-directory: exchange-client
-  #     - run: npm i
-  #       working-directory: exchange-client
-  #     - run: npm run build
-  #       working-directory: exchange-client
-  #     - run: npm publish
-  #       working-directory: exchange-client
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  formkit:
+    needs: changes
+    if: ${{ needs.changes.outputs.formkit == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/formkit
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/formkit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  uikit:
+    needs: changes
+    if: ${{ needs.changes.outputs.uikit == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/uikit
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/uikit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
