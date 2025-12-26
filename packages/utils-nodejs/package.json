@@ -2,7 +2,7 @@
   "name": "@companix/utils-nodejs",
   "version": "0.0.03",
   "main": "dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "author": "Pavel Victorov",
   "files": [
     "dist"

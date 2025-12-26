@@ -1,8 +1,8 @@
 {
   "name": "@companix/formkit",
-  "version": "0.0.03",
+  "version": "0.0.04",
   "module": "./dist/bundle.es.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "type": "module",
   "author": "Pavel Victorov",
   "files": [

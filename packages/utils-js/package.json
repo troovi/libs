@@ -1,9 +1,9 @@
 {
   "name": "@companix/utils-js",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "author": "Pavel Victorov",
   "files": [
     "dist"
