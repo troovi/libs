@@ -48,10 +48,7 @@ function copyScssFiles() {
 
 export default defineConfig({
   plugins: [
-    dts({
-      exclude: './playground'
-      // outDir: 'dist'
-    }),
+    dts({ exclude: './playground' }),
     react(),
     checker({
       typescript: true,

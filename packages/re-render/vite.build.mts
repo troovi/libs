@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import typescript from '@rollup/plugin-typescript'
+import dtsPlugin from 'vite-plugin-dts'
 
 export default defineConfig({
+  plugins: [dtsPlugin({ exclude: './playground' })],
   build: {
     outDir: 'dist',
     lib: {

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import autoExternal from 'rollup-plugin-auto-external'
 import react from '@vitejs/plugin-react'
 import checker from 'vite-plugin-checker'
+import dtsPlugin from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
@@ -11,7 +12,8 @@ export default defineConfig({
       eslint: {
         lintCommand: `eslint "./**/*.{ts,tsx}"`
       }
-    })
+    }),
+    dtsPlugin({ exclude: './playground' })
   ],
   build: {
     outDir: 'dist',

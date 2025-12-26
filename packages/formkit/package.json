@@ -1,8 +1,8 @@
 {
   "name": "@companix/formkit",
-  "version": "0.0.02",
+  "version": "0.0.03",
   "module": "./dist/bundle.es.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "author": "Pavel Victorov",
   "files": [
@@ -39,6 +39,7 @@
     "sass": "^1.96.0",
     "sass-embedded": "^1.96.0",
     "vite": "^7.0.0",
-    "vite-plugin-checker": "^0.9.3"
+    "vite-plugin-checker": "^0.9.3",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
