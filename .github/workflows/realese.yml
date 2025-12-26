@@ -20,18 +20,11 @@ jobs:
       - run: npm i
       - run: npm run build
       - run: npm run github:setup
-      - run: cat package.json
-        working-directory: packages/uikit
-      # - run: ls
-      # - run: cat package.json
-      # - run: npm i
-      #   working-directory: utils
-      # - run: npm run build
-      #   working-directory: utils
-      # - run: npm publish
-      #   working-directory: utils
-      # env:
-      #   NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: npm run publish
+        working-directory: packages/utils-js
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
   # exchange-client:
   #   needs: utils
   #   runs-on: ubuntu-latest
