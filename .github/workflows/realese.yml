@@ -17,7 +17,12 @@ jobs:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
       - run: ls
-      # - run: cat package.json
+      - run: npm i
+      - run: cd packages
+      - run: cd utils-js
+      - run:
+          cat package.json
+          # - run: cat package.json
       # - run: npm i
       #   working-directory: utils
       # - run: npm run build
