@@ -7,7 +7,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "strict": true,
     "strictPropertyInitialization": false,
-    "declaration": false,
     "removeComments": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
@@ -22,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "playground", "../utils-browser/src/device"],
+  "include": ["src", "playground"],
   "exclude": ["node_modules", "dist"]
 }

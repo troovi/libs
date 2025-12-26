@@ -2,9 +2,14 @@ import { defineConfig } from 'vite'
 import autoExternal from 'rollup-plugin-auto-external'
 import react from '@vitejs/plugin-react'
 import checker from 'vite-plugin-checker'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
+    dts({ 
+      exclude: './playground',
+      outDir: 'dist/types'
+    }),
     react(),
     checker({
       typescript: true,
