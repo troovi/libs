@@ -6,6 +6,7 @@ $button-appearances: ();
 
 $tokens: ();
 
+// changes
 @function str-split($string, $delimiter) {
   $result: ();
   $buffer: '';

@@ -1,3 +1,4 @@
+// perfomance
 export class InspectPerfomance {
   private moment: number = 0
   private memory: number = 0
