@@ -19,6 +19,7 @@ jobs:
       - run: ls
       - run: npm i
       - run: cd packages
+      - run: ls
       - run: cd utils-js
       - run:
           cat package.json
