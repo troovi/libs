@@ -1,4 +1,3 @@
-import { Remove } from '@blueprintjs/icons'
 import { createLayout } from 'chezit'
 import { MessageForm } from 'formkit/forms'
 import { Label } from 'formkit/layouts'

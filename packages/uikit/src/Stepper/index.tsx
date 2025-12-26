@@ -1,11 +1,12 @@
 import './StepperInput.scss'
 
-import { ChevronDown, ChevronUp } from '@blueprintjs/icons'
 import { Form } from '../Form'
 import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-input'
 import { usePress } from '@react-aria/interactions'
 import { Button } from '../Button'
 import { attr } from '@troovi/utils-browser'
+import { Icon } from '@/Icon'
+import { faChevronDown, faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 
 interface StepperInputProps extends StepperInputOptions {
   buttons?: boolean
@@ -39,11 +40,11 @@ const Stepper = ({ increment, decrement }: StepperProps) => {
   return (
     <div className="number-stepper">
       <SlepButton slot="increment" onClick={increment}>
-        <ChevronUp size={14} />
+        <Icon size="xxs" icon={faChevronUp} />
       </SlepButton>
       <div className="number-stepper-splitter" />
       <SlepButton slot="decrement" onClick={decrement}>
-        <ChevronDown size={14} />
+        <Icon size="xxs" icon={faChevronDown} />
       </SlepButton>
     </div>
   )

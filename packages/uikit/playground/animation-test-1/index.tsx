@@ -1,5 +1,4 @@
 import './index.scss'
-import { Transition } from '@headlessui/react'
 import { useState } from 'react'
 
 export const Test1Animation = () => {
@@ -9,9 +8,9 @@ export const Test1Animation = () => {
     <div style={{ padding: '40px', display: 'flex', gap: '20px' }}>
       <div style={{ padding: '10px', width: '200px' }}>
         <button onClick={() => setOpen((open) => !open)}>Animation 1</button>
-        <Transition show={open}>
-          <div className="test-1-animation box-styles">Target element</div>
-        </Transition>
+        {/* <Transition show={open}> */}
+        <div className="test-1-animation box-styles">Target element</div>
+        {/* </Transition> */}
       </div>
     </div>
   )

@@ -1,4 +1,3 @@
-// import { ArrowRight } from '@blueprintjs/icons'
 import { Appearance, Button, Mode, Size } from '@/Button'
 import {
   faPlay,

@@ -1,61 +1,63 @@
-# name: publish-packages
-# on:
-#   push:
-#     branch:
-#       - master
+name: publish-packages
+on:
+  push:
+    branch:
+      - master
 
-# jobs:
-#   utils:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       packages: write
-#       contents: read
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           registry-url: https://npm.pkg.github.com/
-#       - run: npm i
-#         working-directory: utils
-#       - run: npm run build
-#         working-directory: utils
-#       - run: npm publish
-#         working-directory: utils
-#         env:
-#           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-#   exchange-client:
-#     needs: utils
-#     runs-on: ubuntu-latest
-#     permissions:
-#       packages: write
-#       contents: read
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
+jobs:
+  utils-js:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com/
+      - run: ls
+      # - run: cat package.json
+      # - run: npm i
+      #   working-directory: utils
+      # - run: npm run build
+      #   working-directory: utils
+      # - run: npm publish
+      #   working-directory: utils
+      # env:
+      #   NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  # exchange-client:
+  #   needs: utils
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     packages: write
+  #     contents: read
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-#       - uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           registry-url: https://npm.pkg.github.com/
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         registry-url: https://npm.pkg.github.com/
 
-#       - name: Setup npm authentication for GitHub Packages
-#         run: printf "\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-#         working-directory: exchange-client
-#         env:
-#           NODE_AUTH_TOKEN: ${{ secrets.GLOBAL_TOKEN }}
+  #     - name: Setup npm authentication for GitHub Packages
+  #       run: printf "\n//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
+  #       working-directory: exchange-client
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.GLOBAL_TOKEN }}
 
-#       - name: Show .npmrc
-#         working-directory: exchange-client
-#         run: cat .npmrc
+  #     - name: Show .npmrc
+  #       working-directory: exchange-client
+  #       run: cat .npmrc
 
-#       - run: node ./setup.js
-#         working-directory: exchange-client
-#       - run: npm i
-#         working-directory: exchange-client
-#       - run: npm run build
-#         working-directory: exchange-client
-#       - run: npm publish
-#         working-directory: exchange-client
-#         env:
-#           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #     - run: node ./setup.js
+  #       working-directory: exchange-client
+  #     - run: npm i
+  #       working-directory: exchange-client
+  #     - run: npm run build
+  #       working-directory: exchange-client
+  #     - run: npm publish
+  #       working-directory: exchange-client
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
