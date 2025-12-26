@@ -1,6 +1,6 @@
 {
   "name": "@companix/formkit",
-  "version": "0.0.01",
+  "version": "0.0.02",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",

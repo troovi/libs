@@ -1,6 +1,6 @@
 {
   "name": "@companix/re-render",
-  "version": "0.0.01",
+  "version": "0.0.02",
   "description": "",
   "main": "./dist/bundle.cjs.js",
   "module": "./dist/bundle.es.js",

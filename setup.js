@@ -4,7 +4,7 @@ const packagesDir = `packages`
 
 const update = (packages) => {
   for (const package in packages) {
-    if (package.startsWith('@troovi')) {
+    if (package.startsWith('@companix')) {
       packages[package] = '*'
     }
   }
