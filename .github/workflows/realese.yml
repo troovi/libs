@@ -22,19 +22,19 @@ jobs:
         with:
           filters: |
             utils-js:
-              - 'packages/utils-js/**'
+              - 'packages/utils-js/package.json'
             utils-browser:
-              - 'packages/utils-browser/**'
+              - 'packages/utils-browser/package.json'
             utils-nodejs:
-              - 'packages/utils-nodejs/**'
+              - 'packages/utils-nodejs/package.json'
             utils-math:
-              - 'packages/utils-math/**'
+              - 'packages/utils-math/package.json'
             re-render:
-              - 'packages/re-render/**'
+              - 'packages/re-render/package.json'
             formkit:
-              - 'packages/formkit/**'
+              - 'packages/formkit/package.json'
             uikit:
-              - 'packages/uikit/**'
+              - 'packages/uikit/package.json'
 
   utils-js:
     needs: changes
