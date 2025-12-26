@@ -123,7 +123,7 @@ jobs:
 
   repulse:
     needs: changes
-    if: contains(github.event.head_commit.modified, 'packages/repulse/package.json')
+    if: ${{ needs.changes.outputs.repulse == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
