@@ -5,8 +5,8 @@ import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-inp
 import { usePress } from '@react-aria/interactions'
 import { Button } from '../Button'
 import { attr } from '@troovi/utils-browser'
-import { Icon } from '@/Icon'
-import { faChevronDown, faChevronRight, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { Icon } from '../Icon'
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 
 interface StepperInputProps extends StepperInputOptions {
   buttons?: boolean
