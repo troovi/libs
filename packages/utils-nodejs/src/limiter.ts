@@ -1,4 +1,4 @@
-import { Logger } from './logger'
+import { JSLogger } from './logger'
 import { generateCode, sleep } from '@troovi/utils-js'
 
 interface LimiterOptions {
@@ -10,7 +10,7 @@ interface LimiterOptions {
 
 // todo: disable parralels
 export class FrequencyLimiter {
-  private readonly logger: Logger
+  private readonly logger: JSLogger
 
   private readonly limit: number
   private readonly interval: number
@@ -26,7 +26,7 @@ export class FrequencyLimiter {
     this.interval = interval
     this.limit = limit
     this.threshold = threshold ?? 1500
-    this.logger = new Logger(`LIMITTER${name ? `-${name.toUpperCase()}` : ''}`)
+    this.logger = new JSLogger(`LIMITTER${name ? `-${name.toUpperCase()}` : ''}`)
   }
 
   async wrap<T>(weight: number, request: () => Promise<T>, id: string = generateCode(8)): Promise<T> {

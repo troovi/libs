@@ -1,6 +1,7 @@
-import { DefaultMonths, getMonthMaxDay, range } from '@/__utils/utils'
+import { DefaultMonths, getMonthMaxDay } from '../__utils/utils'
 import { useMemo } from 'react'
 import { DateFormat } from '..'
+import { range } from '@troovi/utils-js'
 
 export const defaultMax = { day: 31, month: 12, year: 2050 }
 export const defaultMin = { day: 1, month: 1, year: 1900 }

@@ -1,12 +1,11 @@
 import { Popover } from '..'
-import { Form, FormProps } from '@/Form'
+import { Form, FormProps } from '../Form'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
-import { Icon } from '@/Icon'
+import { Icon } from '../Icon'
 import { useRef, useState } from 'react'
 import { Calendar, CalendarProps } from './Calendar'
-import { formatTime } from '@troovi/utils-js'
-import { useDayDisableCheker } from '@/__libs/calendar'
-import { getNum } from '@/__utils/utils'
+import { useDayDisableCheker } from '../__libs/calendar'
+import { formatTime, getNum } from '@troovi/utils-js'
 
 interface DatePickerProps
   extends Omit<CalendarProps, 'onChange'>,

@@ -1,0 +1,43 @@
+import axios, { AxiosInstance, AxiosRequestConfig, CreateAxiosDefaults } from 'axios'
+
+export type IOpattern<T extends IOpattern<T>> = {
+  [key in keyof T]: {
+    params: T[key]['params']
+    answer: T[key]['answer']
+  }
+}
+
+enum HttpVerb {
+  Get = 'GET',
+  Post = 'POST'
+}
+
+interface RequestInterface {
+  url: string
+  body?: any
+  config?: AxiosRequestConfig
+  method: HttpVerb
+}
+
+export class HttpAPI<T extends IOpattern<T>> {
+  public http: AxiosInstance
+
+  constructor(config: CreateAxiosDefaults) {
+    this.http = axios.create(config)
+  }
+
+  private async request<T>(props: RequestInterface): Promise<T> {
+    const { url, body = {}, method, config = {} } = props
+    const dataAtt = method === HttpVerb.Get ? 'params' : 'data'
+
+    return this.http({ url, method, [dataAtt]: body, ...config }).then(({ data }) => data)
+  }
+
+  post<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
+    return this.request<T[K]['answer']>({ method: HttpVerb.Post, url: url as string, config, body })
+  }
+
+  get<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
+    return this.request<T[K]['answer']>({ method: HttpVerb.Get, url: url as string, config, body })
+  }
+}

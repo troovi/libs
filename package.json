@@ -4,7 +4,6 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "push": "rsync -av --exclude='.git' --exclude='node_modules' '/Users/pavel/Documents/XemoResearch/@libs' root@94.198.221.193:/root/xemo"
+    "build": "npm run build -w=@troovi/utils-js -w=@troovi/utils-browser -w=@troovi/utils-nodejs -w=@troovi/state-agent -w=@troovi/formkit -w=@troovi/uikit"
   }
 }

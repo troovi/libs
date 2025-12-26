@@ -6,8 +6,12 @@ export const keysLength = (object: object) => {
   return keys(object).length
 }
 
-export const isEmpthy = (object: object) => {
-  return keysLength(object) === 0
+export const isEmpty = (obj: object) => {
+  for (const _ in obj) {
+    return false
+  }
+
+  return true
 }
 
 export const omit = <T extends object>(object: T, key: keyof T) => {

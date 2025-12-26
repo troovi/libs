@@ -1,4 +1,4 @@
-import { Form } from '../../src/Form'
+import { Form } from '@/Form'
 
 export const TextInput = () => {
   return (

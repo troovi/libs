@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { Icon } from '@/Icon'
+import { Icon } from '../Icon'
 import { attr } from '@troovi/utils-browser'
 import { forwardRef } from 'react'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'

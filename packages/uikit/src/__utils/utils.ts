@@ -1,43 +1,5 @@
+import { clamp } from '@troovi/utils-browser'
 import { DateFormat, Option } from '..'
-
-export const callMultiple =
-  (...fns: any[]) =>
-  (...args: any[]): void =>
-    fns.filter((f) => typeof f === 'function').forEach((f) => f(...args))
-
-export const getActiveElementByAnotherElement = (el: Element | null): Element | null =>
-  el ? el.ownerDocument.activeElement : null
-
-export const contains = (parent?: Element | null, child?: Element | null): boolean => {
-  return parent && child ? parent.contains(child) : false
-}
-
-export const isHTMLElement = (value: any): value is HTMLElement => {
-  return value.nodeType === Node.ELEMENT_NODE
-}
-
-export const clamp = (value: number, min: number, max: number): number =>
-  Math.max(min, Math.min(value, max))
-
-export const getNum = (value: string) => {
-  return isNaN(Number(value)) ? null : +value
-}
-
-/**
- * Генерирует массив с диапазоном чисел. Взято с VKUI
- */
-export const range = (from: number, to: number, step = 1) => {
-  const direction = from < to ? 1 : -1
-  const distance = Math.abs(from - to) + 1
-  const arrayLength = Math.ceil(distance / step)
-
-  const arr = Array<number>(arrayLength)
-  for (let index = 0; index < arr.length; index++) {
-    arr[index] = from + index * step * direction
-  }
-
-  return arr
-}
 
 export const getMonthMaxDay = (month: number, year: number) => {
   return new Date(year, month, 0).getDate()

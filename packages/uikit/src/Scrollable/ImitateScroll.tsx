@@ -1,19 +1,7 @@
 import cn from 'classnames'
 
 import { useRef, useLayoutEffect, useMemo, useCallback, useEffect } from 'react'
-import { pc, px } from '@troovi/utils-browser'
-
-const getContainers = (element: Element, callback: (element: Element) => void) => {
-  callback(element)
-
-  if (element.children) {
-    for (const child of Array.from(element.children)) {
-      if (child.tagName === 'DIV') {
-        getContainers(child, callback)
-      }
-    }
-  }
-}
+import { getContainers, pc, px } from '@troovi/utils-browser'
 
 interface Props {
   children: React.ReactNode

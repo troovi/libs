@@ -5,11 +5,11 @@ import {
   getFirstDay,
   getMonthMaxDay,
   weeks
-} from '@/__utils/utils'
+} from '../__utils/utils'
 import { CalendarHeader } from './CalendarHeader'
-import { useCalendar } from '@/__hooks/useCalendar'
+import { useCalendar } from '../__hooks/useCalendar'
 import { attr } from '@troovi/utils-browser'
-import { isSameDate } from '@/__libs/calendar'
+import { isSameDate } from '../__libs/calendar'
 import { useLayoutEffect } from 'react'
 
 export interface CalendarProps {

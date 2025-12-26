@@ -1,6 +1,5 @@
-import { useResizeTextarea } from '@/__hooks/use-resize'
-import { callMultiple } from '@/__utils/utils'
-import { attr } from '@troovi/utils-browser'
+import { useResizeTextarea } from '../__hooks/use-resize'
+import { attr, callMultiple } from '@troovi/utils-browser'
 import { useEffect } from 'react'
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {

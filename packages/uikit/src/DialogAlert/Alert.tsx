@@ -1,7 +1,7 @@
 import * as AlertPrimitive from '@radix-ui/react-alert-dialog'
 import { Button } from '..'
-import { InternButtonProps } from '@/Button'
-import { RemoveListener } from '@/Toaster/RemoveListener'
+import { InternButtonProps } from '../Button'
+import { RemoveListener } from '../Toaster/RemoveListener'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 interface ActionProps extends Omit<InternButtonProps, 'children'> {

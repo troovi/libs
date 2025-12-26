@@ -1,3 +1,19 @@
+/**
+ * Генерирует массив с диапазоном чисел. Взято с VKUI
+ */
+export const range = (from: number, to: number, step = 1) => {
+  const direction = from < to ? 1 : -1
+  const distance = Math.abs(from - to) + 1
+  const arrayLength = Math.ceil(distance / step)
+
+  const arr = Array<number>(arrayLength)
+  for (let index = 0; index < arr.length; index++) {
+    arr[index] = from + index * step * direction
+  }
+
+  return arr
+}
+
 export const splitByChunks = <T>(items: T[], chunkSize: number): T[][] => {
   const result: T[][] = []
 

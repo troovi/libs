@@ -1,11 +1,10 @@
-import { useFroozeClosing } from '@/__hooks/use-frooze-closing'
+import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
 import { OptionItem, OptionsList, Popover } from '..'
 import { useMemo, useRef, useState } from 'react'
-import { Icon } from '@/Icon'
+import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
-import { contains, getActiveElementByAnotherElement } from '@/__utils/utils'
-import { attr } from '@troovi/utils-browser'
+import { attr, contains, getActiveElementByAnotherElement } from '@troovi/utils-browser'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]

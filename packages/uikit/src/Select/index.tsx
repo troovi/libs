@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from 'react'
 import { OptionsList } from '../OptionItem/OptionsList'
 import { OptionItem } from '../OptionItem/OptionItem'
-import { Popover } from '..'
+import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
-import { FormProps } from '@/Form'
-import type { Option } from '@/types'
+import { FormProps } from '../Form'
+import type { Option } from '../types'
 import { SelectInput } from './SelectInput'
-import { useScrollListController } from '@/__hooks/use-scrollbox'
+import { useScrollListController } from '../__hooks/use-scrollbox'
 
 interface SelectProps<T> extends Omit<FormProps, 'value' | 'onChange' | 'rightElement'> {
   options: Option<T>[]

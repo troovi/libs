@@ -1,4 +1,4 @@
-import { CalendarProps } from '@/DatePicker/Calendar'
+import { CalendarProps } from '../DatePicker/Calendar'
 import { useCallback, useMemo } from 'react'
 
 export function isSameDate(d1: Date, d2: Date): boolean {

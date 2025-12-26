@@ -19,6 +19,6 @@
     "isolatedModules": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
+  "include": ["src", "playground"],
   "exclude": ["node_modules", "dist"]
 }

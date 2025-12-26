@@ -1,7 +1,7 @@
 import './test.scss'
 
-// import { Popover } from '@/Popover'
-// import { Calendar } from '@/DatePicker/Calendar'
+// import { Popover } from '../Popover'
+// import { Calendar } from '../DatePicker/Calendar'
 import { useLayoutEffect } from 'react'
 import { DatePickerControl } from './date-picker'
 

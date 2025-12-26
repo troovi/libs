@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "strictPropertyInitialization": false,
+    "module": "esnext",
+    "declaration": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "baseUrl": "./"
+  },
+  "include": [
+    "./src",
+    "../utils-fintech/src/arithmetics.ts",
+    "../utils-fintech/src/math.ts",
+    "../utils-fintech/src/candle.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

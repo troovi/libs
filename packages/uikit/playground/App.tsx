@@ -4,10 +4,10 @@
 // import { PopupExample } from './popup'
 // import { TextInput } from './text-input'
 // import { NumberInputs } from './number-inputs'
-// import { Button } from '@/Button'
+// import { Button } from '../Button'
 // import { useState } from 'react'
-// import { Drawer } from '@/Drawer'
-// import { Popup } from '@/Popup'
+// import { Drawer } from '../Drawer'
+// import { Popup } from '../Popup'
 // import { TestApp } from './Test'
 import { useLayoutEffect } from 'react'
 import { ButtonsExample, ButtonsGroupExample } from './buttons'
@@ -28,7 +28,7 @@ import { DatePickerExample } from './date-picker'
 import { SwitchExample } from './switch'
 import { DialogAlertExample } from './dialog-alert'
 import { DrawerExample } from './drawer'
-// import { Tabs } from '@/Tabs'
+// import { Tabs } from '../Tabs'
 
 export const App = () => {
   useLayoutEffect(() => {

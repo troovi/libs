@@ -1,27 +1,35 @@
 {
-  "name": "@troovi/formkit",
-  "version": "1.0.0",
+  "name": "@troovi/form-scheme",
+  "version": "0.0.1",
   "description": "",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
+  "keywords": [
+    "react-scheme"
+  ],
   "scripts": {
-    "echo": "echo \"formkit\"",
+    "echo": "echo \"form-scheme\"",
+    "dev": "vite --config vite.config.ts",
     "build": "vite build --config vite.build.ts"
   },
-  "sideEffects": [
-    "dist/formkit.css"
-  ],
+  "publishConfig": {
+    "@troovi:registry": "https://npm.pkg.github.com"
+  },
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "dependencies": {
-    "@troovi/chezit": "file:../chezit",
-    "@troovi/uikit": "file:../uikit"
+    "fast-deep-equal": "^3.1.3"
   },
   "devDependencies": {
     "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "@types/rollup-plugin-auto-external": "^2.0.5",
     "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-react": "^4.6.0",
     "eslint-config-react-app": "^7.0.1",
@@ -32,6 +40,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rollup-plugin-auto-external": "^2.0.0",
+    "sass": "^1.96.0",
+    "sass-embedded": "^1.96.0",
     "vite": "^7.0.0",
     "vite-plugin-checker": "^0.9.3"
   }

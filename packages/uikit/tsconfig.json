@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "playground"],
+  "include": ["src", "playground", "../utils-browser/src/device"],
   "exclude": ["node_modules", "dist"]
 }

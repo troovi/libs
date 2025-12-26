@@ -75,3 +75,7 @@ export const isValidPrecision = (value: number, precision: number) => {
 
   return true
 }
+
+export const getNum = (value: string) => {
+  return isNaN(Number(value)) ? null : +value
+}

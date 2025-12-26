@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import InputMask from 'react-input-mask'
 
-import { useLayoutAndUpdate } from '@/__hooks/use-update'
+import { useLayoutAndUpdate } from '../__hooks/use-update'
 import { attr } from '@troovi/utils-browser'
 import { forwardRef, useCallback, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'

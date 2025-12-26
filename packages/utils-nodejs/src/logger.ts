@@ -6,7 +6,7 @@ interface Options {
   bold?: boolean
 }
 
-export class Logger {
+export class JSLogger {
   private write: (buffer: string) => void
   private pid: number = 8000
 

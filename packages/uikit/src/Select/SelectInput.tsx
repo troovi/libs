@@ -2,7 +2,7 @@ import cn from 'classnames'
 
 import { attr } from '@troovi/utils-browser'
 import { forwardRef, useCallback, useRef } from 'react'
-import { Icon } from '@/Icon'
+import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
