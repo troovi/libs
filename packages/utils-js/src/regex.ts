@@ -2,5 +2,10 @@
 
 export const regex = {
   email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  phone_number: /^[0-9]+$/
+  phone: /^[0-9]+$/
+}
+
+export const checkPattern = {
+  email: (value: string) => regex.email.test(value),
+  phone: (value: string) => regex.phone.test(value)
 }
