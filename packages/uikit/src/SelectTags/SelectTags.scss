@@ -3,6 +3,7 @@
 .select-tags {
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   .form-input {
     padding-left: var(--form_space, 0);

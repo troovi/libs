@@ -20,6 +20,7 @@ export interface SelectTagsProps<T> {
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
   inputRef?: React.Ref<HTMLInputElement>
+  required?: boolean
 }
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
@@ -33,7 +34,8 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     size = 'md',
     value: values,
     inputRef: propInputRef,
-    disabled
+    disabled,
+    required
   } = props
 
   const [inputValue, setInputValue] = useState('')
@@ -150,6 +152,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
         onClick={handleRootClick}
         onMouseDown={handleRootMouseDown}
         data-size={size}
+        data-required={attr(required)}
       >
         <div className="select-tags-container">
           <div className="select-tags">
