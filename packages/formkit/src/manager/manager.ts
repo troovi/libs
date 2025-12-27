@@ -23,6 +23,7 @@ export interface Forms {
 }
 
 export interface FormManager<FlattenValues, ClonedValues> {
+  scheme: SchemeItems.All[]
   disabled?: boolean
   activate: () => void
   disactivate: () => void
@@ -39,10 +40,8 @@ export interface FormManager<FlattenValues, ClonedValues> {
   getValues: () => DeepPartial<ClonedValues>
 }
 
-export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(
-  scheme: SchemeItems.All[],
-  opts: MainOptions<Values, Flatten, Cloned>
-): FormManager<Flatten, Cloned> => {
+// prettier-ignore
+export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(scheme: SchemeItems.All[], opts: MainOptions<Values, Flatten, Cloned>): FormManager<Flatten, Cloned> => {
   const { onSubmit, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = opts
 
   let isActive = false
@@ -85,6 +84,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(
   }
 
   return {
+    scheme,
     disabled,
     activate() {
       isActive = true

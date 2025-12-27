@@ -70,29 +70,29 @@ const useForm = <
     handleSubmit: async () => {
       await manager.handleSubmit()
     },
-    control: { manager, scheme }
+    manager
   }
 }
 
 interface Props {
   className?: string
-  control: { manager: FormManager<any, any>; scheme: SchemeItems.All[] }
+  manager: FormManager<any, any>
 }
 
-export const FormLayout = ({ control, className }: Props) => {
+export const FormLayout = ({ manager, className }: Props) => {
   useMemo(() => {
-    control.manager.activate()
+    manager.activate()
   }, [])
 
   useEffect(() => {
     return () => {
-      control.manager.disactivate()
+      manager.disactivate()
     }
   }, [])
 
   return (
-    <FormContext.Provider value={control.manager}>
-      <SchemeBuilder className={className} scheme={control.scheme} path={[]} />
+    <FormContext.Provider value={manager}>
+      <SchemeBuilder className={className} scheme={manager.scheme} path={[]} />
     </FormContext.Provider>
   )
 }

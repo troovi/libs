@@ -1,27 +1,37 @@
 ## Create form primitives
 
 ```tsx
-const SelectForm = (name: string, x: any) => {}
-const InputForm = (name: string, x: any) => {}
+const SelectForm = (name: string) => {
+  // select form code
+}
+const InputForm = (name: string) => {
+  // input form code
+}
 ```
 
 ## Create layouts
 
 ```tsx
-const Label = ({ name }) => {
-  return ({ children }) => <div></div>
-}
-
-const Double = () => {
-  return () => {
-    return <>{children}</>
+export const Label = createLayout((label: React.ReactNode) => {
+  return ({ children }) => {
+    return <FormGroup label={label}>{children}</FormGroup>
   }
-}
+})
 
-const Splitter = () => {}
+export const Double = createLayout(() => {
+  return ({ children }) => {
+    return <div className="form-double-primitive">{children}</div>
+  }
+})
+
+export const Splitter = createLayout(() => {
+  return () => {
+    return <div className="form-splitter" />
+  }
+})
 ```
 
-## Define a scheme
+## Create a scheme
 
 ```ts
 const scheme = [

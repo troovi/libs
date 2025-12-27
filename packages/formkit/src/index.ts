@@ -5,3 +5,4 @@ export { createExtraForm } from './core/builders/create-extra-form'
 
 export { Condition, Context } from './core/builders/syntax'
 export type { FieldError } from './core/types'
+export type { FormManager } from './manager/manager'
