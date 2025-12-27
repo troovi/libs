@@ -6,11 +6,12 @@ import { ExtraScheme } from './Extra'
 export interface SchemeBuilderProps {
   scheme: SchemeItems.All[]
   path: string[]
+  className?: string
 }
 
-const SchemeBuilder = ({ scheme, path }: SchemeBuilderProps) => {
+export const SchemeBuilder = ({ scheme, path, className }: SchemeBuilderProps) => {
   return (
-    <>
+    <div className={className}>
       {scheme.map((Item, k) => {
         if (Item.type === 'layout') {
           return (
@@ -54,8 +55,6 @@ const SchemeBuilder = ({ scheme, path }: SchemeBuilderProps) => {
           />
         )
       })}
-    </>
+    </div>
   )
 }
-
-export { SchemeBuilder }
