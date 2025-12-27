@@ -5,8 +5,7 @@
   "types": "./src/index.ts",
   "type": "module",
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "author": "Pavel Victorov",
   "scripts": {
