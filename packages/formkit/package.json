@@ -4,7 +4,7 @@
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
-  "author": "Pavel Victorov",
+  "author": "Pavel Victorov.",
   "files": [
     "dist"
   ],

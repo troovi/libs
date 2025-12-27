@@ -1,26 +1,29 @@
-// generics
+## Create form primitives
 
-// implements form
-
+```tsx
 const SelectForm = (name: string, x: any) => {}
 const InputForm = (name: string, x: any) => {}
+```
 
-// implements layout
+## Create layouts
 
-const Label = (v: any) => {
-  return (x: any) => {}
+```tsx
+const Label = ({ name }) => {
+  return ({ children }) => <div></div>
 }
 
 const Double = () => {
-  return (...x: void[]) => {
-    // x.
+  return () => {
+    return <>{children}</>
   }
 }
 
 const Splitter = () => {}
+```
 
-// scheme
+## Define a scheme
 
+```ts
 const scheme = [
   Label('Имя')(
     SelectForm('name', {
@@ -42,3 +45,4 @@ const scheme = [
     )
   )
 ]
+```
