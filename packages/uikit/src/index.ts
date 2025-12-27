@@ -24,6 +24,7 @@ export { TextArea } from './TextArea'
 export { SelectTags } from './SelectTags'
 export { DatePicker } from './DatePicker'
 export { FileOverlay } from './File'
+export { FormGroup } from './FormGroup'
 // hooks
 export * from './__hooks/use-local-storage'
 // agents
