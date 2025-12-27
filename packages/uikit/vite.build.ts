@@ -6,19 +6,20 @@ import dts from 'vite-plugin-dts'
 import { copyFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // Custom plugin to copy SCSS files
-function copyScssFiles() {
+const copyScssFiles = () => {
   return {
     name: 'copy-scss-files',
-    closeBundle() {
+    closeBundle: () => {
       const srcDir = join(__dirname, 'src')
       const distDir = join(__dirname, 'dist')
 
-      function copyRecursive(src: string, dest: string) {
+      const copyRecursive = (src: string, dest: string) => {
         const entries = readdirSync(src)
 
         for (const entry of entries) {
@@ -50,6 +51,9 @@ export default defineConfig({
   plugins: [
     dts({ exclude: './playground' }),
     react(),
+    viteStaticCopy({
+      targets: [{ src: './src/normalize.css', dest: '.' }]
+    }),
     checker({
       typescript: true,
       eslint: {
