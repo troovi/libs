@@ -6,7 +6,6 @@ import dts from 'vite-plugin-dts'
 import { copyFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -51,9 +50,6 @@ export default defineConfig({
   plugins: [
     dts({ exclude: './playground' }),
     react(),
-    viteStaticCopy({
-      targets: [{ src: './src/normalize.css', dest: '.' }]
-    }),
     checker({
       typescript: true,
       eslint: {

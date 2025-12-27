@@ -28,6 +28,7 @@ import { DatePickerExample } from './date-picker'
 import { SwitchExample } from './switch'
 import { DialogAlertExample } from './dialog-alert'
 import { DrawerExample } from './drawer'
+import { FormGroupExample } from './form-group'
 // import { Tabs } from '../Tabs'
 
 export const App = () => {
@@ -82,6 +83,9 @@ export const App = () => {
       </Example>
       <Example name="DatePicker">
         <DatePickerExample />
+      </Example>
+      <Example name="FormGroup">
+        <FormGroupExample />
       </Example>
       <Example name="Checkbox">
         <CheckboxExample />

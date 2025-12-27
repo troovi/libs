@@ -23,7 +23,7 @@ export interface FormProps extends React.HTMLAttributes<HTMLDivElement> {
   maskChar?: string
 }
 
-export const Form = forwardRef<HTMLDivElement, FormProps>(
+export const Input = forwardRef<HTMLDivElement, FormProps>(
   (
     {
       required,
@@ -94,7 +94,7 @@ export const Form = forwardRef<HTMLDivElement, FormProps>(
             {leftElement}
           </span>
         )}
-        <Input
+        <InputElement
           type="text"
           ref={mergeRefs([inputRef, clientInputRef])}
           className="form-input form-input-base"
@@ -122,10 +122,12 @@ interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, '
   maskChar?: string
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ mask, maskChar, ...inputProps }, ref) => {
-  if (mask) {
-    return <InputMask inputRef={ref} mask={mask} maskChar={maskChar} {...inputProps} />
-  }
+const InputElement = forwardRef<HTMLInputElement, InputProps>(
+  ({ mask, maskChar, ...inputProps }, ref) => {
+    if (mask) {
+      return <InputMask inputRef={ref} mask={mask} maskChar={maskChar} {...inputProps} />
+    }
 
-  return <input ref={ref} {...inputProps} />
-})
+    return <input ref={ref} {...inputProps} />
+  }
+)

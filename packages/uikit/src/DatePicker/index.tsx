@@ -1,5 +1,5 @@
 import { Popover } from '..'
-import { Form, FormProps } from '../Form'
+import { Input, FormProps } from '../Input'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
 import { Icon } from '../Icon'
 import { useRef, useState } from 'react'
@@ -149,7 +149,7 @@ export const DatePicker = (props: DatePickerProps) => {
         />
       )}
     >
-      <Form
+      <Input
         {...inputProps}
         value={inputValue}
         disabled={disabled}

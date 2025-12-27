@@ -1,6 +1,6 @@
 {
   "name": "@companix/utils-browser",
-  "version": "0.0.04",
+  "version": "0.0.05",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./src/index.ts",

@@ -1,5 +1,5 @@
 import { Icon } from '@/Icon'
-import { Form } from '@/Form'
+import { Input } from '@/Input'
 import { faEye, faEyeSlash, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
@@ -12,7 +12,7 @@ export const InputsExample = () => {
         <PasswordInput />
         <PasswordInput2 />
         <ChangeSize />
-        <Form
+        <Input
           fill
           placeholder="Fullwidth input"
           leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
@@ -22,13 +22,13 @@ export const InputsExample = () => {
       <div className="flex gap-10">
         <div className="flex flex-col gap-10">
           {sizes.map((size) => {
-            return <Form key={`input-size-${size}`} size={size} placeholder={`Input size ${size}`} />
+            return <Input key={`input-size-${size}`} size={size} placeholder={`Input size ${size}`} />
           })}
         </div>
         <div className="flex flex-col gap-10">
           {sizes.map((size) => {
             return (
-              <Form
+              <Input
                 key={`input-size-${size}-disabled`}
                 size={size}
                 placeholder={`Input disabled ${size}`}
@@ -41,7 +41,7 @@ export const InputsExample = () => {
         <div className="flex flex-col gap-10">
           {sizes.map((size) => {
             return (
-              <Form
+              <Input
                 key={`input-size-${size}-required`}
                 size={size}
                 placeholder={`Input required ${size}`}
@@ -60,7 +60,7 @@ const PasswordInput = () => {
   const [state, setState] = useState(false)
 
   return (
-    <Form
+    <Input
       placeholder={`Slot right`}
       rightElement={
         <div
@@ -77,7 +77,7 @@ const PasswordInput = () => {
 
 const PasswordInput2 = () => {
   return (
-    <Form
+    <Input
       placeholder={`Slot left`}
       leftElement={
         <div data-side={'left'} className="form-slot center h-full gap-6 cursor-pointer">
@@ -92,7 +92,7 @@ const ChangeSize = () => {
   const [value, setValue] = useState('')
 
   return (
-    <Form
+    <Input
       placeholder="Dynamic element"
       value={value}
       onValueChange={setValue}

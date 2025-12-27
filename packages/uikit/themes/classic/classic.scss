@@ -198,6 +198,14 @@ $layout: (
     required_border-color: #f53535,
     required_box-shadow: 0 0 3px 1px rgb(245 53 53 / 40%)
   ),
+  form-group: (
+    label_color: #6b6c77,
+    label_margin-bottom: 4px,
+    caption_margin-top: 2px,
+    caption_font-size: 14px,
+    caption_neutral_color: #5f6b7c,
+    caption_negative_color: #f53535
+  ),
   select: (
     expand_color: #99a2ad,
     clean_color: #99a2ad,

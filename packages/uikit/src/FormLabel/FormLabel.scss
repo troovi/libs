@@ -1,0 +1,32 @@
+@use '../mixins.scss';
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  &[data-fill] {
+    width: 100%;
+  }
+
+  &-label {
+    @include mixins.truncate-text();
+    @include mixins.use-styles(form-group, label);
+  }
+
+  &-caption {
+    @include mixins.truncate-text();
+    @include mixins.use-styles(form-group, caption);
+
+    &[data-appearance='neutral'] {
+      @include mixins.use-styles(form-group, caption, neutral);
+    }
+
+    &[data-appearance='positive'] {
+      @include mixins.use-styles(form-group, caption, positive);
+    }
+
+    &[data-appearance='negative'] {
+      @include mixins.use-styles(form-group, caption, negative);
+    }
+  }
+}
