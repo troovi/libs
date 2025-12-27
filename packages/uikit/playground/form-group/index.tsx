@@ -1,4 +1,4 @@
-import { FormGroup } from '@/FormLabel'
+import { FormGroup } from '@/FormGroup'
 import { Input } from '@/Input'
 import { DatePickerControl } from '../date-picker'
 import { TextArea } from '@/TextArea'
