@@ -3,17 +3,13 @@ import { OptionsList } from '../OptionItem/OptionsList'
 import { OptionItem } from '../OptionItem/OptionItem'
 import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
-import { FormProps } from '../Input'
 import type { Option } from '../types'
-import { SelectInput } from './SelectInput'
+import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
 
-interface SelectProps<T> extends Omit<FormProps, 'value' | 'onChange' | 'rightElement'> {
+interface SelectProps<T> extends Omit<SelectFormProps, 'value' | 'onChange'> {
   options: Option<T>[]
   onChange: (event: T | null) => void
-  placeholder?: string
-  clearButton?: boolean
-  clearButtonIcon?: boolean
   value: T | null
   children?: React.ReactNode
   minimalOptions?: boolean
@@ -24,14 +20,12 @@ export const Select = <T,>(props: SelectProps<T>) => {
   const {
     options,
     onChange,
-    minimalOptions,
-    clearButton,
-    clearButtonIcon,
-    matchTarget = 'width',
     value,
+    minimalOptions,
+    matchTarget = 'width',
     children,
     disabled,
-    ...inputProps
+    ...selectProps
   } = props
 
   const currentOption = useMemo(() => {
@@ -89,12 +83,10 @@ export const Select = <T,>(props: SelectProps<T>) => {
     >
       {children ?? (
         <SelectInput
-          {...inputProps}
+          {...selectProps}
           disabled={disabled}
           value={currentOption.option?.title ?? ''}
           onClear={handleClear}
-          clearButton={clearButton}
-          clearButtonIcon={clearButtonIcon}
         />
       )}
     </Popover>
@@ -102,7 +94,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
 }
 
 interface SelectPopoverProps<T> {
-  scrollboxRef?: React.Ref<HTMLDivElement>
+  scrollboxRef?: React.RefObject<HTMLDivElement>
   optionsWrapperRef?: React.RefObject<HTMLDivElement>
   options: Option<T>[]
   minimalOptions?: boolean

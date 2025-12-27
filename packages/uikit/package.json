@@ -1,6 +1,6 @@
 {
   "name": "@companix/uikit",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
@@ -8,7 +8,7 @@
     "dist",
     "README.md"
   ],
-  "author": "Pavel Victorov.",
+  "author": "Pavel Victorov",
   "scripts": {
     "echo": "echo \"uikit\"",
     "dev": "vite --config vite.config.ts",

@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
+import { mergeRefs } from 'react-merge-refs'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]
@@ -18,6 +19,7 @@ export interface SelectTagsProps<T> {
   emptyText?: string
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
+  inputRef?: React.Ref<HTMLInputElement>
 }
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
@@ -30,6 +32,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     readOnly,
     size = 'md',
     value: values,
+    inputRef: propInputRef,
     disabled
   } = props
 
@@ -169,7 +172,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
             )}
             {(!readOnly || values.length === 0) && (
               <input
-                ref={inputRef}
+                ref={mergeRefs([propInputRef, inputRef])}
                 type="text"
                 autoCapitalize="none"
                 autoComplete="off"

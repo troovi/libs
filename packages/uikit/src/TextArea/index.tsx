@@ -1,6 +1,7 @@
 import { useResizeTextarea } from '../__hooks/use-resize'
 import { attr, callMultiple } from '@companix/utils-browser'
 import { useEffect } from 'react'
+import { mergeRefs } from 'react-merge-refs'
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
@@ -12,6 +13,7 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
    */
   onResize?: (el: HTMLTextAreaElement) => void
   fill?: boolean
+  textAreaRef?: React.Ref<HTMLTextAreaElement>
 }
 
 export const TextArea = ({
@@ -23,6 +25,7 @@ export const TextArea = ({
   required,
   rows = 2,
   fill = false,
+  textAreaRef,
   ...textAreaProps
 }: TextAreaProps) => {
   const [refResizeTextarea, resize] = useResizeTextarea(onResize, grow)
@@ -40,7 +43,7 @@ export const TextArea = ({
         className="form-input"
         data-grow={attr(grow)}
         value={value}
-        ref={refResizeTextarea}
+        ref={mergeRefs([textAreaRef, refResizeTextarea])}
         rows={rows}
         disabled={disabled}
         onChange={callMultiple(onChange, resize)}

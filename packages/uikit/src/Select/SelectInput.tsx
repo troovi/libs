@@ -5,6 +5,7 @@ import { forwardRef, useCallback, useRef } from 'react'
 import { Icon } from '../Icon'
 import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { mergeRefs } from 'react-merge-refs'
 
 export interface SelectFormProps extends React.HTMLAttributes<HTMLDivElement> {
   required?: boolean
@@ -17,6 +18,7 @@ export interface SelectFormProps extends React.HTMLAttributes<HTMLDivElement> {
   fill?: boolean
   clearButton?: boolean
   clearButtonIcon?: boolean
+  inputRef?: React.Ref<HTMLInputElement>
   onClear?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
@@ -34,6 +36,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
       clearButtonIcon,
       disabled,
       onClear,
+      inputRef,
       ...containerProps
     },
     ref
@@ -115,7 +118,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
         </div>
         <VisuallyHidden asChild>
           <input
-            ref={selectInputRef}
+            ref={mergeRefs([inputRef, selectInputRef])}
             autoComplete="off"
             autoCapitalize="none"
             autoCorrect="off"

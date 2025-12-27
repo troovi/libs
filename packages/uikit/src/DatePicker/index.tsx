@@ -11,7 +11,6 @@ interface DatePickerProps
   extends Omit<CalendarProps, 'onChange'>,
     Omit<FormProps, 'value' | 'onChange' | 'rightElement'> {
   onChange?: (value: Date | null) => void
-  placeholder?: string
   clearButton?: boolean
   clearButtonIcon?: boolean
   children?: React.ReactNode
@@ -57,7 +56,6 @@ export const DatePicker = (props: DatePickerProps) => {
     disabled,
     // calendar props
     value,
-
     enableTime,
     disablePickers,
     showNeighboringMonth,

@@ -16,7 +16,7 @@ export interface FormProps extends React.HTMLAttributes<HTMLDivElement> {
   readOnly?: boolean
   onValueChange?: (value: string, targetElement: HTMLInputElement) => void
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  inputRef?: React.RefObject<HTMLInputElement>
+  inputRef?: React.Ref<HTMLInputElement>
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
   mask?: string
