@@ -10,19 +10,18 @@ import { useScrollListController } from '../__hooks/use-scrollbox'
 interface Cleanable<T> {
   clearButton: true
   onChange: (event: T | null) => void
-  value: T | null
 }
 
 interface UnCleanable<T> {
   clearButton?: false
   onChange: (event: T) => void
-  value: T
 }
 
 type DependedValueType<T> = Cleanable<T> | UnCleanable<T>
 
 type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
   DependedValueType<T> & {
+    value: T | null
     options: Option<T>[]
     children?: React.ReactNode
     minimalOptions?: boolean

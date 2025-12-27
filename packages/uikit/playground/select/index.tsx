@@ -11,10 +11,7 @@ export const SelectExample = () => {
           <SelectItem />
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', minWidth: '240px', width: '240px' }}>
-          <SelectItem
-            clearButton
-            icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />}
-          />
+          <SelectItemClosable icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />} />
         </div>
         <div style={{ minWidth: 0, width: '100%' }}>
           <SelectItem fill icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />} />
@@ -41,12 +38,21 @@ export const SelectExample = () => {
 
 interface ItemProps {
   fill?: boolean
-  clearButton?: boolean
   icon?: React.ReactNode
   size?: 'sm' | 'md' | 'lg'
 }
 
-const SelectItem = ({ fill, clearButton, icon, size }: ItemProps) => {
+const options = [
+  { value: 1, title: 'Vladimir Putin' },
+  { value: 2, title: 'Donald Trump' },
+  { value: 3, title: 'Sergey Lavrov' },
+  ...new Array(10).fill(0).map((_, i) => ({
+    title: `Value ${i + 4}`,
+    value: i + 4
+  }))
+]
+
+const SelectItem = ({ fill, icon, size }: ItemProps) => {
   const [value, onChange] = useState<null | number>(null)
 
   return (
@@ -56,17 +62,25 @@ const SelectItem = ({ fill, clearButton, icon, size }: ItemProps) => {
       leftElement={icon}
       fill={fill}
       size={size}
-      clearButton={clearButton}
       placeholder="Не выбрано"
-      options={[
-        { value: 1, title: 'Vladimir Putin' },
-        { value: 2, title: 'Donald Trump' },
-        { value: 3, title: 'Sergey Lavrov' },
-        ...new Array(10).fill(0).map((_, i) => ({
-          title: `Value ${i + 4}`,
-          value: i + 4
-        }))
-      ]}
+      options={options}
+    />
+  )
+}
+
+const SelectItemClosable = ({ fill, icon, size }: ItemProps) => {
+  const [value, onChange] = useState<null | number>(null)
+
+  return (
+    <Select<number>
+      value={value}
+      onChange={onChange}
+      leftElement={icon}
+      clearButton
+      fill={fill}
+      size={size}
+      placeholder="Не выбрано"
+      options={options}
     />
   )
 }
