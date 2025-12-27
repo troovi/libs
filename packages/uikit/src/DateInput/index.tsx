@@ -57,7 +57,7 @@ export const DateInput = ({
         <Select
           placeholder="Год"
           options={years}
-          onChange={(e) => handleDateChange('year', e || 0)}
+          onChange={(e) => handleDateChange('year', e)}
           value={value.year}
           required={required}
           disabled={disabled}
@@ -70,7 +70,7 @@ export const DateInput = ({
         placeholder="Месяц"
         className="w-full"
         options={months}
-        onChange={(e) => handleDateChange('month', e || 0)}
+        onChange={(e) => handleDateChange('month', e)}
         value={value.month}
         disabled={disabled}
         required={required}
@@ -83,7 +83,7 @@ export const DateInput = ({
           placeholder="День"
           options={days}
           disabled={disabled || days.length === 0}
-          onChange={(e) => handleDateChange('day', e || 0)}
+          onChange={(e) => handleDateChange('day', e)}
           value={value.day}
           required={required}
           size={size}

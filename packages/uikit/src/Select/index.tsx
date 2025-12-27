@@ -7,14 +7,27 @@ import type { Option } from '../types'
 import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
 
-interface SelectProps<T> extends Omit<SelectFormProps, 'value' | 'onChange'> {
-  options: Option<T>[]
+interface Cleanable<T> {
+  clearButton: true
   onChange: (event: T | null) => void
   value: T | null
-  children?: React.ReactNode
-  minimalOptions?: boolean
-  matchTarget?: 'width' | 'min-width'
 }
+
+interface UnCleanable<T> {
+  clearButton?: false
+  onChange: (event: T) => void
+  value: T
+}
+
+type DependedValueType<T> = Cleanable<T> | UnCleanable<T>
+
+type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
+  DependedValueType<T> & {
+    options: Option<T>[]
+    children?: React.ReactNode
+    minimalOptions?: boolean
+    matchTarget?: 'width' | 'min-width'
+  }
 
 export const Select = <T,>(props: SelectProps<T>) => {
   const {
@@ -25,6 +38,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
     matchTarget = 'width',
     children,
     disabled,
+    clearButton,
     ...selectProps
   } = props
 
@@ -50,7 +64,10 @@ export const Select = <T,>(props: SelectProps<T>) => {
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onChange(null)
+
+    if (clearButton) {
+      onChange(null)
+    }
   }
 
   const onOpened = () => {
@@ -85,6 +102,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
         <SelectInput
           {...selectProps}
           disabled={disabled}
+          clearButton={clearButton}
           value={currentOption.option?.title ?? ''}
           onClear={handleClear}
         />

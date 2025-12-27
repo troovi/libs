@@ -116,7 +116,7 @@ export const CalendarHeader = ({
           value={currentYear}
           minimalOptions
           matchTarget="min-width"
-          onChange={(value) => onYearChange(value || 0)}
+          onChange={(value) => onYearChange(value)}
         />
         <Select
           fill
@@ -126,7 +126,7 @@ export const CalendarHeader = ({
           value={currentMonth}
           minimalOptions
           matchTarget="min-width"
-          onChange={(value) => onMonthsChange(value || 0)}
+          onChange={(value) => onMonthsChange(value)}
         />
       </div>
       {!nextMonthHidden && (
