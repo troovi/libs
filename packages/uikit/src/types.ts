@@ -12,3 +12,8 @@ export interface DateFormat {
   year: number
   day: number
 }
+
+export interface TimeFormat {
+  hours: number
+  minutes: number
+}

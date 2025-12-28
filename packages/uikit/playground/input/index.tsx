@@ -1,5 +1,5 @@
 import { Icon } from '@/Icon'
-import { Input } from '@/Input'
+import { Input } from '@/Input/Input'
 import { faEye, faEyeSlash, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
@@ -12,11 +12,13 @@ export const InputsExample = () => {
         <PasswordInput />
         <PasswordInput2 />
         <ChangeSize />
-        <Input
-          fill
-          placeholder="Fullwidth input"
-          leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
-        />
+        <div className="flex-1 flex">
+          <Input
+            fill
+            placeholder="Fullwidth input"
+            leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
+          />
+        </div>
       </div>
       <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
       <div className="flex gap-10">

@@ -31,10 +31,6 @@
 
   &[data-fill] {
     width: 100%;
-
-    .form-input {
-      width: 100%;
-    }
   }
 
   &[data-required] {
@@ -56,6 +52,7 @@
 
 .form-input {
   outline: none;
+  width: 100%;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {

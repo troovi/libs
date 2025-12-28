@@ -1,11 +1,11 @@
-import { useEffect, useMemo } from 'react'
-import { OptionsList } from '../OptionItem/OptionsList'
-import { OptionItem } from '../OptionItem/OptionItem'
+import { useImperativeHandle, useMemo } from 'react'
 import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
 import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
+import { SelectOptions } from './SelectOptions'
+import { mergeRefs } from 'react-merge-refs'
 
 interface Cleanable<T> {
   clearButton: true
@@ -26,9 +26,11 @@ type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'
     children?: React.ReactNode
     minimalOptions?: boolean
     matchTarget?: 'width' | 'min-width'
+    popoverRef?: React.Ref<HTMLDivElement>
+    scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
   }
 
-export const Select = <T,>(props: SelectProps<T>) => {
+export const Select = <T extends string | number>(props: SelectProps<T>) => {
   const {
     options,
     onChange,
@@ -37,12 +39,14 @@ export const Select = <T,>(props: SelectProps<T>) => {
     matchTarget = 'width',
     children,
     disabled,
+    scrollRef,
+    popoverRef: propPopoverRef,
     clearButton,
     ...selectProps
   } = props
 
   const currentOption = useMemo(() => {
-    const index = options.findIndex((o) => o.value === value)
+    const index = value === null ? -1 : options.findIndex((o) => o.value === value)
 
     return {
       index,
@@ -54,6 +58,12 @@ export const Select = <T,>(props: SelectProps<T>) => {
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
   const { scrollToElement, optionsWrapperRef, scrollBoxRef } = useScrollListController()
+
+  useImperativeHandle(scrollRef, () => {
+    return {
+      scrollTo: (index) => scrollToElement(index, 'top')
+    }
+  })
 
   const handleChange = (value: T, close: () => void) => {
     froozePopoverPosition()
@@ -71,14 +81,14 @@ export const Select = <T,>(props: SelectProps<T>) => {
 
   const onOpened = () => {
     if (currentOption.index !== -1) {
-      scrollToElement(currentOption.index, true)
+      scrollToElement(currentOption.index, 'center')
     }
   }
 
   return (
     <Popover
       minimal
-      ref={popoverRef}
+      ref={mergeRefs([popoverRef, propPopoverRef])}
       sideOffset={0}
       matchTarget={matchTarget}
       onAnimationEnd={handleAnimationEnd}
@@ -86,7 +96,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
       onCloseAutoFocus={(e) => e.preventDefault()}
       disabled={disabled}
       content={({ close }) => (
-        <SelectPopover<T>
+        <SelectOptions<T>
           options={options}
           active={active}
           scrollboxRef={scrollBoxRef}
@@ -107,37 +117,5 @@ export const Select = <T,>(props: SelectProps<T>) => {
         />
       )}
     </Popover>
-  )
-}
-
-interface SelectPopoverProps<T> {
-  scrollboxRef?: React.RefObject<HTMLDivElement>
-  optionsWrapperRef?: React.RefObject<HTMLDivElement>
-  options: Option<T>[]
-  minimalOptions?: boolean
-  active?: T | null
-  onSelect?: (value: T) => void
-  onOpened?: () => void
-}
-
-const SelectPopover = <T,>(props: SelectPopoverProps<T>) => {
-  const { active, onOpened, scrollboxRef, optionsWrapperRef, options, onSelect, minimalOptions } = props
-
-  useEffect(() => {
-    onOpened?.()
-  }, [])
-
-  return (
-    <OptionsList scrollboxRef={scrollboxRef} optionsWrapperRef={optionsWrapperRef} maxHeight={300}>
-      {options.map((option, i) => (
-        <OptionItem
-          key={`option-item-${option.value}-${i}`}
-          active={active === option.value}
-          onClick={() => onSelect?.(option.value)}
-          minimal={minimalOptions}
-          {...option}
-        />
-      ))}
-    </OptionsList>
   )
 }

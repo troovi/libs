@@ -29,6 +29,8 @@ import { SwitchExample } from './switch'
 import { DialogAlertExample } from './dialog-alert'
 import { DrawerExample } from './drawer'
 import { FormGroupExample } from './form-group'
+import { TimePickerExample } from './time-picker'
+// import { InlineInputsExample } from './inline-input'
 // import { Tabs } from '../Tabs'
 
 export const App = () => {
@@ -69,6 +71,9 @@ export const App = () => {
       <Example name="Input">
         <InputsExample />
       </Example>
+      {/* <Example name="InlineInput">
+        <InlineInputsExample />
+      </Example> */}
       <Example name="TextArea">
         <TextAreaExample />
       </Example>
@@ -83,6 +88,9 @@ export const App = () => {
       </Example>
       <Example name="DatePicker">
         <DatePickerExample />
+      </Example>
+      <Example name="TimePicker">
+        <TimePickerExample />
       </Example>
       <Example name="FormGroup">
         <FormGroupExample />

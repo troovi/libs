@@ -22,3 +22,26 @@
     align-items: center;
   }
 }
+
+.inline-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  &-container {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    align-self: stretch;
+    overflow: hidden;
+    height: var(--form_size_md_height);
+  }
+
+  &-title {
+    padding: 0px var(--form_space, 0);
+    opacity: 0;
+  }
+}

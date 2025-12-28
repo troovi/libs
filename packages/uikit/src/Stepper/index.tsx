@@ -1,6 +1,6 @@
 // import './StepperInput.scss'
 
-import { Input } from '../Input'
+import { Input } from '../Input/Input'
 import { useStepperInput, StepperInputOptions } from '../__hooks/use-stepper-input'
 import { usePress } from '@react-aria/interactions'
 import { Button } from '../Button'

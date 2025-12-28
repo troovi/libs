@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from 'react'
-import { Option, Select } from '..'
+import { Select } from '../Select'
 import { DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR, getMonths, getYears } from '../__utils/utils'
 import { Icon } from '../Icon'
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { setMonth, setYear } from '../__libs/calendar'
+import type { Option } from '..'
 
 export interface CalendarHeaderProps {
   /**

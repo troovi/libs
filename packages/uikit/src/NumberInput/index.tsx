@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { Input, FormProps } from '../Input'
+import { Input, InputProps } from '../Input/Input'
 
-export interface NumberInputProps extends Omit<FormProps, 'value' | 'onChange'> {
+export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: number | null
   onChange: (value: number | null) => void
 }

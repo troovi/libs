@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react'
 interface UseScrollListControllerReturn {
   scrollBoxRef: React.RefObject<HTMLDivElement>
   optionsWrapperRef: React.RefObject<HTMLDivElement>
-  scrollToElement: (index: number, center?: boolean) => void
+  scrollToElement: (index: number, position?: 'center' | 'top') => void
 }
 
 export const useScrollListController = (): UseScrollListControllerReturn => {
@@ -11,7 +11,7 @@ export const useScrollListController = (): UseScrollListControllerReturn => {
   const optionsWrapperRef = useRef<HTMLDivElement>(null)
 
   const scrollToElement = useCallback(
-    (index: number, center = false) => {
+    (index: number, position?: 'center' | 'top') => {
       const dropdown = scrollBoxRef.current
       const optionsWrapper = optionsWrapperRef.current
 
@@ -30,8 +30,10 @@ export const useScrollListController = (): UseScrollListControllerReturn => {
       const itemTop = item.offsetTop
       const itemHeight = item.offsetHeight
 
-      if (center) {
+      if (position === 'center') {
         dropdown.scrollTop = itemTop - dropdownHeight / 2 + itemHeight / 2
+      } else if (position === 'top') {
+        dropdown.scrollTop = itemTop
       } else if (itemTop + itemHeight > dropdownHeight + scrollTop) {
         dropdown.scrollTop = itemTop - dropdownHeight + itemHeight
       } else if (itemTop < scrollTop) {

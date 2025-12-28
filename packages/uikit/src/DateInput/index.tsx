@@ -1,7 +1,8 @@
 import { useMemo, useEffect } from 'react'
-import { DateFormat, Select } from '..'
+import { Select } from '../Select'
 import { createDateValidation, getMonthMaxDay } from '../__utils/utils'
 import { defaultMax, defaultMin, useCalendarOptions } from '../__hooks/useCalendarOptions'
+import { DateFormat } from '..'
 
 export interface DatePickerProps {
   min?: DateFormat

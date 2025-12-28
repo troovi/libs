@@ -2,10 +2,9 @@ import cn from 'classnames'
 
 import { attr } from '@companix/utils-browser'
 import { forwardRef, useCallback, useRef } from 'react'
-import { Icon } from '../Icon'
-import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { mergeRefs } from 'react-merge-refs'
+import { SelectRightElements } from './SelectRight'
 
 export interface SelectFormProps extends React.HTMLAttributes<HTMLDivElement> {
   required?: boolean
@@ -108,12 +107,12 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
             </div>
           </div>
           <div className="select-element">
-            {clearButton && value && (
-              <button className="select-close-button" onClick={handleClear}>
-                {clearButtonIcon ?? <Icon className="select-close-icon" icon={faClose} size="xxxs" />}
-              </button>
-            )}
-            <Icon className="expand-icon select-expand" icon={faChevronDown} size="xxxs" />
+            <SelectRightElements
+              clearButton={clearButton}
+              value={Boolean(value)}
+              clearButtonIcon={clearButtonIcon}
+              onClear={handleClear}
+            />
           </div>
         </div>
         <VisuallyHidden asChild>

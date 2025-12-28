@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
-export const useLayoutAndUpdate = (callback: () => void, deps?: React.DependencyList | undefined) => {
+export const useEffectWithLayout = (callback: () => void, deps?: React.DependencyList | undefined) => {
   const isRendered = useRef(false)
 
   useLayoutEffect(() => {

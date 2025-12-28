@@ -1,5 +1,6 @@
 import { clamp } from '@companix/utils-browser'
-import { DateFormat, Option } from '..'
+import { DateFormat, Option, TimeFormat } from '..'
+import { formatTime } from '@companix/utils-js'
 
 export const getMonthMaxDay = (month: number, year: number) => {
   return new Date(year, month, 0).getDate()
@@ -134,4 +135,39 @@ export const getMonths = (locale?: string): Option<number>[] => {
   }
 
   return months
+}
+
+export const removeDigits = (value: string, signs: string[]) => {
+  return signs.reduce((buffer, sign) => buffer.replaceAll(sign, ''), value.trim())
+}
+
+export const convertTimeToOption = ({ hours, minutes }: TimeFormat, char = ':') => {
+  return [formatTime(hours), formatTime(minutes)].join(char)
+}
+
+interface TimeOption extends Option<string> {
+  hours: string
+  minutes: string
+}
+
+export const getTimeValue = (time: TimeFormat, char = ':') => {
+  const [hours, minutes] = [formatTime(time.hours), formatTime(time.minutes)]
+  const value = [hours, minutes].join(char)
+
+  return { title: value, value: value, hours, minutes }
+}
+
+export const getTimesOptions = (step: number, char = ':'): TimeOption[] => {
+  const currentTime = { minutes: -step, hours: 0 }
+
+  return Array.from({ length: (24 * 60) / step }).map(() => {
+    currentTime.minutes += step
+
+    if (currentTime.minutes === 60) {
+      currentTime.minutes = 0
+      currentTime.hours++
+    }
+
+    return getTimeValue(currentTime, char)
+  })
 }

@@ -1,55 +1,55 @@
-import { Popover } from '..'
-import { Input, FormProps } from '../Input'
-import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
-import { Icon } from '../Icon'
+import { Popover } from '../Popover'
+import { Input, InputProps } from '../Input/Input'
 import { useRef, useState } from 'react'
 import { Calendar, CalendarProps } from './Calendar'
 import { useDayDisableCheker } from '../__libs/calendar'
 import { formatTime, getNum } from '@companix/utils-js'
+import { removeDigits } from '../__utils/utils'
+import { SelectRightElements } from '../Select/SelectRight'
+
+const dateInput = {
+  char: '-',
+  toString: (value: Date | null): string => {
+    if (value) {
+      const day = formatTime(value.getDate())
+      const month = formatTime(value.getMonth() + 1)
+      const year = value.getFullYear()
+
+      return [day, month, year].join(dateInput.char)
+    }
+
+    return ''
+  },
+  toValue: (input: string): Date | null => {
+    const values = input.split(dateInput.char)
+
+    if (values.length === 3) {
+      const [day, month, year] = [getNum(values[0]), getNum(values[1]), getNum(values[2])]
+
+      if (day && month && year) {
+        const date = new Date(year, month - 1, day)
+
+        if (date.getFullYear() === year && date.getDate() === day && date.getMonth() === month - 1) {
+          return date
+        }
+      }
+    }
+
+    return null
+  }
+}
 
 interface DatePickerProps
   extends Omit<CalendarProps, 'onChange'>,
-    Omit<FormProps, 'value' | 'onChange' | 'rightElement'> {
+    Omit<InputProps, 'value' | 'onChange' | 'rightElement'> {
   onChange?: (value: Date | null) => void
   clearButton?: boolean
   clearButtonIcon?: boolean
   children?: React.ReactNode
-  minimalOptions?: boolean
-}
-
-const createInputValue = (value: Date | null, char: string = '-'): string => {
-  if (value) {
-    const day = formatTime(value.getDate())
-    const month = formatTime(value.getMonth() + 1)
-    const year = value.getFullYear()
-
-    return [day, month, year].join(char)
-  }
-
-  return ''
-}
-
-const inputToDate = (input: string, char: string = '-'): Date | null => {
-  const values = input.split(char)
-
-  if (values.length === 3) {
-    const [day, month, year] = [getNum(values[0]), getNum(values[1]), getNum(values[2])]
-
-    if (day && month && year) {
-      const date = new Date(year, month - 1, day)
-
-      if (date.getFullYear() === year && date.getDate() === day && date.getMonth() === month - 1) {
-        return date
-      }
-    }
-  }
-
-  return null
 }
 
 export const DatePicker = (props: DatePickerProps) => {
   const {
-    minimalOptions,
     clearButton,
     clearButtonIcon,
     children,
@@ -71,7 +71,7 @@ export const DatePicker = (props: DatePickerProps) => {
   } = props
 
   const [inputValue, setInputValue] = useState(() => {
-    return createInputValue(value ?? null)
+    return dateInput.toString(value ?? null)
   })
 
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -103,7 +103,7 @@ export const DatePicker = (props: DatePickerProps) => {
   const handleInputChange = (value: string) => {
     setInputValue(value)
 
-    const date = inputToDate(value)
+    const date = dateInput.toValue(value)
 
     if (date && !isDayDisabled(date)) {
       onChange?.(date)
@@ -111,16 +111,16 @@ export const DatePicker = (props: DatePickerProps) => {
   }
 
   const handleInputBlur = () => {
-    const date = inputToDate(inputValue)
+    const date = dateInput.toValue(inputValue)
 
     if (!date || isDayDisabled(date)) {
-      setInputValue(createInputValue(value ?? null))
+      setInputValue(dateInput.toString(value ?? null))
     }
   }
 
   const handleCalendarChange = (value: Date) => {
     onChange?.(value)
-    setInputValue(createInputValue(value))
+    setInputValue(dateInput.toString(value))
   }
 
   return (
@@ -156,20 +156,14 @@ export const DatePicker = (props: DatePickerProps) => {
         onBlur={handleInputBlur}
         mask={'99-99-9999'}
         rightElement={
-          <>
-            {clearButton && isInputDefined(inputValue) && (
-              <button className="select-close-button" onClick={handleClear}>
-                {clearButtonIcon ?? <Icon className="select-close-icon" icon={faClose} size="xxxs" />}
-              </button>
-            )}
-            <Icon className="expand-icon select-expand" icon={faChevronDown} size="xxxs" />
-          </>
+          <SelectRightElements
+            clearButton={clearButton}
+            clearButtonIcon={clearButtonIcon}
+            value={Boolean(removeDigits(inputValue, ['-', '_']))}
+            onClear={handleClear}
+          />
         }
       />
     </Popover>
   )
-}
-
-const isInputDefined = (value: string) => {
-  return value.trim().replaceAll('-', '').replaceAll('_', '')
 }
