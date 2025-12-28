@@ -30,7 +30,7 @@ type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'
     scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
   }
 
-export const Select = <T extends string | number>(props: SelectProps<T>) => {
+export const Select = <T,>(props: SelectProps<T>) => {
   const {
     options,
     onChange,
