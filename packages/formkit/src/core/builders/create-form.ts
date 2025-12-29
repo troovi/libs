@@ -38,13 +38,14 @@ export const createForm = <V, P>(builder: FormBuilder<P, V>) => {
   return <N extends string>(name: N, params: P & Rules<V>): SchemeItems.Form<N, V, P> => {
     const check = builder.getRequireCheck(params)
 
-    const { validate, required } = params.$rules ?? {}
+    const { $rules = {}, ...clientParams } = params
+    const { validate, required } = $rules
 
     return {
       type: 'form',
       name,
       defaultValue: builder.defaultValue,
-      Form: builder.getForm(params),
+      Form: builder.getForm(clientParams as P),
       validate: (value) => {
         // required case
         if (required) {
