@@ -45,7 +45,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
       thousandsGroupStyle,
       decimalScale,
       fixedDecimalScale,
-      allowNegative,
+      allowNegative = false,
       allowLeadingZeros,
       suffix,
       prefix,
