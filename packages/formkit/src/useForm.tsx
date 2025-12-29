@@ -49,6 +49,7 @@ const useForm = <
   const manager = managerRef.current
 
   return {
+    manager,
     useValue: <K extends keyof FlattenValues>(name: K): FlattenValues[K] => {
       return useValue(name as string)
     },
@@ -69,8 +70,7 @@ const useForm = <
     },
     handleSubmit: async () => {
       await manager.handleSubmit()
-    },
-    manager
+    }
   }
 }
 

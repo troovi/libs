@@ -1,4 +1,5 @@
-import { faChevronDown, faClose } from '@fortawesome/free-solid-svg-icons'
+import { faClose } from '@fortawesome/free-solid-svg-icons/faClose'
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown'
 import { Icon } from '../Icon'
 
 interface SelectRightElementsProps {

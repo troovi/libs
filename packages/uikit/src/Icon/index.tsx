@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { forwardRef } from 'react'
 
 export interface IconProps {
