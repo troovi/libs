@@ -27,6 +27,7 @@ export { DateInput } from './DateInput'
 export { FileOverlay } from './File'
 export { FormGroup } from './FormGroup'
 export { TimePicker } from './TimePicker'
+export { Icon } from './Icon'
 // hooks
 export { useLocalStorage } from './__hooks/use-local-storage'
 // agents
