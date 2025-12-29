@@ -75,11 +75,10 @@ const useForm = <
 }
 
 interface Props {
-  className?: string
   manager: FormManager<any, any>
 }
 
-export const FormLayout = ({ manager, className }: Props) => {
+export const FormLayout = ({ manager }: Props) => {
   useMemo(() => {
     manager.activate()
   }, [])
@@ -92,7 +91,7 @@ export const FormLayout = ({ manager, className }: Props) => {
 
   return (
     <FormContext.Provider value={manager}>
-      <SchemeBuilder className={className} scheme={manager.scheme} path={[]} />
+      <SchemeBuilder scheme={manager.scheme} path={[]} />
     </FormContext.Provider>
   )
 }
