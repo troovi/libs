@@ -1,14 +1,17 @@
 import { forwardRef, useCallback } from 'react'
 import ReactInputMask from 'react-input-mask'
 
-interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'children'> {
+interface InputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'children' | 'value' | 'defaultValue'> {
+  defaultValue?: string
+  value?: string
   mask?: string
   maskChar?: string
   onValueChange?: (value: string, targetElement: HTMLInputElement) => void
 }
 
 export const InputElement = forwardRef<HTMLInputElement, InputProps>(
-  ({ mask, maskChar, onChange, onValueChange, ...inputProps }, ref) => {
+  ({ mask, maskChar = '_', onChange, onValueChange, ...inputProps }, ref) => {
     const handleInputChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onChange?.(event)

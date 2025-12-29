@@ -1,6 +1,6 @@
 {
   "name": "@companix/uikit",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
@@ -37,7 +37,8 @@
     "@radix-ui/react-visually-hidden": "^1.2.4",
     "classnames": "^2.5.1",
     "react-input-mask": "^2.0.4",
-    "react-merge-refs": "^3.0.2"
+    "react-merge-refs": "^3.0.2",
+    "react-number-format": "^5.4.4"
   },
   "devDependencies": {
     "@blueprintjs/core": "^6.2.1",

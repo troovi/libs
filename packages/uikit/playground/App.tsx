@@ -30,6 +30,7 @@ import { DialogAlertExample } from './dialog-alert'
 import { DrawerExample } from './drawer'
 import { FormGroupExample } from './form-group'
 import { TimePickerExample } from './time-picker'
+import { NumberInputs } from './number-inputs'
 // import { InlineInputsExample } from './inline-input'
 // import { Tabs } from '../Tabs'
 
@@ -70,6 +71,9 @@ export const App = () => {
       </Example>
       <Example name="Input">
         <InputsExample />
+      </Example>
+      <Example name="NumberInputs">
+        <NumberInputs />
       </Example>
       {/* <Example name="InlineInput">
         <InlineInputsExample />

@@ -28,10 +28,12 @@ export { FileOverlay } from './File'
 export { FormGroup } from './FormGroup'
 export { TimePicker } from './TimePicker'
 // hooks
-export * from './__hooks/use-local-storage'
+export { useLocalStorage } from './__hooks/use-local-storage'
 // agents
 export { createAlertAgent } from './DialogAlert'
 export { createToaster } from './Toaster'
 // types
 export * from './types'
 export type { Appearance } from './Button'
+export type { RadioOption } from './Radio'
+export type { NumberInputProps, ReactNumberFormatParams } from './NumberInput'

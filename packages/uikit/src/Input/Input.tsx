@@ -6,7 +6,7 @@ import classNames from 'classnames'
 
 export interface InputProps extends Omit<InputContainerProps, 'inputRef' | 'children'> {
   placeholder?: string
-  value?: string | number
+  value?: string
   readOnly?: boolean
   onValueChange?: (value: string, targetElement: HTMLInputElement) => void
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void

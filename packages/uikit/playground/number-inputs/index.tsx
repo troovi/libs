@@ -1,50 +1,49 @@
 import { useState } from 'react'
-import { StepperInput } from '@/Stepper'
-import { NumberInput } from '@/NumberInput'
+import { NumberInput, ReactNumberFormatParams } from '@/NumberInput'
 
 export const NumberInputs = () => {
   return (
-    <div className="flex flex-col gap-22" style={{ width: '200px' }}>
-      <div>NumberInputs</div>
-      <div>
-        <NumbInput1 />
-      </div>
-      <div>
-        <NumbInput2 />
-      </div>
-      <div>
-        <NumbInput3 />
+    <div className="col-group">
+      <div className="row-group">
+        <NumberInputControlled
+          placeholder="Enter the price"
+          thousandSeparator=" "
+          suffix=" ₽"
+          allowNegative={false}
+        />
+        <NumberInputControlled
+          placeholder="Amount of coin"
+          fixedDecimalScale
+          decimalScale={4}
+          allowLeadingZeros={false}
+        />
       </div>
     </div>
   )
 }
 
-const NumbInput1 = () => {
-  const [value, onChange] = useState(0)
-  return (
-    <div className="flex flex-col">
-      <StepperInput buttons step={0.01} value={value} onChange={onChange} />
-      <div onClick={() => onChange(0)}>set 0</div>
-    </div>
-  )
-}
+// const NumbInput1 = () => {
+//   const [value, onChange] = useState(0)
+//   return (
+//     <div className="flex flex-col">
+//       {/* <StepperInput buttons step={0.01} value={value} onChange={onChange} /> */}
+//       <div onClick={() => onChange(0)}>set 0</div>
+//     </div>
+//   )
+// }
 
-const NumbInput2 = () => {
-  const [value, onChange] = useState(0)
+// const NumbInput2 = () => {
+//   const [value, onChange] = useState(0)
 
-  return <StepperInput step={1} value={value} onChange={onChange} />
-}
+//   return null
 
-const NumbInput3 = () => {
-  const [value, onChange] = useState<number | null>(0)
+//   // return <StepperInput step={1} value={value} onChange={onChange} />
+// }
 
-  console.log(value)
+const NumberInputControlled = (params: ReactNumberFormatParams & { placeholder: string }) => {
+  const [value, setInputValue] = useState<null | number>(null)
 
-  return (
-    <div>
-      <NumberInput value={value} onChange={onChange} />
-      <div onClick={() => onChange(1122)}>Set 1122</div>
-      <div onClick={() => onChange(null)}>Set null</div>
-    </div>
-  )
+  console.log({ value })
+
+  return <NumberInput value={value} onValueChange={setInputValue} {...params} />
 }

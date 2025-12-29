@@ -1,74 +1,86 @@
-import { useRef, useState } from 'react'
-import { Input, InputProps } from '../Input/Input'
+import classNames from 'classnames'
 
-export interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: number | null
-  onChange: (value: number | null) => void
+import { forwardRef, useRef } from 'react'
+import { mergeRefs } from 'react-merge-refs'
+import { InputContainer, InputContainerProps } from '../Input/InputContainer'
+import { NumericFormat } from 'react-number-format'
+
+export interface ReactNumberFormatParams {
+  thousandSeparator?: boolean | string
+  decimalSeparator?: string
+  allowedDecimalSeparators?: Array<string>
+  thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan' | 'none'
+  decimalScale?: number
+  fixedDecimalScale?: boolean
+  allowNegative?: boolean
+  allowLeadingZeros?: boolean
+  suffix?: string
+  prefix?: string
 }
 
-export const NumberInput = ({ value, onChange, ...props }: NumberInputProps) => {
-  const [, rerender] = useState([])
-  const input = useRef<string>(getInputValue(value))
+export interface NumberInputProps
+  extends Omit<InputContainerProps, 'inputRef' | 'children'>,
+    ReactNumberFormatParams {
+  placeholder?: string
+  value?: number | null
+  readOnly?: boolean
+  onValueChange?: (value: number | null) => void
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  inputRef?: React.Ref<HTMLInputElement>
+  inputClassName?: string
+}
 
-  if (+input.current !== value) {
-    input.current = getInputValue(value)
+export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
+  (
+    {
+      onChange,
+      onValueChange,
+      readOnly,
+      inputClassName,
+      value,
+      placeholder,
+      thousandSeparator,
+      decimalSeparator,
+      allowedDecimalSeparators,
+      thousandsGroupStyle,
+      decimalScale,
+      fixedDecimalScale,
+      allowNegative,
+      allowLeadingZeros,
+      suffix,
+      prefix,
+      inputRef: clientInputRef,
+      ...containerProps
+    },
+    ref
+  ) => {
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    return (
+      <InputContainer ref={ref} inputRef={inputRef} {...containerProps}>
+        <NumericFormat
+          type="text"
+          getInputRef={mergeRefs([inputRef, clientInputRef])}
+          className={classNames('form-input form-input-base', inputClassName)}
+          aria-disabled={containerProps.disabled}
+          onChange={onChange}
+          onValueChange={({ floatValue }) => onValueChange?.(floatValue ?? null)}
+          value={value}
+          placeholder={placeholder}
+          disabled={containerProps.disabled}
+          readOnly={readOnly}
+          thousandSeparator={thousandSeparator}
+          decimalSeparator={decimalSeparator}
+          allowedDecimalSeparators={allowedDecimalSeparators}
+          thousandsGroupStyle={thousandsGroupStyle}
+          decimalScale={decimalScale}
+          fixedDecimalScale={fixedDecimalScale}
+          allowNegative={allowNegative}
+          allowLeadingZeros={allowLeadingZeros}
+          suffix={suffix}
+          prefix={prefix}
+        />
+      </InputContainer>
+    )
   }
-
-  return (
-    <Input
-      {...props}
-      value={input.current}
-      onChange={(e) => {
-        const source = (e.currentTarget.value as string).trim()
-
-        if (source === '') {
-          input.current = ''
-          return onChange(null)
-        }
-
-        if (source.startsWith('.')) {
-          return
-        }
-
-        const numbersigns = source.replace('.', '').split('')
-
-        if (numbersigns.some((symbol) => isNaN(parseInt(symbol)))) {
-          return
-        }
-
-        input.current = clean(source.split(''))
-
-        if (+input.current === value) {
-          return rerender([])
-        }
-
-        onChange(+input.current)
-      }}
-    />
-  )
-}
-
-const getInputValue = (value: number | null) => {
-  return value === null ? '' : value.toString()
-}
-
-const clean = (signs: string[]) => {
-  const result = [...signs]
-  const source = [...signs]
-
-  if (source.every((value) => value === '0')) {
-    return '0'
-  }
-
-  for (let i = 0; i < source.length; i++) {
-    if (source[i] !== '0') {
-      break
-    }
-
-    if (source[i] === '0' && source[i + 1] !== '.') {
-      result.shift()
-    }
-  }
-
-  return result.join('')
-}
+)
