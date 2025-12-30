@@ -1,21 +1,24 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 
 export interface FileOverlayProps {
   multiple?: true
   onChange?: (file: File[]) => void
   children: React.ReactNode
-  mimes?: string[]
   disabled?: boolean
   className?: string
+  mimes?: ('image' | 'video' | 'audio' | 'text' | 'application')[]
 }
+
+// Интерактивные элементы (button, a, input) внутри <label>
+// прерывают нативную активацию связанного <input>.
 
 const FileOverlay = ({
   onChange,
   disabled,
-  mimes,
   children,
   multiple,
+  mimes,
   className
 }: FileOverlayProps) => {
   const ref = useRef<HTMLInputElement>(null)
@@ -34,21 +37,21 @@ const FileOverlay = ({
     }
   }
 
+  const accept = useMemo(() => {
+    if (mimes) {
+      return mimes.map((mime) => `${mime}/*`).join(',')
+    }
+  }, [mimes])
+
   return (
     <label className={className}>
       {children}
       <VisuallyHidden asChild>
         <input
           ref={ref}
-          hidden
           type="file"
-          autoComplete="off"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck="false"
-          aria-autocomplete="none"
           multiple={multiple}
-          accept={(mimes ?? []).join(', ')}
+          accept={accept}
           onChange={handleChange}
           disabled={disabled}
         />

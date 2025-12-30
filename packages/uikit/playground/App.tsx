@@ -21,6 +21,7 @@ import { FormGroupExample } from './form-group'
 import { TimePickerExample } from './time-picker'
 import { NumberInputs } from './number-inputs'
 import { ProgressBarExample } from './progress'
+import { FileExample } from './file'
 
 export const App = () => {
   useLayoutEffect(() => {
@@ -91,6 +92,9 @@ export const App = () => {
       </Example>
       <Example name="ButtonGroup">
         <ButtonsGroupExample />
+      </Example>
+      <Example name="File">
+        <FileExample />
       </Example>
       <Example name="ProgressBar">
         <ProgressBarExample />

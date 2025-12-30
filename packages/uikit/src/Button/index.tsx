@@ -20,6 +20,7 @@ export interface InternButtonProps {
   text?: React.ReactNode
   children?: React.ReactNode
   className?: string
+  Component?: React.ElementType
 }
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, InternButtonProps {}
@@ -39,12 +40,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading,
       className,
       iconRight,
+      Component = 'button',
       ...buttonProps
     },
     ref
   ) => {
     return (
-      <button
+      <Component
         ref={ref}
         className={classNames('button', className)}
         data-size={size}
@@ -54,6 +56,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         data-mode={mode}
         data-fill={attr(fill)}
         data-active={attr(active)}
+        type={Component === 'button' ? 'button' : undefined}
         {...buttonProps}
         onClick={loading ?? buttonProps.disabled ? undefined : buttonProps.onClick}
       >
@@ -66,7 +69,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             {iconRight}
           </>
         )}
-      </button>
+      </Component>
     )
   }
 )
