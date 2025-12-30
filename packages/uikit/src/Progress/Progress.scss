@@ -1,0 +1,47 @@
+@use '../mixins.scss';
+
+.progress-bar {
+  @include mixins.use-styles(progress);
+
+  display: block;
+  overflow: hidden;
+  position: relative;
+  border-radius: 100px;
+  width: 100%;
+
+  &-thumb {
+    animation: linear-progress-bar-stripes 0.3s linear infinite reverse;
+    background: linear-gradient(
+      -45deg,
+      hsla(0, 0%, 100%, 0.2) 25%,
+      transparent 0,
+      transparent 50%,
+      hsla(0, 0%, 100%, 0.2) 0,
+      hsla(0, 0%, 100%, 0.2) 75%,
+      transparent 0
+    );
+    background-size: 30px 30px;
+    border-radius: 40px;
+    height: 100%;
+    position: absolute;
+    transition: width 0.2s cubic-bezier(0.4, 1, 0.75, 0.9);
+    width: 100%;
+
+    @include mixins.use-styles(progress, thumb);
+
+    @each $appearance, $v in mixins.$appearances {
+      &[data-appearance='#{$appearance}'] {
+        @include mixins.use-styles(progress, thumb, $appearance);
+      }
+    }
+  }
+}
+
+@keyframes linear-progress-bar-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 30px 0;
+  }
+}

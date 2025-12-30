@@ -99,6 +99,7 @@
   &-content {
     display: flex;
     flex-direction: column;
+    width: 100%;
 
     @include mixins.use-styles(toaster, content);
   }
@@ -111,11 +112,14 @@
     @include mixins.use-styles(toaster, description);
   }
 
-  &-close {
-    cursor: pointer;
+  &-close-placement {
     top: var(--toaster_close_space, 0);
     right: var(--toaster_close_space, 0);
     position: absolute;
+  }
+
+  &-close {
+    cursor: pointer;
     transition: color 0.2s;
 
     @include mixins.use-styles(toaster, close);

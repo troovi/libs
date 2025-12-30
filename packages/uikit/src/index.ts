@@ -28,11 +28,13 @@ export { FileOverlay } from './File'
 export { FormGroup } from './FormGroup'
 export { TimePicker } from './TimePicker'
 export { Icon } from './Icon'
+export { ProgressBar } from './Progress'
 // hooks
 export { useLocalStorage } from './__hooks/use-local-storage'
 // agents
 export { createAlertAgent } from './DialogAlert'
 export { createToaster } from './Toaster'
+export { Toast } from './Toaster/Toast'
 // types
 export * from './types'
 export type { Appearance } from './Button'

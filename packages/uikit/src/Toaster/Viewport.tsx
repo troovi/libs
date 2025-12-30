@@ -24,13 +24,14 @@ export interface ViewportProps {
 
 export interface ViewportRef {
   addToast: (toast: InnerToast) => void
+  updateToast: (toast: InnerToast) => void
 }
 
 export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
   const { side = 'top', align = 'center', gap = 14, duration, swipeThreshold, closeIcon } = props
   const [toasters, setToasters] = useState<InnerToast[]>([])
 
-  const refs = useMemo((): { [id: string]: HTMLLIElement } => {
+  const toastsRefs = useMemo((): { [id: string]: HTMLLIElement } => {
     return {}
   }, [])
 
@@ -40,6 +41,18 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
       return {
         addToast: (toast) => {
           setToasters((state) => [...state, toast])
+        },
+        updateToast: (toast) => {
+          setToasters((state) => {
+            const nextState = [...state]
+            const index = state.findIndex((u) => u.id === toast.id)
+
+            if (index !== -1) {
+              nextState[index] = toast
+            }
+
+            return nextState
+          })
         }
       }
     },
@@ -51,18 +64,18 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
       let offset = 0
 
       for (let i = index + 1; i < toasters.length; i++) {
-        if (refs[toasters[i].id]) {
-          offset += refs[toasters[i].id].clientHeight + gap
+        if (toastsRefs[toasters[i].id]) {
+          offset += toastsRefs[toasters[i].id].clientHeight + gap
         }
       }
 
-      if (refs[id]) {
-        refs[id].style.setProperty('--offset', `${offset}px`)
+      if (toastsRefs[id]) {
+        toastsRefs[id].style.setProperty('--offset', `${offset}px`)
       }
     })
   }, [])
 
-  const handleClose = (id: string) => {
+  const dropToast = (id: string) => {
     setToasters((state) => {
       const nextState = [...state]
       const index = nextState.findIndex((item) => item.id === id)
@@ -77,33 +90,25 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
 
   return (
     <ToasterPrimitive.Provider
-      duration={duration}
       swipeThreshold={swipeThreshold}
       swipeDirection={SwipesDirections[`${side}-${align}`]}
     >
       {toasters.map(({ id, ...toast }) => (
         <Toast
           {...toast}
+          id={id}
           key={`toaster-${id}`}
+          duration={toast.duration ?? duration}
           closeIcon={closeIcon}
           onInitialized={(ref) => {
-            refs[id] = ref
+            toastsRefs[id] = ref
             applyOffsets(toasters)
           }}
-          onRemoving={() => {
-            delete refs[id]
+          onClosing={() => {
+            delete toastsRefs[id]
             applyOffsets(toasters)
           }}
-          onRemoved={() => {
-            if (refs[id]) {
-              // Если коллбек onRemoved вызвается при истечении duration,
-              // мы не перехватываем событие onRemoving и не изменяем позиции текущих тостов
-              // (автоматическое закрытие тостов всегда происходит в порядке открытия)
-              delete refs[id]
-            }
-
-            handleClose(id)
-          }}
+          onClosed={() => dropToast(id)}
         />
       ))}
       <ToasterPrimitive.Viewport

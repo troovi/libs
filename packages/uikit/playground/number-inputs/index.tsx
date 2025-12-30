@@ -43,7 +43,5 @@ export const NumberInputs = () => {
 const NumberInputControlled = (params: ReactNumberFormatParams & { placeholder: string }) => {
   const [value, setInputValue] = useState<null | number>(null)
 
-  console.log({ value })
-
   return <NumberInput value={value} onValueChange={setInputValue} {...params} />
 }

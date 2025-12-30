@@ -1,15 +1,85 @@
 import { Button } from '@/Button'
 import { ButtonGroup } from '@/ButtonGroup'
 import { Icon } from '@/Icon'
-import { createToaster } from '@/Toaster'
-import { faCircleCheck, faCircleInfo, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { ProgressBar } from '@/Progress'
+import { ToastOptions, createToaster } from '@/Toaster'
+import { Toast } from '@/index'
+import {
+  faCircleCheck,
+  faCircleInfo,
+  faCloudArrowUp,
+  faTriangleExclamation
+} from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
-const Toaster = createToaster({ duration: 2500, align: 'center' })
+const { api: toaster, Viewport: ToasterViewport } = createToaster({
+  duration: 2500,
+  align: 'center'
+})
 
 export const ToasterExample = () => {
   const [side, setSide] = useState<'top' | 'bottom'>('top')
   const [align, setAlign] = useState<'center' | 'left' | 'right'>('center')
+
+  const handleCreateEvent = () => {
+    toaster.add({
+      appearance: 'neutral',
+      title: 'Event created',
+      description: 'Sunday, December 21, 2025 at 2:45 AM'
+    })
+  }
+
+  const handleCopyText = () => {
+    toaster.add({
+      appearance: 'neutral',
+      title: 'The text is copied'
+    })
+  }
+
+  const handleMoveFiles = () => {
+    toaster.add({
+      appearance: 'positive',
+      title: 'Move files is completed!',
+      description: 'Moved 6 files'
+    })
+  }
+
+  const handleDelete = () => {
+    toaster.add({
+      appearance: 'negative',
+      title: 'Permission error',
+      description:
+        'You do not have permissions to perform this action. Please contact your system administrator to request the appropriate access rights.'
+    })
+  }
+
+  const renderProgress = (progress: number): ToastOptions => {
+    return {
+      closable: false,
+      duration: progress < 100 ? Infinity : 1000,
+      description: (
+        <div className="flex items-center gap-10">
+          <Icon icon={faCloudArrowUp} size="xxs" className="quieter" />
+          <ProgressBar appearance={progress < 100 ? 'primary' : 'positive'} value={progress / 100} />
+          <Toast.Close className="toaster-progress-close" />
+        </div>
+      )
+    }
+  }
+
+  const handleUpload = () => {
+    let progress = 0
+
+    const id = toaster.add(renderProgress(progress))
+    const progressToastInterval = setInterval(() => {
+      if (progress > 100) {
+        clearInterval(progressToastInterval)
+      } else {
+        progress += 10 + Math.random() * 20
+        toaster.update({ id, ...renderProgress(progress) })
+      }
+    }, 1000)
+  }
 
   return (
     <div>
@@ -36,57 +106,19 @@ export const ToasterExample = () => {
           </ButtonGroup>
         </div>
         <div className="row-group">
-          <Button
-            appearance="neutral"
-            onClick={() => {
-              Toaster.send({
-                appearance: 'neutral',
-                title: 'Event created',
-                description: 'Sunday, December 21, 2025 at 2:45 AM'
-              })
-            }}
-          >
+          <Button appearance="neutral" onClick={handleCreateEvent}>
             Create event
           </Button>
-          <Button
-            onClick={() => {
-              Toaster.send({
-                appearance: 'neutral',
-                title: 'The text is copied'
-              })
-            }}
-          >
-            Copy text
-          </Button>
-          <Button
-            onClick={() => {
-              Toaster.send({
-                appearance: 'positive',
-                title: 'Move files is completed!',
-                description: 'Moved 6 files'
-              })
-            }}
-          >
-            Move files
-          </Button>
-          <Button
-            onClick={() =>
-              Toaster.send({
-                appearance: 'negative',
-                title: 'Permission error',
-                description:
-                  'You do not have permissions to perform this action. Please contact your system administrator to request the appropriate access rights.'
-              })
-            }
-          >
-            Delete root
-          </Button>
+          <Button onClick={handleCopyText}>Copy text</Button>
+          <Button onClick={handleMoveFiles}>Move files</Button>
+          <Button onClick={handleDelete}>Delete root</Button>
+          <Button onClick={handleUpload}>Upload file</Button>
         </div>
         <div className="row-group">
           <Button
             appearance="primary"
             onClick={() => {
-              Toaster.send({
+              toaster.add({
                 appearance: 'primary',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -99,7 +131,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              Toaster.send({
+              toaster.add({
                 appearance: 'neutral',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -112,7 +144,7 @@ export const ToasterExample = () => {
           <Button
             appearance="positive"
             onClick={() => {
-              Toaster.send({
+              toaster.add({
                 appearance: 'positive',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -125,7 +157,7 @@ export const ToasterExample = () => {
           <Button
             appearance="negative"
             onClick={() => {
-              Toaster.send({
+              toaster.add({
                 appearance: 'negative',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -138,7 +170,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              Toaster.send({
+              toaster.add({
                 appearance: 'warning',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -150,7 +182,7 @@ export const ToasterExample = () => {
           </Button>
         </div>
       </div>
-      <Toaster.Viewport align={align} side={side} />
+      <ToasterViewport align={align} side={side} />
     </div>
   )
 }

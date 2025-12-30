@@ -292,6 +292,14 @@ $layout: (
     icon_visible_opacity: 1,
     icon_unchecked_color: rgba(220, 38, 38),
     icon_checked_color: rgba(22, 163, 74)
+  ),
+  progress: (
+    background: rgba(95, 107, 124, 0.2),
+    height: 8px,
+    thumb_primary_background-color: #2d72d2,
+    thumb_neutral_background-color: rgba(95, 107, 124, 0.8),
+    thumb_positive_background-color: #238551,
+    thumb_negative_background-color: #cd4246
   )
 );
 
@@ -443,7 +451,7 @@ $theme-light: (
   ),
   toaster: (
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-    close_color: hsl(0, 0%, 52.3%),
+    close_color: #0000005a,
     close_hover_color: hsl(0, 0%, 9%),
     // appearances
     primary_background: hsl(208, 100%, 97%),

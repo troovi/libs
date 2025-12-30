@@ -3,11 +3,14 @@ import { Viewport, ViewportProps, ViewportRef } from './Viewport'
 import { useMemo, useRef } from 'react'
 
 export interface ToastOptions {
+  id?: string
   appearance?: 'primary' | 'neutral' | 'positive' | 'negative' | 'warning'
   icon?: React.ReactNode
   title?: React.ReactNode
   description?: React.ReactNode
   duration?: number
+  closeIcon?: React.ReactNode
+  closable?: boolean
 }
 
 export interface InnerToast extends ToastOptions {
@@ -16,22 +19,38 @@ export interface InnerToast extends ToastOptions {
 
 export const createToaster = (rootProps: ViewportProps = {}) => {
   const store = {
-    emit: (toast: InnerToast) => {
+    addToast: (toast: InnerToast) => {
+      console.error('uninitialized', toast)
+    },
+    updateToast: (toast: InnerToast) => {
       console.error('uninitialized', toast)
     }
   }
 
   return {
-    send: (toast: ToastOptions) => {
-      store.emit({ ...toast, id: hash() })
+    api: {
+      add: (toast: ToastOptions) => {
+        const id = toast.id ?? hash()
+        store.addToast({ ...toast, id })
+        return id
+      },
+      update: (toast: InnerToast) => {
+        store.updateToast(toast)
+      }
     },
     Viewport: (props: ViewportProps = {}) => {
       const ref = useRef<ViewportRef>(null)
 
       useMemo(() => {
-        store.emit = (value) => {
+        store.addToast = (value) => {
           if (ref.current) {
             ref.current.addToast(value)
+          }
+        }
+
+        store.updateToast = (value) => {
+          if (ref.current) {
+            ref.current.updateToast(value)
           }
         }
       }, [])

@@ -1,14 +1,3 @@
-// import { Test1Animation } from './animation-test-1'
-// import { Test2Animation, Test2CompletedAnimation } from './animation-test-2'
-// import { SelectExample } from './select'
-// import { PopupExample } from './popup'
-// import { TextInput } from './text-input'
-// import { NumberInputs } from './number-inputs'
-// import { Button } from '../Button'
-// import { useState } from 'react'
-// import { Drawer } from '../Drawer'
-// import { Popup } from '../Popup'
-// import { TestApp } from './Test'
 import { useLayoutEffect } from 'react'
 import { ButtonsExample, ButtonsGroupExample } from './buttons'
 import { PopoversExample } from './popovers'
@@ -31,8 +20,7 @@ import { DrawerExample } from './drawer'
 import { FormGroupExample } from './form-group'
 import { TimePickerExample } from './time-picker'
 import { NumberInputs } from './number-inputs'
-// import { InlineInputsExample } from './inline-input'
-// import { Tabs } from '../Tabs'
+import { ProgressBarExample } from './progress'
 
 export const App = () => {
   useLayoutEffect(() => {
@@ -44,16 +32,6 @@ export const App = () => {
     <div className="examples-list">
       <div />
       <div />
-      {/* <div style={{ height: '200px', width: '100%', position: 'relative' }}>
-        <div className="row-group" style={{ position: 'absolute' }}>
-          <Test1Animation />
-          <Test2Animation />
-          <Test2CompletedAnimation />
-        </div>
-      </div>
-      <TabsApp />
-      <ButtonsExample />
-      <SelectExample /> */}
       <Example name="Popovers">
         <PopoversExample />
       </Example>
@@ -75,9 +53,6 @@ export const App = () => {
       <Example name="NumberInputs">
         <NumberInputs />
       </Example>
-      {/* <Example name="InlineInput">
-        <InlineInputsExample />
-      </Example> */}
       <Example name="TextArea">
         <TextAreaExample />
       </Example>
@@ -116,6 +91,9 @@ export const App = () => {
       </Example>
       <Example name="ButtonGroup">
         <ButtonsGroupExample />
+      </Example>
+      <Example name="ProgressBar">
+        <ProgressBarExample />
       </Example>
       <Example name="Toaster">
         <ToasterExample />

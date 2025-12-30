@@ -32,7 +32,7 @@ export class HttpAPI {
 
     return this.http({ url, method, [dataAtt]: body, ...config })
       .then(({ data }) => data)
-      .catch(async ({ response }: AxiosError) => {
+      .catch(({ response }: AxiosError) => {
         throw response
       })
   }
