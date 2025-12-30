@@ -19,7 +19,7 @@ interface RequestInterface {
   method: HttpVerb
 }
 
-export class HttpAPI<T extends IOpattern<T>> {
+export class HttpAPI {
   public http: AxiosInstance
 
   constructor(config: CreateAxiosDefaults) {
@@ -37,7 +37,7 @@ export class HttpAPI<T extends IOpattern<T>> {
       })
   }
 
-  createClient(context: string = '') {
+  createClient<T extends IOpattern<T>>(context: string = '') {
     const request = this.request.bind(this) as <T>(props: RequestInterface) => Promise<T>
 
     if (context) {
