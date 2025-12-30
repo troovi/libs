@@ -60,6 +60,11 @@ export class HttpAPI<T extends IOpattern<T>> {
           config,
           body
         })
+      },
+      blob<K extends keyof T>(url: K, body: T[K]['params']) {
+        return this.post(url, body, { responseType: 'arraybuffer' }).then((blobpart) => {
+          return new Blob([blobpart as BlobPart])
+        })
       }
     }
   }
