@@ -1,18 +1,15 @@
-interface Headers {
-  Authorization?: string
-  'Content-Type': string
-}
+import type { RawAxiosRequestHeaders } from 'axios'
 
 interface Options {
   multipart?: boolean
   token?: string
-  tokenStore?: string
+  tokenSource?: string
 }
 
-export const getHeaders = ({ token, tokenStore, multipart }: Options = {}): Headers => {
-  const Authorization = getAuthToken(token, tokenStore)
+export const getHeaders = ({ token, tokenSource, multipart }: Options = {}): RawAxiosRequestHeaders => {
+  const Authorization = getAuthToken(token, tokenSource)
 
-  const headers: Headers = {
+  const headers: RawAxiosRequestHeaders = {
     'Content-Type': multipart ? 'multipart/form-data; charset=utf-8' : 'application/json'
   }
 
@@ -23,8 +20,8 @@ export const getHeaders = ({ token, tokenStore, multipart }: Options = {}): Head
   return headers
 }
 
-export const getAuthToken = (token?: string, tokenStore: string = 'token') => {
-  const value = token ?? localStorage.getItem(tokenStore)
+export const getAuthToken = (token?: string, tokenSource: string = 'token') => {
+  const value = token ?? localStorage.getItem(tokenSource)
 
   if (value) {
     return `Bearer ${value}`
