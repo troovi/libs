@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, CreateAxiosDefaults } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, CreateAxiosDefaults } from 'axios'
 
 export type IOpattern<T extends IOpattern<T>> = {
   [key in keyof T]: {
@@ -30,14 +30,37 @@ export class HttpAPI<T extends IOpattern<T>> {
     const { url, body = {}, method, config = {} } = props
     const dataAtt = method === HttpVerb.Get ? 'params' : 'data'
 
-    return this.http({ url, method, [dataAtt]: body, ...config }).then(({ data }) => data)
+    return this.http({ url, method, [dataAtt]: body, ...config })
+      .then(({ data }) => data)
+      .catch(async ({ response }: AxiosError) => {
+        throw response
+      })
   }
 
-  post<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
-    return this.request<T[K]['answer']>({ method: HttpVerb.Post, url: url as string, config, body })
-  }
+  createClient(context: string = '') {
+    const request = this.request.bind(this) as <T>(props: RequestInterface) => Promise<T>
 
-  get<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
-    return this.request<T[K]['answer']>({ method: HttpVerb.Get, url: url as string, config, body })
+    if (context) {
+      context += '/'
+    }
+
+    return {
+      post<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
+        return request<T[K]['answer']>({
+          method: HttpVerb.Post,
+          url: context + url.toString(),
+          config,
+          body
+        })
+      },
+      get<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
+        return request<T[K]['answer']>({
+          method: HttpVerb.Get,
+          url: context + url.toString(),
+          config,
+          body
+        })
+      }
+    }
   }
 }

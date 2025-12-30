@@ -20,13 +20,7 @@ export const createExtraForm = <N extends string, T extends SchemeItems.Registry
 }: ExtraFormBuilder<N, T>): SchemeItems.Extra<N, T> => {
   return {
     type: 'extra',
-    items: getItems((name) => {
-      return (getForm) => ({
-        type: 'registry',
-        name,
-        getForm
-      })
-    }),
+    items: getItems((name) => (getForm) => ({ type: 'registry', name, getForm })),
     getController
   }
 }

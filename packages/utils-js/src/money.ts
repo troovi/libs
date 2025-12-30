@@ -1,4 +1,4 @@
-export const bigMoneyAmount = (amount: number) => {
+export const cashAmount = (amount: number) => {
   const thousand = amount / 1000
 
   if (thousand >= 1000) {
@@ -15,17 +15,34 @@ export const bigMoneyAmount = (amount: number) => {
 }
 
 interface CurrencyOptions {
+  currency: string
+  locale: Intl.LocalesArgument
   noPennies?: boolean
 }
 
-export const rubles = (num: number, options?: CurrencyOptions) => {
-  return num.toLocaleString('ru-RU', {
+const getCurrency = (value: number, { noPennies, currency, locale }: CurrencyOptions) => {
+  return value.toLocaleString(locale, {
     style: 'currency',
-    currency: 'RUB',
-    ...(options?.noPennies ? { minimumFractionDigits: 0, maximumFractionDigits: 0 } : {})
+    currency,
+    ...(noPennies ? { minimumFractionDigits: 0, maximumFractionDigits: 0 } : {})
   })
 }
 
-export const dollars = (value: number, options?: CurrencyOptions) => {
-  return value.toLocaleString('us-US', { style: 'currency', currency: 'USD' })
+// export const currency = (options: Pick<CurrencyOptions, 'noPennies'> = {}) => {
+//   return {
+//     rubles: (value: number) => {
+//       return getCurrency(value, { locale: 'ru-RU', currency: 'RUB', ...options })
+//     },
+//     dollars: (value: number) => {
+//       return getCurrency(value, { locale: 'us-US', currency: 'USD', ...options })
+//     }
+//   }
+// }
+
+export const rubles = (value: number, options: Pick<CurrencyOptions, 'noPennies'> = {}) => {
+  return getCurrency(value, { locale: 'ru-RU', currency: 'RUB', ...options })
+}
+
+export const dollars = (value: number, options: Pick<CurrencyOptions, 'noPennies'> = {}) => {
+  return getCurrency(value, { locale: 'us-US', currency: 'USD', ...options })
 }
