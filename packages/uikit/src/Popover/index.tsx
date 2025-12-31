@@ -8,11 +8,11 @@ export type Side = 'top' | 'right' | 'bottom' | 'left'
 
 export interface PopoverProps {
   children: React.ReactNode
+  content: ({ close }: { close: () => void }) => React.ReactNode
   open?: boolean
   triggerRef?: React.Ref<HTMLButtonElement>
   triggerProps?: React.ButtonHTMLAttributes<HTMLButtonElement>
   onOpenChange?: (open: boolean) => void
-  content: ({ close }: { close: () => void }) => React.ReactNode
   onAnimationEnd?: () => void
   onAnimationStart?: () => void
   onOpenAutoFocus?: (event: Event) => void

@@ -2,7 +2,7 @@ import * as ToasterPrimitive from '@radix-ui/react-toast'
 import { attr } from '@companix/utils-browser'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ToastOptions } from '.'
-import { RemoveListener } from './RemoveListener'
+import { RemoveListener } from '../__utils/RemoveListener'
 
 interface ToastProps extends ToastOptions {
   id: string

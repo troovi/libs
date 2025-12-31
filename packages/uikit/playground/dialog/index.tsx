@@ -32,7 +32,7 @@ export const DialogExample = () => {
           </div>
         )}
       </DialogControlled>
-      <DialogControlled size="full" buttonProps={{ text: 'Open full-size dialog' }}>
+      <DialogControlled size="full" disableEsc buttonProps={{ text: 'Open full-size dialog' }}>
         {() => (
           <div className="flex flex-col h-full justify-between p-20 overflow-hidden">
             <div className="overflow-y-scroll">
@@ -63,12 +63,12 @@ export const DialogExample = () => {
   )
 }
 
-interface Props extends Pick<DialogProps, 'size'> {
+interface Props extends Omit<DialogProps, 'value' | 'onChange' | 'children' | 'open' | 'onOpenChange'> {
   buttonProps?: ButtonProps
   children: (value: { close: () => void }) => JSX.Element
 }
 
-const DialogControlled = ({ size, children, buttonProps }: Props) => {
+const DialogControlled = ({ size, children, buttonProps, ...dialogProps }: Props) => {
   const [open, setOpen] = useState(false)
 
   return (
@@ -76,7 +76,13 @@ const DialogControlled = ({ size, children, buttonProps }: Props) => {
       <Button {...buttonProps} onClick={() => setOpen(true)}>
         Open dialog
       </Button>
-      <Dialog open={open} onOpenChange={setOpen} size={size}>
+      <Dialog
+        {...dialogProps}
+        open={open}
+        onOpenChange={setOpen}
+        onClosed={() => console.log('CLOSED')}
+        size={size}
+      >
         <Dialog.Close className="dialog-close">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
             <path

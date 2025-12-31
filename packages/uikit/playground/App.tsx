@@ -22,6 +22,8 @@ import { TimePickerExample } from './time-picker'
 import { NumberInputs } from './number-inputs'
 import { ProgressBarExample } from './progress'
 import { FileExample } from './file'
+import { DialogRegistries } from './__registries/popups'
+import { PopoverRegistries } from './__registries/popovers'
 
 export const App = () => {
   useLayoutEffect(() => {
@@ -101,6 +103,13 @@ export const App = () => {
       </Example>
       <Example name="Toaster">
         <ToasterExample />
+      </Example>
+      <div style={{ height: '2px', background: 'rgb(0 0 0 / 6%)' }} />
+      <Example name="Dialog Registry">
+        <DialogRegistries />
+      </Example>
+      <Example name="Popover Registry">
+        <PopoverRegistries />
       </Example>
 
       {/* <div className="flex flex-col gap-10">

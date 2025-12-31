@@ -41,3 +41,9 @@ export type { Appearance } from './Button'
 export type { RadioOption } from './Radio'
 export type { NumberInputProps, ReactNumberFormatParams } from './NumberInput'
 export type { CalendarProps } from './DatePicker/Calendar'
+// helpers
+export { createDialogsRegistry, DialogShell } from './__helpers/createDialogRegistry'
+export { createPopoversRegistry } from './__helpers/createPopoversRegistry'
+// helpers types
+export type { PopupProps } from './__helpers/createDialogRegistry'
+export type { PopoverContentProps } from './__helpers/createPopoversRegistry'
