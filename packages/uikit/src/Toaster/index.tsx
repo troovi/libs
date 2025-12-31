@@ -18,39 +18,27 @@ export interface InnerToast extends ToastOptions {
 }
 
 export const createToaster = (rootProps: ViewportProps = {}) => {
-  const store = {
-    addToast: (toast: InnerToast) => {
-      console.error('uninitialized', toast)
-    },
-    updateToast: (toast: InnerToast) => {
+  const store: ViewportRef = {
+    showToast: (toast: InnerToast) => {
       console.error('uninitialized', toast)
     }
   }
 
   return {
     api: {
-      add: (toast: ToastOptions) => {
+      show: (toast: ToastOptions) => {
         const id = toast.id ?? hash()
-        store.addToast({ ...toast, id })
+        store.showToast({ ...toast, id })
         return id
-      },
-      update: (toast: InnerToast) => {
-        store.updateToast(toast)
       }
     },
     Viewport: (props: ViewportProps = {}) => {
       const ref = useRef<ViewportRef>(null)
 
       useMemo(() => {
-        store.addToast = (value) => {
+        store.showToast = (value) => {
           if (ref.current) {
-            ref.current.addToast(value)
-          }
-        }
-
-        store.updateToast = (value) => {
-          if (ref.current) {
-            ref.current.updateToast(value)
+            ref.current.showToast(value)
           }
         }
       }, [])

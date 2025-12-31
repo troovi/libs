@@ -23,8 +23,7 @@ export interface ViewportProps {
 }
 
 export interface ViewportRef {
-  addToast: (toast: InnerToast) => void
-  updateToast: (toast: InnerToast) => void
+  showToast: (toast: InnerToast) => void
 }
 
 export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
@@ -39,15 +38,16 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
     ref,
     () => {
       return {
-        addToast: (toast) => {
-          setToasters((state) => [...state, toast])
-        },
-        updateToast: (toast) => {
+        showToast: (toast) => {
           setToasters((state) => {
             const nextState = [...state]
             const index = state.findIndex((u) => u.id === toast.id)
 
-            if (index !== -1) {
+            if (index === -1) {
+              // add new one
+              nextState.push(toast)
+            } else {
+              // update existing one
               nextState[index] = toast
             }
 

@@ -22,7 +22,7 @@ export const ToasterExample = () => {
   const [align, setAlign] = useState<'center' | 'left' | 'right'>('center')
 
   const handleCreateEvent = () => {
-    toaster.add({
+    toaster.show({
       appearance: 'neutral',
       title: 'Event created',
       description: 'Sunday, December 21, 2025 at 2:45 AM'
@@ -30,14 +30,14 @@ export const ToasterExample = () => {
   }
 
   const handleCopyText = () => {
-    toaster.add({
+    toaster.show({
       appearance: 'neutral',
       title: 'The text is copied'
     })
   }
 
   const handleMoveFiles = () => {
-    toaster.add({
+    toaster.show({
       appearance: 'positive',
       title: 'Move files is completed!',
       description: 'Moved 6 files'
@@ -45,7 +45,7 @@ export const ToasterExample = () => {
   }
 
   const handleDelete = () => {
-    toaster.add({
+    toaster.show({
       appearance: 'negative',
       title: 'Permission error',
       description:
@@ -70,13 +70,13 @@ export const ToasterExample = () => {
   const handleUpload = () => {
     let progress = 0
 
-    const id = toaster.add(renderProgress(progress))
+    const id = toaster.show(renderProgress(progress))
     const progressToastInterval = setInterval(() => {
       if (progress > 100) {
         clearInterval(progressToastInterval)
       } else {
         progress += 10 + Math.random() * 20
-        toaster.update({ id, ...renderProgress(progress) })
+        toaster.show({ id, ...renderProgress(progress) })
       }
     }, 1000)
   }
@@ -118,7 +118,7 @@ export const ToasterExample = () => {
           <Button
             appearance="primary"
             onClick={() => {
-              toaster.add({
+              toaster.show({
                 appearance: 'primary',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -131,7 +131,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              toaster.add({
+              toaster.show({
                 appearance: 'neutral',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -144,7 +144,7 @@ export const ToasterExample = () => {
           <Button
             appearance="positive"
             onClick={() => {
-              toaster.add({
+              toaster.show({
                 appearance: 'positive',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -157,7 +157,7 @@ export const ToasterExample = () => {
           <Button
             appearance="negative"
             onClick={() => {
-              toaster.add({
+              toaster.show({
                 appearance: 'negative',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -170,7 +170,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              toaster.add({
+              toaster.show({
                 appearance: 'warning',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
