@@ -14,6 +14,7 @@ export interface InputProps extends Omit<InputContainerProps, 'inputRef' | 'chil
   inputClassName?: string
   mask?: string
   maskChar?: string
+  type?: React.HTMLInputTypeAttribute
 }
 
 export const Input = forwardRef<HTMLDivElement, InputProps>(
@@ -26,6 +27,7 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
       value,
       placeholder,
       mask,
+      type = 'text',
       maskChar,
       inputRef: clientInputRef,
       ...containerProps
@@ -37,7 +39,7 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
     return (
       <InputContainer ref={ref} inputRef={inputRef} {...containerProps}>
         <InputElement
-          type="text"
+          type={type}
           ref={mergeRefs([inputRef, clientInputRef])}
           className={classNames('form-input form-input-base', inputClassName)}
           aria-disabled={containerProps.disabled}
