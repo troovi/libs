@@ -1,4 +1,3 @@
-import { useLayoutEffect } from 'react'
 import { ButtonsExample, ButtonsGroupExample } from './buttons'
 import { PopoversExample } from './popovers'
 import { Example } from './Example'
@@ -24,150 +23,107 @@ import { ProgressBarExample } from './progress'
 import { FileExample } from './file'
 import { DialogRegistries } from './__registries/popups'
 import { PopoverRegistries } from './__registries/popovers'
+import { ThemeProvider } from '@/ThemeProvider'
+import { ThemeSwitcher } from './ThemeSwitcher'
 
 export const App = () => {
-  useLayoutEffect(() => {
-    document.body.classList.add('theme-light')
-  }, [])
-
-  // return <TestApp />
   return (
-    <div className="examples-list">
-      <div />
-      <div />
-      <Example name="Popovers">
-        <PopoversExample />
-      </Example>
-      <Example name="Tooltip">
-        <TooltipExample />
-      </Example>
-      <Example name="Dialog">
-        <DialogExample />
-      </Example>
-      <Example name="DialogAlert">
-        <DialogAlertExample />
-      </Example>
-      <Example name="Drawer">
-        <DrawerExample />
-      </Example>
-      <Example name="Input">
-        <InputsExample />
-      </Example>
-      <Example name="NumberInputs">
-        <NumberInputs />
-      </Example>
-      <Example name="TextArea">
-        <TextAreaExample />
-      </Example>
-      <Example name="Select">
-        <SelectExample />
-      </Example>
-      <Example name="SelectTags">
-        <SelectTagsExample />
-      </Example>
-      <Example name="DateInput">
-        <DateInputExample />
-      </Example>
-      <Example name="DatePicker">
-        <DatePickerExample />
-      </Example>
-      <Example name="TimePicker">
-        <TimePickerExample />
-      </Example>
-      <Example name="FormGroup">
-        <FormGroupExample />
-      </Example>
-      <Example name="Checkbox">
-        <CheckboxExample />
-      </Example>
-      <Example name="RadioGroup">
-        <RadioGroupExample />
-      </Example>
-      <Example name="Switch">
-        <SwitchExample />
-      </Example>
-      <Example name="Tabs">
-        <TabsExample />
-      </Example>
-      <Example name="Buttons">
-        <ButtonsExample />
-      </Example>
-      <Example name="ButtonGroup">
-        <ButtonsGroupExample />
-      </Example>
-      <Example name="File">
-        <FileExample />
-      </Example>
-      <Example name="ProgressBar">
-        <ProgressBarExample />
-      </Example>
-      <Example name="Toaster">
-        <ToasterExample />
-      </Example>
-      <div style={{ height: '2px', background: 'rgb(0 0 0 / 6%)' }} />
-      <Example name="Dialog Registry">
-        <DialogRegistries />
-      </Example>
-      <Example name="Popover Registry">
-        <PopoverRegistries />
-      </Example>
-
-      {/* <div className="flex flex-col gap-10">
-        <DrawerApp />
-        <PopupApp />
-      </div>
-      <PopupExample />
-      <TextInput />
-      <NumberInputs /> */}
-      <div />
-      <div />
-    </div>
+    <ThemeProvider>
+      <AppLayout />
+    </ThemeProvider>
   )
 }
 
-// const TabsApp = () => {
-//   const [tab, setTab] = useState('tab-1')
+const AppLayout = () => {
+  console.log('AppLayout render')
 
-//   return (
-//     <div>
-//       <Tabs onChange={setTab} value={tab}>
-//         <Tabs.Tab value="tab-1">Tab1</Tabs.Tab>
-//         <Tabs.Tab value="tab-2">Tab2</Tabs.Tab>
-//       </Tabs>
-//       Active: {tab}
-//     </div>
-//   )
-// }
-
-// const DrawerApp = () => {
-//   const [isOpen, setOpen] = useState(false)
-
-//   return (
-//     <>
-//       <Drawer onClose={() => setOpen(false)} isOpen={isOpen} size="60%">
-//         <Content close={() => setOpen(false)} />
-//       </Drawer>
-//       <Button onClick={() => setOpen((value) => !value)}>{isOpen ? 'Close' : 'Open'} drawer</Button>
-//     </>
-//   )
-// }
-
-// const Content = ({ close }: { close: () => void }) => {
-//   console.log('RENDER')
-//   return <div onClick={close}>App: click to close</div>
-// }
-
-// const PopupApp = () => {
-//   const [isOpen, setOpen] = useState(false)
-
-//   return (
-//     <>
-//       <Popup onClose={() => setOpen(false)} isOpen={isOpen} className="popup-1">
-//         <div style={{ padding: '10px' }}>
-//           <Button onClick={() => setOpen(false)}>App: click to close</Button>
-//         </div>
-//       </Popup>
-//       <Button onClick={() => setOpen((value) => !value)}>{isOpen ? 'Close' : 'Open'} popup</Button>
-//     </>
-//   )
-// }
+  return (
+    <div className="flex flex-col">
+      <div className="header sticky flex items-center justify-between bg-white top-0 z-40">
+        <div className="font-semibold text-black">@companix/uikit</div>
+        <ThemeSwitcher />
+      </div>
+      <div className="examples-list">
+        <div />
+        <Example name="Popovers">
+          <PopoversExample />
+        </Example>
+        <Example name="Tooltip">
+          <TooltipExample />
+        </Example>
+        <Example name="Dialog">
+          <DialogExample />
+        </Example>
+        <Example name="DialogAlert">
+          <DialogAlertExample />
+        </Example>
+        <Example name="Drawer">
+          <DrawerExample />
+        </Example>
+        <Example name="Input">
+          <InputsExample />
+        </Example>
+        <Example name="NumberInputs">
+          <NumberInputs />
+        </Example>
+        <Example name="TextArea">
+          <TextAreaExample />
+        </Example>
+        <Example name="Select">
+          <SelectExample />
+        </Example>
+        <Example name="SelectTags">
+          <SelectTagsExample />
+        </Example>
+        <Example name="DateInput">
+          <DateInputExample />
+        </Example>
+        <Example name="DatePicker">
+          <DatePickerExample />
+        </Example>
+        <Example name="TimePicker">
+          <TimePickerExample />
+        </Example>
+        <Example name="FormGroup">
+          <FormGroupExample />
+        </Example>
+        <Example name="Checkbox">
+          <CheckboxExample />
+        </Example>
+        <Example name="RadioGroup">
+          <RadioGroupExample />
+        </Example>
+        <Example name="Switch">
+          <SwitchExample />
+        </Example>
+        <Example name="Tabs">
+          <TabsExample />
+        </Example>
+        <Example name="Buttons">
+          <ButtonsExample />
+        </Example>
+        <Example name="ButtonGroup">
+          <ButtonsGroupExample />
+        </Example>
+        <Example name="File">
+          <FileExample />
+        </Example>
+        <Example name="ProgressBar">
+          <ProgressBarExample />
+        </Example>
+        <Example name="Toaster">
+          <ToasterExample />
+        </Example>
+        <div style={{ height: '2px', background: 'rgb(0 0 0 / 6%)' }} />
+        <Example name="Dialog Registry">
+          <DialogRegistries />
+        </Example>
+        <Example name="Popover Registry">
+          <PopoverRegistries />
+        </Example>
+        <div />
+        <div />
+      </div>
+    </div>
+  )
+}

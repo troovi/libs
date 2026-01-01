@@ -29,6 +29,7 @@ export { FormGroup } from './FormGroup'
 export { TimePicker } from './TimePicker'
 export { Icon } from './Icon'
 export { ProgressBar } from './Progress'
+export { ThemeProvider, useTheme } from './ThemeProvider'
 // hooks
 export { useLocalStorage } from './__hooks/use-local-storage'
 // agents
