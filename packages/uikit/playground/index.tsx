@@ -1,13 +1,9 @@
 import './styles.scss'
-
-import './index.scss'
+import './app.scss'
 import './index.css'
 
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
-// import { TestApp } from './Test'
-
-createRoot(document.getElementById('root')!).render(<App />)
 
 const error = console.error
 console.error = (...args: any) => {
@@ -16,3 +12,5 @@ console.error = (...args: any) => {
 
   error(...args)
 }
+
+createRoot(document.getElementById('root')!).render(<App />)

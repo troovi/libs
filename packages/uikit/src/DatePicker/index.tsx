@@ -1,7 +1,7 @@
 import { Popover } from '../Popover'
 import { Input, InputProps } from '../Input/Input'
 import { useRef, useState } from 'react'
-import { Calendar, CalendarProps } from './Calendar'
+import { Calendar, CalendarProps } from '../Calendar/Calendar'
 import { useDayDisableCheker } from '../__libs/calendar'
 import { formatTime, getNum } from '@companix/utils-js'
 import { removeDigits } from '../__utils/utils'
@@ -131,6 +131,7 @@ export const DatePicker = (props: DatePickerProps) => {
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
       disabled={disabled}
+      fitMaxHeight={false}
       content={() => (
         <Calendar
           value={value}

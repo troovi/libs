@@ -1,0 +1,225 @@
+@use '../../src/theme.scss';
+
+$theme-light: (
+  button: (
+    // primary
+    // primary_default
+    primary_default_enabled_color: #fff,
+    primary_default_enabled_background: #2d72d2,
+    primary_default_enabled_box-shadow: var(--button_enabled_box-shadow),
+    primary_default_hovered_background: #215db0,
+    primary_default_hovered_box-shadow: var(--button_hovered_box-shadow),
+    primary_default_pressed_background: #184a90,
+    primary_default_disabled_background: rgba(45, 114, 210, 0.5),
+    primary_default_disabled_box-shadow: none,
+    primary_default_disabled_color: hsla(0, 0%, 100%, 0.6),
+    // primary_outlined
+    primary_outline_enabled_color: #215db0,
+    primary_outline_enabled_border: 1px solid rgba(33, 93, 176, 0.6),
+    primary_outline_hovered_background: rgba(45, 114, 210, 0.15),
+    primary_outline_pressed_background: rgba(45, 114, 210, 0.3),
+    primary_outline_pressed_color: #184a90,
+    primary_outline_disabled_border: 1px solid rgba(33, 93, 176, 0.2),
+    primary_outline_disabled_color: rgba(33, 93, 176, 0.5),
+    primary_outline_disabled_background: none,
+    // primary_minimal
+    primary_minimal_enabled_color: var(--button_primary_outline_enabled_color),
+    primary_minimal_hovered_background: var(--button_primary_outline_hovered_background),
+    primary_minimal_pressed_background: var(--button_primary_outline_pressed_background),
+    primary_minimal_pressed_color: var(--button_primary_outline_pressed_color),
+    primary_minimal_disabled_background: none,
+    primary_minimal_disabled_color: rgba(33, 93, 176, 0.5),
+    // neutral
+    // neutral_default
+    neutral_default_enabled_color: #1c2127,
+    neutral_default_enabled_background: #f6f7f9,
+    neutral_default_enabled_box-shadow: var(--button_enabled_box-shadow),
+    neutral_default_hovered_background: #edeff2,
+    neutral_default_hovered_box-shadow: var(--button_hovered_box-shadow),
+    neutral_default_pressed_background: #dce0e5,
+    neutral_default_disabled_background: rgba(211, 216, 222, 0.5),
+    neutral_default_disabled_box-shadow: none,
+    neutral_default_disabled_color: rgba(95, 107, 124, 0.6),
+    // neutral_outlined
+    neutral_outline_enabled_color: var(--button_neutral_default_enabled_color),
+    neutral_outline_enabled_border: 1px solid rgba(28, 33, 39, 0.2),
+    neutral_outline_hovered_background: rgba(143, 153, 168, 0.15),
+    neutral_outline_pressed_background: rgba(143, 153, 168, 0.3),
+    neutral_outline_disabled_border: 1px solid rgba(95, 107, 124, 0.1),
+    neutral_outline_disabled_color: rgba(95, 107, 124, 0.6),
+    neutral_outline_disabled_background: none,
+    // neutral_minimal
+    neutral_minimal_enabled_color: var(--button_neutral_outline_enabled_color),
+    neutral_minimal_hovered_background: var(--button_neutral_outline_hovered_background),
+    neutral_minimal_pressed_background: var(--button_neutral_outline_pressed_background),
+    neutral_minimal_pressed_color: var(--button_neutral_outline_pressed_color),
+    neutral_minimal_disabled_background: none,
+    neutral_minimal_disabled_color: rgba(95, 107, 124, 0.6),
+    // positive
+    // positive_default
+    positive_default_enabled_color: #fff,
+    positive_default_enabled_background: #238551,
+    positive_default_enabled_box-shadow: var(--button_enabled_box-shadow),
+    positive_default_hovered_background: #1c6e42,
+    positive_default_hovered_box-shadow: var(--button_hovered_box-shadow),
+    positive_default_pressed_background: #165a36,
+    positive_default_disabled_background: rgba(35, 133, 81, 0.5),
+    positive_default_disabled_box-shadow: none,
+    positive_default_disabled_color: hsla(0, 0%, 100%, 0.6),
+    // positive_outlined
+    positive_outline_enabled_color: #1c6e42,
+    positive_outline_enabled_border: 1px solid rgba(28, 110, 66, 0.6),
+    positive_outline_hovered_background: rgba(35, 133, 81, 0.15),
+    positive_outline_pressed_background: rgba(35, 133, 81, 0.3),
+    positive_outline_pressed_color: #165a36,
+    positive_outline_disabled_border: 1px solid rgba(28, 110, 66, 0.2),
+    positive_outline_disabled_color: rgba(28, 110, 66, 0.5),
+    positive_outline_disabled_background: none,
+    // positive_minimal
+    positive_minimal_enabled_color: var(--button_positive_outline_enabled_color),
+    positive_minimal_hovered_background: var(--button_positive_outline_hovered_background),
+    positive_minimal_pressed_background: var(--button_positive_outline_pressed_background),
+    positive_minimal_pressed_color: var(--button_positive_outline_pressed_color),
+    positive_minimal_disabled_background: none,
+    positive_minimal_disabled_color: rgba(28, 110, 66, 0.5),
+    // negative
+    // negative_default
+    negative_default_enabled_color: #fff,
+    negative_default_enabled_background: #cd4246,
+    negative_default_enabled_box-shadow: var(--button_enabled_box-shadow),
+    negative_default_hovered_background: #ac2f33,
+    negative_default_hovered_box-shadow: var(--button_hovered_box-shadow),
+    negative_default_pressed_background: #8e292c,
+    negative_default_disabled_background: rgba(205, 66, 70, 0.5),
+    negative_default_disabled_box-shadow: none,
+    negative_default_disabled_color: hsla(0, 0%, 100%, 0.6),
+    // negative_outlined
+    negative_outline_enabled_color: #ac2f33,
+    negative_outline_enabled_border: 1px solid rgba(172, 47, 51, 0.6),
+    negative_outline_hovered_background: rgba(205, 66, 70, 0.15),
+    negative_outline_pressed_background: rgba(205, 66, 70, 0.3),
+    negative_outline_pressed_color: #8e292c,
+    negative_outline_disabled_border: 1px solid rgba(172, 47, 51, 0.2),
+    negative_outline_disabled_color: rgba(172, 47, 51, 0.5),
+    negative_outline_disabled_background: none,
+    // negative_minimal
+    negative_minimal_enabled_color: #ac2f33,
+    negative_minimal_hovered_background: var(--button_negative_outline_hovered_background),
+    negative_minimal_pressed_background: var(--button_negative_outline_pressed_background),
+    negative_minimal_pressed_color: var(--button_negative_outline_pressed_color),
+    negative_minimal_disabled_background: none,
+    negative_minimal_disabled_color: rgba(172, 47, 51, 0.5)
+  ),
+  popover: (
+    box-shadow:
+      '0 0 0 1px rgba(17, 20, 24, 0.1), 0 2px 4px rgba(17, 20, 24, 0.2), 0 8px 24px rgba(17, 20, 24, 0.2)',
+    content_background: #ffffff
+  ),
+  tooltip: (
+    background: #000,
+    color: #fff
+  ),
+  checkbox: (
+    color: #34343c,
+    box_background: #b5b7c040,
+    box_hover_background: #b5b7c081,
+    box_active_background: #b5b7c0a8,
+    box_checked_background: #ffdb4d,
+    required_color: #f53535,
+    required_box_border: 1.5px solid #f53535
+  ),
+  radio: (
+    color: #34343c,
+    box_background: #b5b7c040,
+    box_hover_background: #b5b7c081,
+    box_active_background: #b5b7c0a8,
+    box_checked_background: #ffdb4d,
+    mark_background: #ffffff,
+    required_color: #f53535,
+    required_box_border: 1.5px solid #f53535
+  ),
+  tab: (
+    color: #717171,
+    hover_color: #161616,
+    active_color: #2d72d2,
+    indicator_background: #2d72d2,
+    container_border-bottom: 1px solid #d8d8d8
+  ),
+  toaster: (
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+    close_color: #0000005a,
+    close_hover_color: hsl(0, 0%, 9%),
+    // appearances
+    primary_background: hsl(208, 100%, 97%),
+    primary_color: hsl(210, 92%, 45%),
+    primary_border: 1px solid hsl(210deg 92% 45% / 26%),
+    neutral_background: #fff,
+    neutral_icon_color: #969696,
+    neutral_border: 1px solid hsl(0deg 0% 0% / 16%),
+    negative_background: hsl(359, 100%, 97%),
+    negative_color: hsl(360, 100%, 45%),
+    negative_border: 1px solid hsl(359deg 100% 90.4%),
+    positive_background: hsl(143, 85%, 96%),
+    positive_color: hsl(140, 100%, 27%),
+    positive_border: 1px solid hsl(140deg 100% 27% / 26%),
+    warning_background: hsl(49, 100%, 97%),
+    warning_color: hsl(31, 92%, 45%),
+    warning_border: 1px solid hsl(49deg 100% 45.5% / 60%)
+  ),
+  dialog: (
+    box-shadow:
+      '0 0 0 1px rgba(17, 20, 24, 0.1), 0 2px 4px rgba(17, 20, 24, 0.2), 0 8px 24px rgba(17, 20, 24, 0.2)'
+  ),
+  popup: (
+    overlay_background: rgba(17, 20, 24, 0.7),
+    background: #f6f7f9
+  ),
+  form: (
+    background: #ffffff,
+    focus_background: #ffffff,
+    placeholder_color: #9899a3,
+    color: #37352f,
+    border: 1px solid rgba(17, 20, 24, 0.2),
+    box-shadow: '0 1px 2px rgba(17, 20, 24, 0.1)',
+    disabled_background: rgba(211, 216, 222, 0.5),
+    disabled_color: rgba(95, 107, 124, 0.6)
+  ),
+  form-group: (
+    label_color: #6b6c77,
+    caption_neutral_color: #5f6b7c
+  ),
+  drawer: (
+    background: #f6f7f9
+  ),
+  select: (
+    expand_color: #99a2ad,
+    clean_color: #99a2ad,
+    clean_hover_color: #3d3d3d
+  ),
+  tag: (
+    background-color: rgb(0 0 0 / 7%),
+    color: #000000,
+    border: 1px solid #cfcfcf,
+    close_color: #4b4b4b,
+    close_hover_color: #a1a5ab,
+    empty_color: #818c99
+  ),
+  option: (
+    check_color: #2688eb,
+    hover_background: rgba(143, 153, 168, 0.15),
+    active_background: rgba(143, 153, 168, 0.3),
+    minimal_selected_background-color: rgba(0, 133, 255, 0.1),
+    minimal_selected_color: #0780ef
+  )
+);
+
+.theme-light {
+  --button_enabled_box-shadow: inset 0 0 0 1px rgba(17, 20, 24, 0.2), 0 1px 2px rgba(17, 20, 24, 0.1);
+  --button_hovered_box-shadow: inset 0 0 0 1px rgba(17, 20, 24, 0.2), 0 1px 2px rgba(17, 20, 24, 0.2);
+  //
+  @include theme.use-tokens($theme-light);
+  // close
+  --dialog-close-color: #34343c;
+  --dialog-close-hover-background: #b5b7c033;
+  --dialog-close-active-background: #b5b7c057;
+}

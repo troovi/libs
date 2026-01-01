@@ -95,7 +95,7 @@ export { createToaster } from './Toaster'
 export { Toast } from './Toaster/Toast'
 // types
 export * from './types'
-export type { CalendarProps } from './DatePicker/Calendar'
+export type { CalendarProps } from './Calendar/Calendar'
 // helpers
 export { createDialogsRegistry, DialogShell } from './__helpers/createDialogRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'

@@ -36,6 +36,9 @@ export const Drawer = ({ open, onOpenChange, children, size, direction, classNam
           <VisuallyHidden>
             <DialogPrimitive.Title />
           </VisuallyHidden>
+          <VisuallyHidden>
+            <DialogPrimitive.Description />
+          </VisuallyHidden>
           {children}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

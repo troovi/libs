@@ -1,0 +1,12 @@
+@use '../../src/theme.scss';
+
+$theme-dark: (
+  button: (
+    primary_default_enabled_color: #fff,
+    primary_default_enabled_background: #2d72d2
+  )
+);
+
+.theme-dark {
+  @include theme.use-tokens($theme-dark);
+}

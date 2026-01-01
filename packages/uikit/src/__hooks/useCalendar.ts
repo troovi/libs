@@ -1,4 +1,4 @@
-import { CalendarProps } from '../DatePicker/Calendar'
+import { CalendarProps } from '../Calendar/Calendar'
 import { addMonths, subMonths, useDayDisableCheker } from '../__libs/calendar'
 import { DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR } from '../__utils/utils'
 import { useCallback, useState } from 'react'
