@@ -6,7 +6,7 @@ interface ColorSchemeScriptProps {
   defaultColorScheme: ColorSchemeExtendedType
 }
 
-// A script for initial scheme
+// A script for initial scheme (usage in nextjs)
 export const ColorSchemeScript = memo(({ storageKey, defaultColorScheme }: ColorSchemeScriptProps) => {
   return (
     <script
