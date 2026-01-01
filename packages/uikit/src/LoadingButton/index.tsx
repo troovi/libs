@@ -1,9 +1,9 @@
 import { Button, ButtonProps } from '../Button'
 import { UseLoadingProps, useLoading } from '../__hooks/use-loading'
 
-export interface LoadButtonProps extends UseLoadingProps, Omit<ButtonProps, 'onClick'> {}
+export interface LoadingButtonProps extends UseLoadingProps, Omit<ButtonProps, 'onClick'> {}
 
-export const LoadButton = ({ onClick, appearance = 'primary', ...rest }: LoadButtonProps) => {
+export const LoadingButton = ({ onClick, appearance = 'primary', ...rest }: LoadingButtonProps) => {
   const { isLoading, isError, handleClick } = useLoading({ onClick })
 
   return (

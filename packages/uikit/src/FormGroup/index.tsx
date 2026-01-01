@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { attr } from '@companix/utils-browser'
 
-interface FormLabelProps {
+export interface FormGroupProps {
   label: React.ReactNode
   children: React.ReactNode
   caption?: React.ReactNode
@@ -10,7 +10,7 @@ interface FormLabelProps {
   className?: string
 }
 
-export const FormGroup = (props: FormLabelProps) => {
+export const FormGroup = (props: FormGroupProps) => {
   const { fill, className, label, children, caption, apperance = 'neutral' } = props
 
   return (

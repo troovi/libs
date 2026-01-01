@@ -1,13 +1,18 @@
 import { Scrollable } from '../Scrollable'
 
-interface MenuProps {
+export interface OptionsListProps {
   children: React.ReactNode
   maxHeight?: number
   scrollboxRef?: React.Ref<HTMLDivElement>
   optionsWrapperRef?: React.Ref<HTMLDivElement>
 }
 
-export const OptionsList = ({ children, maxHeight, scrollboxRef, optionsWrapperRef }: MenuProps) => {
+export const OptionsList = ({
+  children,
+  maxHeight,
+  scrollboxRef,
+  optionsWrapperRef
+}: OptionsListProps) => {
   return (
     <Scrollable
       ref={scrollboxRef}

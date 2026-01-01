@@ -19,7 +19,7 @@ interface UnCleanable<T> {
 
 type DependedValueType<T> = Cleanable<T> | UnCleanable<T>
 
-type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
+export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
   DependedValueType<T> & {
     value: T | null
     options: Option<T>[]

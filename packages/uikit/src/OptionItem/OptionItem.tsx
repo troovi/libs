@@ -6,7 +6,7 @@ import { forwardRef } from 'react'
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import { Option } from '../types'
 
-interface OptionProps
+export interface OptionProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'>,
     Omit<Option<unknown>, 'value'> {
   active?: boolean

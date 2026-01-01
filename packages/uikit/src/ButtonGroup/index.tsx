@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import cn from 'classnames'
 import { attr } from '@companix/utils-browser'
 
-interface ButtonGroupProps {
+export interface ButtonGroupProps {
   children: React.ReactNode
   className?: string
   fill?: boolean

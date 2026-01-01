@@ -1,7 +1,7 @@
 import * as RadixTabs from '@radix-ui/react-tabs'
 import { createContext, useContext, useEffect, useId, useRef, useState } from 'react'
 
-interface Props {
+export interface TabsProps {
   children: React.ReactNode
   onChange: (value: string) => void
   value: string
@@ -13,7 +13,7 @@ const makeTriggerId = (baseId: string, value: string) => {
   return `radix-${baseId}-trigger-${value}`
 }
 
-export const Tabs = ({ children, value, onChange }: Props) => {
+export const Tabs = ({ children, value, onChange }: TabsProps) => {
   const listRef = useRef<HTMLDivElement>(null)
   const baseId = useId()
 

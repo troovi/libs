@@ -7,7 +7,7 @@ export interface RadioOption<T> {
   label: React.ReactNode
 }
 
-interface RadioGroupProps<T> {
+export interface RadioGroupProps<T> {
   options: RadioOption<T>[]
   onChange: (event: T) => void
   value: T | null

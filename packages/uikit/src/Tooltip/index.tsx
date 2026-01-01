@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Popover } from '..'
 import { Side } from '../Popover'
 
-interface TooltipProps {
+export interface TooltipProps {
   children: React.ReactNode
   content: React.ReactNode
   side?: Side

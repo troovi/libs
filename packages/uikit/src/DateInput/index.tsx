@@ -4,7 +4,7 @@ import { createDateValidation, getMonthMaxDay } from '../__utils/utils'
 import { defaultMax, defaultMin, useCalendarOptions } from '../__hooks/useCalendarOptions'
 import { DateFormat } from '..'
 
-export interface DatePickerProps {
+export interface DateInputProps {
   min?: DateFormat
   max?: DateFormat
   noDaySelect?: boolean
@@ -26,7 +26,7 @@ export const DateInput = ({
   onChange,
   required,
   size
-}: DatePickerProps) => {
+}: DateInputProps) => {
   const validateDate = useMemo(() => {
     return createDateValidation({ min, max })
   }, [min, max])

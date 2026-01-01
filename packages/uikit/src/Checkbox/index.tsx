@@ -4,7 +4,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import { useId } from 'react'
 import { attr } from '@companix/utils-browser'
 
-interface CheckboxProps {
+export interface CheckboxProps {
   checked: boolean
   onCheckedChange: (checked: boolean) => void
   size?: 'sm' | 'md'

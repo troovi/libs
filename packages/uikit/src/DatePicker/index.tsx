@@ -39,7 +39,7 @@ const dateInput = {
   }
 }
 
-interface DatePickerProps
+export interface DatePickerProps
   extends Omit<CalendarProps, 'onChange'>,
     Omit<InputProps, 'value' | 'onChange' | 'rightElement'> {
   onChange?: (value: Date | null) => void

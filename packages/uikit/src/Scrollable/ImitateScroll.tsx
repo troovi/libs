@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { useRef, useLayoutEffect, useMemo, useCallback, useEffect } from 'react'
 import { getContainers, pc, px } from '@companix/utils-browser'
 
-interface Props {
+export interface ImitateScrollProps {
   children: React.ReactNode
   thumbClassName: string
   thumbColor?: string
@@ -21,7 +21,7 @@ const ImitateScroll = ({
   scrollableClassName,
   thumbMargin = 0,
   trackWidth = 20
-}: Props) => {
+}: ImitateScrollProps) => {
   const scrollThumbRef = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
 

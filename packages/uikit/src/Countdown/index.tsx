@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 
 const formatTime = (num: number) => String(num).padStart(2, '0')
 
-interface CountDownProps {
+export interface CountDownProps {
   expiration: number
   separator?: string
   onExpired?: VoidFunction
