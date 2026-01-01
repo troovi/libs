@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getColorScheme, updateDOM } from './helpers'
-import { ColorSchemeScript } from './script'
 import type { ColorSchemeExtendedType, ColorSchemeType } from './types'
 
 export interface UseColorSchemeProps {
@@ -87,7 +86,6 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
 
   return (
     <ColorSchemeContext.Provider value={{ colorScheme, setColorScheme: handleColorScheme }}>
-      <ColorSchemeScript storageKey={storageKey} defaultColorScheme={defaultColorScheme} />
       {children}
     </ColorSchemeContext.Provider>
   )

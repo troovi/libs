@@ -8,19 +8,17 @@ interface ColorSchemeScriptProps {
 
 // A script for initial scheme
 export const ColorSchemeScript = memo(({ storageKey, defaultColorScheme }: ColorSchemeScriptProps) => {
-  const scriptArgs = JSON.stringify([storageKey, defaultColorScheme]).slice(1, -1)
-
   return (
     <script
       suppressHydrationWarning
       dangerouslySetInnerHTML={{
-        __html: `(${script.toString()})(${scriptArgs})`
+        __html: `(${colorSchemeScript.toString()})("${storageKey}", "${defaultColorScheme}")`
       }}
     />
   )
 })
 
-const script = (storageKey: string, defaultColorScheme: 'light' | 'dark') => {
+export const colorSchemeScript = (storageKey: string, defaultColorScheme: 'light' | 'dark') => {
   const [LIGHT_CLASS_NAME, DARK_CLASS_NAME] = ['theme-light', 'theme-dark']
 
   try {
@@ -36,7 +34,5 @@ const script = (storageKey: string, defaultColorScheme: 'light' | 'dark') => {
     document.documentElement.classList.remove(LIGHT_CLASS_NAME, DARK_CLASS_NAME)
     document.documentElement.classList.add(colorSchemeClassName)
     document.documentElement.style.colorScheme = resolved
-  } catch (e) {
-    //
-  }
+  } catch (e) {}
 }

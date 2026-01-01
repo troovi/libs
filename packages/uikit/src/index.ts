@@ -88,6 +88,7 @@ export type { ProgressBarProps } from './Progress'
 
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
+export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
 export { useLocalStorage } from './__hooks/use-local-storage'
 // agents
 export { createAlertAgent } from './DialogAlert'

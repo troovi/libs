@@ -8,5 +8,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="./playground/index.tsx"></script>
+    <script type="module">
+      import { colorSchemeScript } from './src/ThemeProvider/script'
+
+      const script = document.createElement('script')
+      script.textContent = `(${colorSchemeScript.toString()})("theme","system")`
+
+      document.head.appendChild(script)
+    </script>
   </body>
 </html>

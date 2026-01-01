@@ -25,14 +25,11 @@ import { DialogRegistries } from './__registries/popups'
 import { PopoverRegistries } from './__registries/popovers'
 import { ThemeProvider } from '@/ThemeProvider'
 import { ThemeSwitcher } from './ThemeSwitcher'
-import { SCSSReady } from './PaintReady'
 
 export const App = () => {
   return (
     <ThemeProvider>
-      <SCSSReady>
-        <AppLayout />
-      </SCSSReady>
+      <AppLayout />
     </ThemeProvider>
   )
 }
