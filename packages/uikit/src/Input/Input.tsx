@@ -12,9 +12,9 @@ export interface InputProps extends Omit<InputContainerProps, 'inputRef' | 'chil
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   inputRef?: React.Ref<HTMLInputElement>
   inputClassName?: string
+  inputType?: React.HTMLInputTypeAttribute
   mask?: string
   maskChar?: string
-  type?: React.HTMLInputTypeAttribute
 }
 
 export const Input = forwardRef<HTMLDivElement, InputProps>(
@@ -27,7 +27,7 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
       value,
       placeholder,
       mask,
-      type = 'text',
+      inputType = 'text',
       maskChar,
       inputRef: clientInputRef,
       ...containerProps
@@ -39,7 +39,7 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
     return (
       <InputContainer ref={ref} inputRef={inputRef} {...containerProps}>
         <InputElement
-          type={type}
+          type={inputType}
           ref={mergeRefs([inputRef, clientInputRef])}
           className={classNames('form-input form-input-base', inputClassName)}
           aria-disabled={containerProps.disabled}

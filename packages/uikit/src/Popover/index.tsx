@@ -28,6 +28,14 @@ export interface PopoverProps {
   disabled?: boolean
 }
 
+// Important remark: Anchor will always double rerender!
+// If we use custom Anchor (asChild), child will be rerendered twice.
+// The Trigger implementation:
+// https://github.com/radix-ui/primitives/blob/main/packages/react/popover/src/popover.tsx
+// PopoverTrigger uses Anchor:
+// https://github.com/radix-ui/primitives/blob/main/packages/react/popper/src/popper.tsx
+// Here we see that Anchor double rerender through onAnchorChange, because previousAnchor !== anchorRef.current, where previousAnchor is always null
+
 export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => {
   const {
     children,
