@@ -1,6 +1,7 @@
 {
   "name": "@companix/uikit",
-  "version": "0.0.34",
+  "version": "0.0.35",
+  "main": "./dist/bundle.es.js",
   "module": "./dist/bundle.es.js",
   "types": "./src/index.ts",
   "type": "module",
