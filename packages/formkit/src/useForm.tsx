@@ -14,6 +14,10 @@ export type DirtyEvent<T> = Required<{ [K in keyof T]: { name: K; isDirty: boole
 
 export type SetError<V> = (name: keyof V, error: { message: string }) => void
 
+export interface SubmitCallbacls<FlattenValues> {
+  setError: SetError<FlattenValues>
+}
+
 export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedValues> {
   disabled?: boolean
   defaultValues?: DeepPartial<ClonedValues>
@@ -21,7 +25,7 @@ export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedVa
   onDirty?: (event: DirtyEvent<FlattenValues>) => void
   onChangeEvent?: (event: ChangeEvent<FlattenValues>) => void
   onFormDirty?: (isDirty: boolean) => void
-  onSubmit: (values: Values, { setError }: { setError: SetError<FlattenValues> }) => Promise<void>
+  onSubmit: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
 }
 
 const useDynamicForm = (
@@ -40,13 +44,19 @@ const useForm = <
   scheme: Items,
   opts: MainOptions<Values, FlattenValues, Cloned>
 ) => {
-  const managerRef = useRef<FormManager<FlattenValues, Cloned> | null>(null)
+  const managerRef = useRef<FormManager<Values, FlattenValues, Cloned> | null>(null)
 
   if (managerRef.current === null) {
     managerRef.current = createFormManager(scheme, opts)
   }
 
   const manager = managerRef.current
+
+  useEffect(() => {
+    if (managerRef.current) {
+      managerRef.current.submitRef.onSubmit = opts.onSubmit
+    }
+  }, [opts.onSubmit])
 
   return {
     manager,
@@ -75,7 +85,7 @@ const useForm = <
 }
 
 interface Props {
-  manager: FormManager<any, any>
+  manager: FormManager<any, any, any>
 }
 
 export const FormLayout = ({ manager }: Props) => {

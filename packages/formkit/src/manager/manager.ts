@@ -4,7 +4,7 @@ import { DeepPartial, FieldValues } from '../types'
 import { FieldError, SchemeItems } from '../core/types'
 import { readScheme } from './read-scheme'
 import { createValues } from './create-value'
-import { ChangeEvent, DirtyEvent, MainOptions, SetError } from '../useForm'
+import { ChangeEvent, DirtyEvent, MainOptions, SetError, SubmitCallbacls } from '../useForm'
 
 interface FormItem {
   isDirty: boolean
@@ -22,7 +22,8 @@ export interface Forms {
   [name: string]: FormItem
 }
 
-export interface FormManager<FlattenValues, ClonedValues> {
+export interface FormManager<Values, FlattenValues, ClonedValues> {
+  submitRef: { onSubmit: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => void }
   scheme: SchemeItems.All[]
   disabled?: boolean
   activate: () => void
@@ -41,13 +42,17 @@ export interface FormManager<FlattenValues, ClonedValues> {
 }
 
 // prettier-ignore
-export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(scheme: SchemeItems.All[], opts: MainOptions<Values, Flatten, Cloned>): FormManager<Flatten, Cloned> => {
-  const { onSubmit, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = opts
+export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(scheme: SchemeItems.All[], options: MainOptions<Values, Flatten, Cloned>): FormManager<Values, Flatten, Cloned> => {
+  const { onSubmit, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = options
 
-  let isActive = false
-  let isSubmitted = false
+  // can be redefined on rerenders
+  const submitRef = { onSubmit }
 
-  let dirtyCount = 0
+  const state = {
+    isActive: false,
+    isSubmitted: false,
+    dirtyCount: 0
+  }
 
   const forms: Forms = {}
 
@@ -72,25 +77,26 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
   const handleDirty = (name: string, isDirty: boolean) => {
     onDirty?.({ name, isDirty } as DirtyEvent<Flatten>)
 
-    if (isDirty && dirtyCount === 0) {
+    if (isDirty && state.dirtyCount === 0) {
       onFormDirty?.(true)
     }
 
-    if (!isDirty && dirtyCount === 1) {
+    if (!isDirty && state.dirtyCount === 1) {
       onFormDirty?.(false)
     }
 
-    dirtyCount += isDirty ? 1 : -1
+    state.dirtyCount += isDirty ? 1 : -1
   }
 
   return {
+    submitRef,
     scheme,
     disabled,
     activate() {
-      isActive = true
+      state.isActive = true
     },
     disactivate() {
-      isActive = false
+      state.isActive = false
     },
     setError(name, error) {
       const form = this.getForm(name as string)
@@ -126,7 +132,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
         return
       }
 
-      isSubmitted = true
+      state.isSubmitted = true
 
       let isFocusSetted = false
       let isErrorsExist = false
@@ -153,14 +159,14 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       }
 
       if (!isErrorsExist) {
-        if (dirtyCount === 0) {
+        if (state.dirtyCount === 0) {
           onEqual?.()
           return
         }
 
         const values = createValues<Values>(scheme, forms)
 
-        await onSubmit(values, {
+        await submitRef.onSubmit(values, {
           setError: (name, error) => {
             const form = this.getForm(name as string)
 
@@ -217,7 +223,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
           forms[name].rerender = () => {}
           forms[name].focus = undefined
 
-          if (isActive) {
+          if (state.isActive) {
             forms[name].value = undefined
 
             const isDirty = !isEqual(forms[name].defaultValue, forms[name].initValue)
@@ -277,7 +283,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       onChangeEvent?.({ name, value } as ChangeEvent<Flatten>)
 
       // validate error if neccesery
-      if (form.error || isSubmitted) {
+      if (form.error || state.isSubmitted) {
         form.error = form.validate(value) || null
       }
 
