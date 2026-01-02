@@ -2,10 +2,9 @@ import classNames from 'classnames'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { forwardRef } from 'react'
 
-export interface IconProps {
+export interface IconProps extends React.SVGProps<SVGSVGElement> {
   icon: IconDefinition
   size?: 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl'
-  className?: string
 }
 
 export const Icon = forwardRef<SVGSVGElement, IconProps>(

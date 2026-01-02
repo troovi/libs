@@ -1,3 +1,8 @@
+export { Avatar } from './Avatar'
+export type { AvatarProps } from './Avatar'
+export type { AvatarSize } from './Avatar/types'
+export { avatarSizes } from './Avatar/types'
+
 export { Button } from './Button'
 export type { ButtonProps, Appearance, Mode, Size } from './Button'
 
@@ -10,6 +15,9 @@ export type { SpinnerProps } from './Spinner'
 export { Scrollable } from './Scrollable'
 export { ImitateScroll } from './Scrollable/ImitateScroll'
 export type { ImitateScrollProps } from './Scrollable/ImitateScroll'
+
+export { Segments } from './Segments'
+export type { SegmentsProps } from './Segments'
 
 export { Popover } from './Popover'
 export type { PopoverProps } from './Popover'

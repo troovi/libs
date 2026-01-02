@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { varToStyle } from '@companix/utils-browser'
+import { customCSS } from '@companix/utils-browser'
 
 export interface DrawerProps {
   open: boolean
@@ -29,7 +29,7 @@ export const Drawer = ({ open, onOpenChange, children, size, direction, classNam
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="drawer-overlay" />
         <DialogPrimitive.Content
-          style={varToStyle({ '--drawer-size': size ?? '50%' })}
+          style={customCSS({ '--drawer-size': size ?? '50%' })}
           className={classNames('drawer', className)}
           data-direction={direction}
         >

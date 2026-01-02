@@ -1,3 +1,4 @@
+@use './Avatar/Avatar.scss';
 @use './Button/Button.scss';
 @use './Icon/icon.scss';
 @use './Popover/Popover.scss';
@@ -21,6 +22,7 @@
 @use './Switch/Switch.scss';
 @use './Spinner/Spinner.scss';
 @use './ButtonGroup/ButtonGroup.scss';
+@use './Segments/Segments.scss';
 @use './Scrollable/Scrollable.scss';
 @use './FormGroup/FormGroup.scss';
 @use './Progress/Progress.scss';

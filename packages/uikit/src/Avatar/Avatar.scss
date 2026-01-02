@@ -1,0 +1,64 @@
+@use '../mixins.scss';
+
+.avatar {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  isolation: isolate;
+
+  @include mixins.use-styles(avatar);
+
+  &-image {
+    object-fit: cover;
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: transparent;
+    text-indent: 10000px;
+    border: 0;
+    border-radius: inherit;
+  }
+
+  &-icon {
+    position: absolute;
+    top: auto;
+    left: auto;
+  }
+
+  &-initials {
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+
+    @include mixins.use-styles(avatar, initials);
+  }
+
+  &-border {
+    box-sizing: border-box;
+    pointer-events: none;
+    border-radius: inherit;
+    transform-origin: left top;
+
+    @include mixins.use-styles(avatar, border);
+  }
+
+  &-content {
+    display: inherit;
+    align-items: inherit;
+    justify-content: inherit;
+    border-radius: inherit;
+  }
+
+  &-border,
+  &-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

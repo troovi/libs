@@ -25,6 +25,8 @@ import { DialogRegistries } from './__registries/popups'
 import { PopoverRegistries } from './__registries/popovers'
 import { ThemeProvider } from '@/ThemeProvider'
 import { ThemeSwitcher } from './ThemeSwitcher'
+import { AvatarExample } from './avatars'
+import { SegmentsExample } from './segments'
 
 export const App = () => {
   return (
@@ -105,8 +107,14 @@ const AppLayout = () => {
         <Example name="ButtonGroup">
           <ButtonsGroupExample />
         </Example>
+        <Example name="Segments">
+          <SegmentsExample />
+        </Example>
         <Example name="File">
           <FileExample />
+        </Example>
+        <Example name="Avatar">
+          <AvatarExample />
         </Example>
         <Example name="ProgressBar">
           <ProgressBarExample />

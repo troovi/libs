@@ -266,6 +266,19 @@ $layout: (
     thumb_neutral_background-color: rgba(95, 107, 124, 0.8),
     thumb_positive_background-color: #238551,
     thumb_negative_background-color: #cd4246
+  ),
+  avatar: (
+    border-radius: 100%,
+    border_border: 1px solid rgba(0, 0, 0, 0.08),
+    initials_font-weight: 600
+  ),
+  segment-control: (
+    container_padding: 2px,
+    container_border-radius: 8px,
+    container_height: 36px,
+    slider_box-shadow:
+      'inset 0 0 0 .5px rgba(0,0,0,0.08),0 3px 8px rgb(0,0,0,.12),0 3px 1px rgb(0,0,0,.04)',
+    option_transition: background 80ms
   )
 );
 

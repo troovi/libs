@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { forwardRef } from 'react'
-import { px, varToStyle } from '@companix/utils-browser'
+import { px, customCSS } from '@companix/utils-browser'
 
 interface OuterImplementation {
   implementation: 'outer'
@@ -61,7 +61,7 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
       const { padding, scrollbarWidth } = props
 
       return {
-        ...varToStyle({ '--scrollbar-width': px(scrollbarWidth) }),
+        ...customCSS({ '--scrollbar-width': px(scrollbarWidth) }),
         padding: `0px ${padding - scrollbarWidth}px 0px ${padding}px`
       }
     }
@@ -77,7 +77,7 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
       }
 
       return {
-        ...varToStyle({ '--scrollbar-width': px(scrollbarWidth) }),
+        ...customCSS({ '--scrollbar-width': px(scrollbarWidth) }),
         padding: shadowPadding,
         margin: -shadowPadding,
         marginRight: noneCorrect ? undefined : `calc(-${scrollbarWidth}px - ${shadowPadding}px)`,
@@ -97,7 +97,7 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
 
       return {
         [scrollY ? 'paddingLeft' : 'paddingTop']: padding,
-        ...varToStyle({ '--scrollbar-width': px(padding) })
+        ...customCSS({ '--scrollbar-width': px(padding) })
       }
     }
 
@@ -116,8 +116,8 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
         ...style,
         ...props.style,
         ...{ maxHeight: maxHeight ? px(maxHeight) : undefined },
-        ...varToStyle({ '--thumb-padding': px(thumbPadding) }),
-        ...varToStyle({ '--thumb-color': thumbColor ?? '#c1c2c8bd' })
+        ...customCSS({ '--thumb-padding': px(thumbPadding) }),
+        ...customCSS({ '--thumb-color': thumbColor ?? '#c1c2c8bd' })
       }}
       className={classNames(
         !(window as any).IS_MOBILE && 'scrollable',

@@ -23,9 +23,7 @@ export const setCssVariable = (property: string, value: string) => {
   document.documentElement.style.setProperty(property, value)
 }
 
-export const varToStyle = (props: Record<string, string | number>) => {
-  return props as React.CSSProperties
-}
+export const customCSS = (properties: CSSCustomProperties) => properties
 
 export const capitalize = (str: string) => {
   return str[0].toUpperCase() + str.slice(1)
@@ -34,3 +32,8 @@ export const capitalize = (str: string) => {
 export const attr = (bool?: boolean | null) => {
   return bool ? '' : undefined
 }
+
+export type CSSCustomProperties<T extends string | number | undefined = string> = Record<
+  `--${string}`,
+  T
+>

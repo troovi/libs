@@ -1,5 +1,5 @@
 import * as ToasterPrimitive from '@radix-ui/react-toast'
-import { varToStyle } from '@companix/utils-browser'
+import { customCSS } from '@companix/utils-browser'
 import { useCallback, useMemo, useState, useImperativeHandle, forwardRef } from 'react'
 import { Toast } from './Toast'
 import { InnerToast } from '.'
@@ -115,7 +115,7 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
         data-side={side}
         data-align={align}
         className="toaster-viewport"
-        style={varToStyle({ '--toasters-gap': `${gap}px` })}
+        style={customCSS({ '--toasters-gap': `${gap}px` })}
       />
     </ToasterPrimitive.Provider>
   )

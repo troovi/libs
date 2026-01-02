@@ -210,6 +210,16 @@ $theme-light: (
     active_background: rgba(143, 153, 168, 0.3),
     minimal_selected_background-color: rgba(0, 133, 255, 0.1),
     minimal_selected_color: #0780ef
+  ),
+  avatar: (
+    background: #f0f2f5,
+    color: #96a0ab
+  ),
+  segment-control: (
+    container_background-color: #f5f5f5,
+    slider_background-color: #ffffff,
+    option_hover_background: rgba(143, 153, 168, 0.15),
+    option_active_background: rgba(143, 153, 168, 0.3)
   )
 );
 
