@@ -1,9 +1,9 @@
 {
   "name": "@companix/icons-solid",
-  "version": "0.0.02",
+  "version": "0.0.01",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "echo": "echo \"@companix/icons-solid\"",
     "make": "node ./make.js",

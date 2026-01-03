@@ -1,8 +1,9 @@
 const fs = require('fs')
 
 const packagesDir = `packages`
+const iconsDir = `icons`
 
-const update = (packages) => {
+const updateLocalNames = (packages) => {
   for (const package in packages) {
     if (package.startsWith('@companix')) {
       packages[package] = '*'
@@ -10,21 +11,33 @@ const update = (packages) => {
   }
 }
 
-console.log('Setup GitHub Packages...')
+const updatePackage = (path, mutate) => {
+  const packageContent = JSON.parse(fs.readFileSync(path, 'utf8'))
+  mutate(packageContent)
+  fs.writeFileSync(path, JSON.stringify(packageContent, null, 2))
+}
 
+console.log('Shake local dependencies...')
 fs.readdirSync(packagesDir).forEach((packageName) => {
-  const packageDir = `${packagesDir}/${packageName}`
-  const packagePath = `${packageDir}/package.json`
+  const packagePath = `${packagesDir}/${packageName}/package.json`
 
-  if (fs.lstatSync(packageDir) && fs.existsSync(packagePath)) {
-    const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
-
-    update(packageContent.devDependencies)
-    update(packageContent.dependencies)
-
-    // WARNING: every package must have this "types" path after compilation:
-    packageContent.types = './dist/index.d.ts'
-
-    fs.writeFileSync(packagePath, JSON.stringify(packageContent, null, 2))
+  if (fs.existsSync(packagePath)) {
+    updatePackage(packagePath, (packageContent) => {
+      updateLocalNames(packageContent.devDependencies)
+      updateLocalNames(packageContent.dependencies)
+    })
   }
+})
+
+console.log('Set declaration path...')
+;[packagesDir, iconsDir].forEach((directory) => {
+  fs.readdirSync(directory).forEach((packageName) => {
+    const packagePath = `${directory}/${packageName}/package.json`
+
+    if (fs.existsSync(packagePath)) {
+      updatePackage(packagePath, (packageContent) => {
+        packageContent.types = './dist/index.d.ts'
+      })
+    }
+  })
 })
