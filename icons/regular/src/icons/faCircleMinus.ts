@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faCircleMinus: IconData = [512,512,["minus-circle"],"f056","M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM168 232c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z"]

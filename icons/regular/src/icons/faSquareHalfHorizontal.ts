@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faSquareHalfHorizontal: IconData = [448,512,[],"e80e","M448 256l0 160-.3 6.5c-3.1 30.1-27 54.1-57.1 57.1l-6.5 .3-320 0C30.9 480 3.6 454.8 .3 422.5L0 416 0 256 448 256zM48 416c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-112-352 0 0 112z"]

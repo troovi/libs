@@ -89,7 +89,7 @@ export { TimePicker } from './TimePicker'
 export type { TimePickerProps } from './TimePicker'
 
 export { Icon } from './Icon'
-export type { IconProps } from './Icon'
+export type { IconProps, IconDefinition } from './Icon'
 
 export { ProgressBar } from './Progress'
 export type { ProgressBarProps } from './Progress'
