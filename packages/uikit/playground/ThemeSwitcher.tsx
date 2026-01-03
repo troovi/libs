@@ -2,7 +2,7 @@ import { Button } from '@/Button'
 import { ButtonGroup } from '@/ButtonGroup'
 import { Icon } from '@/Icon'
 import { useTheme } from '@/ThemeProvider'
-import { faCircleHalfStroke, faMoon, faSun } from '@fortawesome/free-solid-svg-icons'
+import { faCircleHalfStroke, faMoon, faSunBright } from '@companix/icons-solid'
 
 export const ThemeSwitcher = () => {
   const { colorScheme, setColorScheme } = useTheme()
@@ -13,7 +13,7 @@ export const ThemeSwitcher = () => {
     <div className="flex items-center">
       <ButtonGroup>
         <Button
-          icon={<Icon icon={faSun} size="xxs" />}
+          icon={<Icon icon={faSunBright} size="xxs" />}
           onClick={() => setColorScheme('light')}
           active={colorScheme === 'light'}
         >

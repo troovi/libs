@@ -1,7 +1,7 @@
 import { Button } from '@/Button'
 import { FileOverlay } from '@/File'
 import { Icon } from '@/Icon'
-import { faFile, faImage, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faFile, faImage, faVideo } from '@companix/icons-solid'
 
 export const FileExample = () => {
   return (

@@ -1,6 +1,6 @@
 import { DatePicker } from '@/DatePicker'
 import { Icon } from '@/Icon'
-import { faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar } from '@companix/icons-solid'
 import { useState } from 'react'
 
 export const DatePickerExample = () => {

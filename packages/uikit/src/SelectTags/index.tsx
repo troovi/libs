@@ -3,10 +3,9 @@ import type { Option } from '../types'
 import { OptionItem, OptionsList, Popover } from '..'
 import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown'
-import { faClose } from '@fortawesome/free-solid-svg-icons/faClose'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
+import { faXmark, faChevronDown } from '@companix/icons-solid'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]
@@ -168,7 +167,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                   <div key={`tag-option-${value}-${i}`} className="tag">
                     <span className="tag-name">{store[value].title}</span>
                     <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
-                      <Icon className="tag-close-icon" icon={faClose} size="xxxs" />
+                      <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
                     </button>
                   </div>
                 ))}

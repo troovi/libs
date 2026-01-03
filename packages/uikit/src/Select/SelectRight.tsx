@@ -1,5 +1,4 @@
-import { faClose } from '@fortawesome/free-solid-svg-icons/faClose'
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown'
+import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { Icon } from '../Icon'
 
 interface SelectRightElementsProps {
@@ -16,7 +15,7 @@ export const SelectRightElements = (props: SelectRightElementsProps) => {
     <>
       {clearButton && value && (
         <button className="select-close-button" onClick={onClear}>
-          {clearButtonIcon ?? <Icon className="select-close-icon" icon={faClose} size="xxxs" />}
+          {clearButtonIcon ?? <Icon className="select-close-icon" icon={faXmark} size="xxxs" />}
         </button>
       )}
       <Icon className="expand-icon select-expand" icon={faChevronDown} size="xxxs" />

@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { Icon } from '../Icon'
 import { attr } from '@companix/utils-browser'
 import { forwardRef } from 'react'
-import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import { faCheck } from '@companix/icons-solid'
 import { Option } from '../types'
 
 export interface OptionProps

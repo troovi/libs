@@ -1,7 +1,7 @@
 import { Checkbox } from '@/Checkbox'
 import { Icon } from '@/Icon'
 import { Tooltip } from '@/Tooltip'
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircleInfo } from '@companix/icons-solid'
 import { useState } from 'react'
 
 const longtext = `The expanded form makes it easy to schedule meetings: fields to fill out are displayed on the left, and the participants' schedule is shown on the right.`
@@ -30,7 +30,7 @@ export const CheckboxExample = () => {
               <span>Use the advanced form to create events</span>
               <Tooltip side="top" content={longtext}>
                 <span className="help-tip">
-                  <Icon icon={faInfoCircle} size="xxxs" />
+                  <Icon icon={faCircleInfo} size="xxxs" />
                 </span>
               </Tooltip>
             </>

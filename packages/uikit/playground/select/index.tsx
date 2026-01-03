@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Select } from '@/Select'
 import { Icon } from '@/Icon'
-import { faGift } from '@fortawesome/free-solid-svg-icons'
+import { faGift } from '@companix/icons-solid'
 
 export const SelectExample = () => {
   return (

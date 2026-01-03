@@ -15,6 +15,7 @@ jobs:
       repulse: ${{ steps.filter.outputs.repulse }}
       formkit: ${{ steps.filter.outputs.formkit }}
       uikit: ${{ steps.filter.outputs.uikit }}
+      icons-solid: ${{ steps.filter.outputs.icons-solid }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -35,6 +36,8 @@ jobs:
               - 'packages/formkit/package.json'
             uikit:
               - 'packages/uikit/package.json'
+            icons-solid:
+              - 'icons/solid/package.json'
       - run: echo '${{ toJson(github.event) }}'
 
   utils-js:
@@ -102,7 +105,7 @@ jobs:
 
   utils-math:
     needs: changes
-    if: contains(github.event.head_commit.modified, 'packages/utils-math/package.json')
+    if: ${{ needs.changes.outputs.utils-math == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -179,6 +182,28 @@ jobs:
       - run: npm ci
       - run: npm run build --workspace=@companix/uikit
       - run: npm run github:setup
+      - run: ls
+        working-directory: packages/uikit
+      - run: npm publish --access public
+        working-directory: packages/uikit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  icons-solid:
+    needs: changes
+    if: ${{ needs.changes.outputs.icons-solid == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/icons-solid
       - run: ls
         working-directory: packages/uikit
       - run: npm publish --access public

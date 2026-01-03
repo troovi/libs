@@ -1,6 +1,6 @@
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { Icon } from '../Icon'
-import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import { faCheck } from '@companix/icons-solid'
 import { useId } from 'react'
 import { attr } from '@companix/utils-browser'
 

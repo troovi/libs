@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faCircleDot: IconData = [512,512,[128280,"dot-circle"],"f192","M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-352a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"]

@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faCircleHalfStroke: IconData = [512,512,[9680,"adjust"],"f042","M448 256c0-106-86-192-192-192l0 384c106 0 192-86 192-192zM0 256a256 256 0 1 1 512 0 256 256 0 1 1 -512 0z"]

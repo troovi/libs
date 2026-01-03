@@ -1,6 +1,6 @@
 import { Icon } from '@/Icon'
 import { Input } from '@/Input/Input'
-import { faEye, faEyeSlash, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faEyeSlash, faMagnifyingGlass } from '@companix/icons-solid'
 import { useState } from 'react'
 
 const sizes = ['lg', 'md', 'sm'] as const
@@ -16,7 +16,9 @@ export const InputsExample = () => {
           <Input
             fill
             placeholder="Fullwidth input"
-            leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
+            leftElement={
+              <Icon size="xxs" icon={faMagnifyingGlass} className="quieter form-space-margin" />
+            }
           />
         </div>
       </div>
@@ -34,7 +36,9 @@ export const InputsExample = () => {
                 key={`input-size-${size}-disabled`}
                 size={size}
                 placeholder={`Input disabled ${size}`}
-                leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
+                leftElement={
+                  <Icon size="xxs" icon={faMagnifyingGlass} className="quieter form-space-margin" />
+                }
                 disabled
               />
             )
@@ -47,7 +51,9 @@ export const InputsExample = () => {
                 key={`input-size-${size}-required`}
                 size={size}
                 placeholder={`Input required ${size}`}
-                leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
+                leftElement={
+                  <Icon size="xxs" icon={faMagnifyingGlass} className="quieter form-space-margin" />
+                }
                 required
               />
             )
@@ -98,7 +104,7 @@ const ChangeSize = () => {
       placeholder="Dynamic element"
       value={value}
       onValueChange={setValue}
-      leftElement={<Icon size="xxs" icon={faSearch} className="quieter form-space-margin" />}
+      leftElement={<Icon size="xxs" icon={faMagnifyingGlass} className="quieter form-space-margin" />}
       rightElement={
         <div className="form-space-margin flex items-center h-full cursor-pointer">
           <div

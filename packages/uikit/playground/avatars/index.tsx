@@ -3,7 +3,7 @@ import { getFallbackIconSizeByImageBaseSize } from '@/Avatar/helpers'
 import { Icon } from '@/Icon'
 import { avatarSizes } from '@/index'
 import { box } from '@companix/utils-browser'
-import { faCircleUser, faImage } from '@fortawesome/free-solid-svg-icons'
+import { faCircleUser, faImage } from '@companix/icons-solid'
 
 export const AvatarExample = () => {
   return (

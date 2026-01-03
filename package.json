@@ -1,11 +1,12 @@
 {
   "name": "libs",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "icons/*"
   ],
   "scripts": {
     "github:setup": "node ./setup.js",
-    "build": "npm run build -w=@companix/utils-js -w=@companix/utils-browser -w=@companix/utils-nodejs -w=@companix/utils-math -w=@companix/repulse -w=@companix/formkit -w=@companix/uikit",
+    "build": "npm run build -w=@companix/icons-solid -w=@companix/utils-js -w=@companix/utils-browser -w=@companix/utils-nodejs -w=@companix/utils-math -w=@companix/repulse -w=@companix/formkit -w=@companix/uikit",
     "upgrade:patch": "version=patch node ./upgrade.js",
     "upgrade:minor": "version=minor node ./upgrade.js",
     "upgrade:major": "version=major node ./upgrade.js"

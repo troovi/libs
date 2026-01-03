@@ -5,12 +5,12 @@ import {
   faBookmark,
   faArrowRight,
   faChevronRight,
-  faFolderBlank,
   faEye,
   faCaretDown,
   faPen,
-  faFile
-} from '@fortawesome/free-solid-svg-icons'
+  faFile,
+  faFolder
+} from '@companix/icons-solid'
 import { Icon } from '@/Icon'
 import { ButtonGroup } from '@/ButtonGroup'
 
@@ -55,7 +55,7 @@ export const ButtonsExample = () => {
         </Button>
         <Button
           fill
-          icon={<Icon icon={faFolderBlank} size="xxxs" />}
+          icon={<Icon icon={faFolder} size="xxxs" />}
           iconRight={<Icon icon={faChevronRight} size="xxxs" className="quieter" />}
         >
           Button

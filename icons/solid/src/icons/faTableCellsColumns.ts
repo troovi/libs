@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faTableCellsColumns: IconData = [448,512,[],"e6ac","M192 224l64 0 0 192-64 0 0-192zm192 0l0 192-64 0 0-192 64 0zM64 224l64 0 0 192-64 0 0-192zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"]

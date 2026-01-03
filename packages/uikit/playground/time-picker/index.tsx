@@ -1,8 +1,7 @@
 import { Icon } from '@/Icon'
 import { TimePicker, TimePickerProps } from '@/TimePicker'
 import { TimeFormat } from '@/types'
-import { faClock } from '@fortawesome/free-regular-svg-icons'
-// import { faClock } from '@fortawesome/free-solid-svg-icons'
+import { faClock } from '@companix/icons-solid'
 import { useState } from 'react'
 
 export const TimePickerExample = () => {

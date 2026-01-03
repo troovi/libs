@@ -1,7 +1,7 @@
 import { Button } from '@/Button'
 import { createAlertAgent } from '@/DialogAlert'
 import { Icon } from '@/Icon'
-import { faWifi } from '@fortawesome/free-solid-svg-icons'
+import { faWifi } from '@companix/icons-solid'
 
 const AlertAgent = createAlertAgent({ cancelDefaultText: 'Cancel' })
 

@@ -1,6 +1,6 @@
 import { Icon } from '@/Icon'
 import { Switch, SwitchProps } from '@/Switch'
-import { faCheck, faClose } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark } from '@companix/icons-solid'
 import { useState } from 'react'
 
 const longtext = `The expanded form makes it easy to schedule meetings: fields to fill out are displayed on the left, and the participants' schedule is shown on the right.`
@@ -14,7 +14,7 @@ export const SwitchExample = () => {
           <SwitchControl
             label="I want to recieve promote emails"
             checkedIcon={<Icon icon={faCheck} />}
-            uncheckedIcon={<Icon icon={faClose} />}
+            uncheckedIcon={<Icon icon={faXmark} />}
           />
         </div>
         <div className="flex flex-col gap-12">

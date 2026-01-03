@@ -9,7 +9,7 @@ import {
   faCircleInfo,
   faCloudArrowUp,
   faTriangleExclamation
-} from '@fortawesome/free-solid-svg-icons'
+} from '@companix/icons-solid'
 import { useState } from 'react'
 
 const { api: toaster, Viewport: ToasterViewport } = createToaster({

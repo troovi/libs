@@ -1,0 +1,3 @@
+
+import type { IconData } from '../types'
+export const faTombstoneBlank: IconData = [448,512,[129702,"tombstone-alt"],"f721","M224 0C118 0 32 86 32 192l0 256c-17.7 0-32 14.3-32 32s14.3 32 32 32l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l0-256C416 86 330 0 224 0z"]
