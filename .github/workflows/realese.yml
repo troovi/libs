@@ -182,7 +182,6 @@ jobs:
       - run: npm ci
       - run: npm run build --workspace=@companix/uikit
       - run: npm run github:setup
-        working-directory: packages/uikit
       - run: npm publish --access public
         working-directory: packages/uikit
         env:

@@ -8,7 +8,7 @@
   "files": [
     "dist"
   ],
-  "author": "Pavel Victorov.",
+  "author": "Pavel Victorov",
   "scripts": {
     "echo": "echo \"uikit\"",
     "dev": "vite --config vite.config.ts",
