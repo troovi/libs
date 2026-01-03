@@ -21,7 +21,10 @@ const getIconName = (str, prefix = 'fa') => {
 import type { IconData } from '../types'
 export const ${iconName}: IconData = ${JSON.stringify(icons[name])}`
 
-    await promises.appendFile('./src/index.ts', `export { ${iconName} } from './icons/${iconName}'\n`)
+    await promises.appendFile(
+      './src/index.ts',
+      `export { ${iconName} } from './icons/${iconName}.js'\n`
+    )
 
     await new Promise((resolve) => {
       fs.writeFile(filepath, content, (err) => {
