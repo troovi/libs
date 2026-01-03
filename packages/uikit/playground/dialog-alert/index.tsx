@@ -3,14 +3,14 @@ import { createAlertAgent } from '@/DialogAlert'
 import { Icon } from '@/Icon'
 import { faWifi } from '@companix/icons-solid'
 
-const AlertAgent = createAlertAgent({ cancelDefaultText: 'Cancel' })
+const { Viewport: AlertViewport, api: AlertAPI } = createAlertAgent({ cancelDefaultText: 'Cancel' })
 
 export const DialogAlertExample = () => {
   return (
     <div className="row-group">
       <Button
         onClick={() => {
-          AlertAgent.show({
+          AlertAPI.show({
             title: 'Are you sure?',
             confirm: { text: 'Move to trash' },
             description: `Are you sure you want to move filename to Trash? You will be able to restore it later, but it will become private to you`
@@ -21,7 +21,7 @@ export const DialogAlertExample = () => {
       </Button>
       <Button
         onClick={() => {
-          AlertAgent.show({
+          AlertAPI.show({
             cancel: { text: 'Okay' },
             description: `Couldn't create the file because the containing folder doesn't exist anymore. You will be redirected to your user folder`
           })
@@ -31,7 +31,7 @@ export const DialogAlertExample = () => {
       </Button>
       <Button
         onClick={() => {
-          AlertAgent.show({
+          AlertAPI.show({
             disableCancel: true,
             icon: <Icon icon={faWifi} />,
             confirm: { text: 'Reload', appearance: 'neutral', onClick: () => window.location.reload() },
@@ -41,7 +41,7 @@ export const DialogAlertExample = () => {
       >
         Reconnecting
       </Button>
-      <AlertAgent.Viewport />
+      <AlertViewport />
     </div>
   )
 }
