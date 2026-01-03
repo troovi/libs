@@ -203,7 +203,6 @@ jobs:
       - run: npm ci
       - run: npm run build --workspace=@companix/icons-solid
       - run: npm run github:setup
-        working-directory: icons/solid
       - run: npm publish --access public
         working-directory: icons/solid
         env:
