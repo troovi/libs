@@ -17,8 +17,10 @@ export const createAlertAgent = (options: AlertBaseProps = {}) => {
   }
 
   return {
-    show: (value: Omit<InnerAlert, 'id'>) => {
-      store.emit({ ...value, id: hash() })
+    api: {
+      show: (value: Omit<InnerAlert, 'id'>) => {
+        store.emit({ ...value, id: hash() })
+      }
     },
     Viewport: () => {
       const ref = useRef<ViewportRef>(null)
