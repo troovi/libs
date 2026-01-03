@@ -205,8 +205,8 @@ jobs:
       - run: npm ci
       - run: npm run build --workspace=@companix/icons-solid
       - run: ls
-        working-directory: packages/uikit
+        working-directory: packages/icons-solid
       - run: npm publish --access public
-        working-directory: packages/uikit
+        working-directory: packages/icons-solid
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
