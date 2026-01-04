@@ -1,4 +1,6 @@
-import { CSSCustomProperties, attr } from '@companix/utils-browser'
+import { SliderOptions, makeTabId, useTabSlider } from '@/__hooks/use-tab-slider'
+import { attr } from '@companix/utils-browser'
+import { useId, useRef } from 'react'
 
 interface SegmentOption<T> {
   label: React.ReactNode
@@ -12,24 +14,25 @@ export interface SegmentsProps<T> {
 }
 
 export const Segments = <T extends number | string>({ value, onChange, options }: SegmentsProps<T>) => {
-  const currentIndex = options.findIndex((option) => option.value === value)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const sliderStyle: CSSCustomProperties = {
-    '--uikit--current-index': String(currentIndex),
-    '--uikit--options': String(options.length)
-  }
+  const currentIndex = options.findIndex((option) => option.value === value)
+  const baseId = useId().replaceAll(':', '')
 
   return (
     <div className="segments-container">
-      <div role="radiogroup" className="segments">
-        {currentIndex > -1 && <div aria-hidden className="segments-slider" style={sliderStyle} />}
+      <div role="radiogroup" className="segments" ref={containerRef}>
+        {currentIndex > -1 && (
+          <SegmentsSlider containerRef={containerRef} baseId={baseId} value={value} />
+        )}
         {options.map((option) => {
           return (
             <div
               key={`segment-${option.value}`}
+              id={makeTabId(baseId, option.value)}
               onClick={() => onChange(option.value)}
               className="segments-option"
-              data-active={attr(option.value === value)}
+              data-selected={attr(option.value === value)}
             >
               {option.label}
             </div>
@@ -38,4 +41,10 @@ export const Segments = <T extends number | string>({ value, onChange, options }
       </div>
     </div>
   )
+}
+
+const SegmentsSlider = (options: SliderOptions) => {
+  const styles = useTabSlider(options)
+
+  return <div aria-hidden className="segments-slider" style={styles} />
 }

@@ -101,14 +101,14 @@ const AppLayout = () => {
         <Example name="Tabs">
           <TabsExample />
         </Example>
+        <Example name="Segments">
+          <SegmentsExample />
+        </Example>
         <Example name="Buttons">
           <ButtonsExample />
         </Example>
         <Example name="ButtonGroup">
           <ButtonsGroupExample />
-        </Example>
-        <Example name="Segments">
-          <SegmentsExample />
         </Example>
         <Example name="File">
           <FileExample />

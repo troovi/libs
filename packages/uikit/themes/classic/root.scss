@@ -276,8 +276,11 @@ $layout: (
     container_padding: 2px,
     container_border-radius: 8px,
     container_height: 36px,
+    slider_transition: all 210ms,
     slider_box-shadow:
       'inset 0 0 0 .5px rgba(0,0,0,0.08),0 3px 8px rgb(0,0,0,.12),0 3px 1px rgb(0,0,0,.04)',
+    option_padding: 0px 20px,
+    option_justify-content: center,
     option_transition: background 80ms
   )
 );
