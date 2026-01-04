@@ -1,4 +1,4 @@
-import { SliderOptions, makeTabId, useTabSlider } from '@/__hooks/use-tab-slider'
+import { SliderOptions, makeTabId, useTabSlider } from '../__hooks/use-tab-slider'
 import { attr } from '@companix/utils-browser'
 import { useId, useRef } from 'react'
 

@@ -1,4 +1,4 @@
-import { makeTabId, useTabSlider } from '@/__hooks/use-tab-slider'
+import { makeTabId, useTabSlider } from '../__hooks/use-tab-slider'
 import * as RadixTabs from '@radix-ui/react-tabs'
 import { createContext, useContext, useId, useRef } from 'react'
 
