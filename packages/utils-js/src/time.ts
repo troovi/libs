@@ -20,7 +20,7 @@ interface Options {
   utc?: boolean
 }
 
-export const getTime = (timestamp: number, { utc }: Options) => {
+export const getTime = (timestamp: number, { utc }: Options = {}) => {
   const date = new Date(timestamp)
   const prefix = utc ? 'UTC' : ''
 
@@ -29,7 +29,7 @@ export const getTime = (timestamp: number, { utc }: Options) => {
   return values.join(':')
 }
 
-export const getDate = (timestamp: number, { utc }: Options) => {
+export const getDate = (timestamp: number, { utc }: Options = {}) => {
   const date = new Date(timestamp)
   const prefix = utc ? 'UTC' : ''
 
@@ -42,7 +42,7 @@ export const getDate = (timestamp: number, { utc }: Options) => {
   return values.join('.')
 }
 
-export const getDateTime = (timestamp: number, options: Options) => {
+export const getDateTime = (timestamp: number, options: Options = {}) => {
   return [getDate(timestamp, options), getTime(timestamp, options)].join(' ')
 }
 
