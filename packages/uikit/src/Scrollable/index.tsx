@@ -34,6 +34,7 @@ interface ScrollableProps {
   children: React.ReactNode
   style?: React.CSSProperties
   className?: string
+  preventOnMouse?: boolean
 }
 
 type Implementation = InnerImplementation | OuterImplementation | EdgeImplementation
@@ -47,6 +48,7 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
     scrollX,
     className,
     scrollY,
+    preventOnMouse,
     onWheel,
     maxHeight,
     onScroll,
@@ -110,7 +112,9 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
       onWheel={onWheel}
       onScroll={onScroll}
       onMouseDown={(e) => {
-        e.preventDefault()
+        if (preventOnMouse) {
+          e.preventDefault()
+        }
       }}
       style={{
         ...style,
