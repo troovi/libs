@@ -27,6 +27,7 @@ import { ThemeProvider } from '@/ThemeProvider'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { AvatarExample } from './avatars'
 import { SegmentsExample } from './segments'
+import { PopupsRegistry } from './__registries/popups/registry'
 
 export const App = () => {
   return (
@@ -131,6 +132,7 @@ const AppLayout = () => {
         </Example>
         <div />
         <div />
+        <PopupsRegistry.Overlay />
       </div>
     </div>
   )

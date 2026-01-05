@@ -26,7 +26,7 @@ export { Tooltip } from './Tooltip'
 export type { TooltipProps } from './Tooltip'
 
 export { Select } from './Select'
-export type { SelectProps } from './Select'
+export type { SelectProps, SelectParams } from './Select'
 
 export { Input } from './Input/Input'
 export type { InputProps } from './Input/Input'

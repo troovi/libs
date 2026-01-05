@@ -2,6 +2,12 @@ import { useEffect } from 'react'
 import { Icon, Option, OptionItem, OptionsList } from '..'
 import { faPlus } from '@companix/icons-solid'
 
+export interface SelectAddOption {
+  text: string
+  closeOnClick?: boolean
+  onClick: () => void
+}
+
 interface SelectPopoverProps<T> {
   scrollboxRef?: React.RefObject<HTMLDivElement>
   optionsWrapperRef?: React.RefObject<HTMLDivElement>
@@ -10,12 +16,7 @@ interface SelectPopoverProps<T> {
   active?: T | null
   onSelect?: (value: T) => void
   onOpened?: () => void
-  close: () => void
-  addOption?: {
-    text: string
-    closeOnClick?: boolean
-    onClick: () => void
-  }
+  addOption?: SelectAddOption
 }
 
 export const SelectOptions = <T,>(props: SelectPopoverProps<T>) => {
@@ -27,7 +28,6 @@ export const SelectOptions = <T,>(props: SelectPopoverProps<T>) => {
     optionsWrapperRef,
     options,
     onSelect,
-    close,
     minimalOptions
   } = props
 
@@ -42,13 +42,7 @@ export const SelectOptions = <T,>(props: SelectPopoverProps<T>) => {
           className="select-add-option"
           icon={<Icon icon={faPlus} />}
           title={addOption.text}
-          onClick={() => {
-            if (addOption.closeOnClick ?? true) {
-              close()
-            }
-
-            addOption.onClick()
-          }}
+          onClick={addOption.onClick}
         />
       )}
       {options.map((option, i) => (

@@ -4,7 +4,7 @@ import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
 import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
-import { SelectOptions } from './SelectOptions'
+import { SelectAddOption, SelectOptions } from './SelectOptions'
 import { mergeRefs } from 'react-merge-refs'
 
 interface Cleanable<T> {
@@ -19,19 +19,20 @@ interface UnCleanable<T> {
 
 type DependedValueType<T> = Cleanable<T> | UnCleanable<T>
 
+export interface SelectParams {
+  minimalOptions?: boolean
+  matchTarget?: 'width' | 'min-width'
+  popoverRef?: React.Ref<HTMLDivElement>
+  scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
+  addOption?: SelectAddOption
+}
+
 export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
-  DependedValueType<T> & {
+  DependedValueType<T> &
+  SelectParams & {
     value: T | null
     options: Option<T>[]
     children?: React.ReactNode
-    minimalOptions?: boolean
-    matchTarget?: 'width' | 'min-width'
-    popoverRef?: React.Ref<HTMLDivElement>
-    scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
-    addOption?: {
-      text: string
-      onClick: () => void
-    }
   }
 
 export const Select = <T,>(props: SelectProps<T>) => {
@@ -76,11 +77,6 @@ export const Select = <T,>(props: SelectProps<T>) => {
     close()
   }
 
-  const handleClose = (close: () => void) => {
-    froozePopoverPosition()
-    close()
-  }
-
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
 
@@ -112,7 +108,6 @@ export const Select = <T,>(props: SelectProps<T>) => {
           scrollboxRef={scrollBoxRef}
           optionsWrapperRef={optionsWrapperRef}
           minimalOptions={minimalOptions}
-          close={() => handleClose(close)}
           addOption={addOption}
           onOpened={onOpened}
           onSelect={(value) => handleChange(value, close)}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Select } from '@/Select'
+import { Select, SelectParams } from '@/Select'
 import { Icon } from '@/Icon'
 import { faGift } from '@companix/icons-solid'
 
@@ -45,15 +45,9 @@ export const SelectExample = () => {
   )
 }
 
-interface ItemProps {
+interface ItemProps extends SelectParams {
   fill?: boolean
   leftElement?: React.ReactNode
-  size?: 'sm' | 'md' | 'lg'
-  addOption?: {
-    text: string
-    closeOnClick?: boolean
-    onClick: () => void
-  }
 }
 
 const options = [

@@ -2,14 +2,15 @@ import { Button, ButtonProps } from '@/Button'
 import { useState } from 'react'
 import { Dialog, DialogProps } from '@/Dialog'
 import { SelectItem } from '../select'
+import { PopupsRegistry } from '../__registries/popups/registry'
 
 export const DialogExample = () => {
   return (
     <div className="row-group">
       <DialogControlled buttonProps={{ text: 'Open dialog' }}>
         {() => (
-          <div className="flex flex-col p-20 overflow-hidden">
-            <div className="overflow-y-scroll">
+          <div className="flex flex-col overflow-hidden">
+            <div className="overflow-y-scroll p-20">
               <b>
                 Data integration is the seminal problem of the digital age. For over ten years, we ve
                 helped the worlds premier organizations rise to the challenge.
@@ -20,16 +21,12 @@ export const DialogExample = () => {
                 fuse, and transform data into any shape they desire. Business analysts become data
                 engineers — and leaders in their organizations data revolution.
               </div>
-              <SelectItem />
-            </div>
-            <div className="w-full pt-20">
-              <DialogControlled buttonProps={{ fill: true }}>
-                {({ close }) => (
-                  <div className="p-20">
-                    <Button onClick={close}>Close me</Button>
-                  </div>
-                )}
-              </DialogControlled>
+              <SelectItem
+                addOption={{
+                  text: 'Add new',
+                  onClick: () => PopupsRegistry.Open.Dialog1({ name: 'name', surname: 'surname' })
+                }}
+              />
             </div>
           </div>
         )}
