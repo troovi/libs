@@ -6,6 +6,7 @@ import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
 import { faXmark, faChevronDown } from '@companix/icons-solid'
+import { matchPattern } from '@companix/utils-js'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]
@@ -81,10 +82,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     }
 
     return optionsProp.filter(({ title }) => {
-      const normalizedTitle = title.toLowerCase()
-      const normalizedQuery = inputValue.trim().toLowerCase()
-
-      return normalizedTitle.indexOf(normalizedQuery) >= 0
+      return matchPattern(title, inputValue)
     })
   }, [inputValue, optionsProp])
 
