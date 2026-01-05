@@ -16,30 +16,34 @@ export const getTimes = (ms: number) => {
   return { hours, minutes, seconds }
 }
 
-export const getTime = (timestamp: number, utc: boolean = true) => {
-  const date = new Date(timestamp)
-  const prefix = utc ? 'UTC' : ''
-
-  const times = [
-    formatTime(date[`get${prefix}Hours`]()),
-    formatTime(date[`get${prefix}Minutes`]()),
-    formatTime(date[`get${prefix}Seconds`]())
-  ]
-
-  return times.join(':')
+interface Options {
+  utc?: boolean
 }
 
-export const getDate = (timestamp: number, utc: boolean = true) => {
+export const getTime = (timestamp: number, { utc }: Options) => {
   const date = new Date(timestamp)
   const prefix = utc ? 'UTC' : ''
 
-  const times = [
+  const values = [formatTime(date[`get${prefix}Hours`]()), formatTime(date[`get${prefix}Minutes`]())]
+
+  return values.join(':')
+}
+
+export const getDate = (timestamp: number, { utc }: Options) => {
+  const date = new Date(timestamp)
+  const prefix = utc ? 'UTC' : ''
+
+  const values = [
     formatTime(date[`get${prefix}Date`]()),
     formatTime(date[`get${prefix}Month`]() + 1),
     formatTime(date[`get${prefix}FullYear`]())
   ]
 
-  return times.join(':')
+  return values.join('.')
+}
+
+export const getDateTime = (timestamp: number, options: Options) => {
+  return [getDate(timestamp, options), getTime(timestamp, options)].join(' ')
 }
 
 // export const timeDuration = (ms: number) => {
