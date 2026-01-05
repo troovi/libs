@@ -19,11 +19,21 @@ interface RequestInterface {
   method: HttpVerb
 }
 
+interface Options extends CreateAxiosDefaults {
+  handleException?: (e: AxiosError) => void
+}
+
+const defaultExceptionHandler = ({ response }: AxiosError) => {
+  throw response
+}
+
 export class HttpAPI {
   public http: AxiosInstance
+  private handleException: (e: AxiosError) => void
 
-  constructor(config: CreateAxiosDefaults) {
+  constructor({ handleException = defaultExceptionHandler, ...config }: Options) {
     this.http = axios.create(config)
+    this.handleException = handleException
   }
 
   private async request<T>(props: RequestInterface): Promise<T> {
@@ -32,9 +42,7 @@ export class HttpAPI {
 
     return this.http({ url, method, [dataAtt]: body, ...config })
       .then(({ data }) => data)
-      .catch(({ response }: AxiosError) => {
-        throw response
-      })
+      .catch(this.handleException)
   }
 
   createClient<T extends IOpattern<T>>(context: string = '') {
