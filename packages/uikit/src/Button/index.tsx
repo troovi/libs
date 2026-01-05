@@ -61,7 +61,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={loading ?? buttonProps.disabled ? undefined : buttonProps.onClick}
       >
         {loading ? (
-          <Spinner size={14} />
+          <>
+            <Spinner size={14} className="button-spinner" />
+            <span className="button-text">{text ?? children}</span>
+          </>
         ) : (
           <>
             {icon}

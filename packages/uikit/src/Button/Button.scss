@@ -125,4 +125,18 @@
   @include use-appearance(neutral);
   @include use-appearance(negative);
   @include use-appearance(positive);
+
+  &[data-loading] {
+    position: relative;
+
+    .button-text {
+      visibility: hidden;
+    }
+
+    .button-spinner {
+      position: absolute;
+      margin: 0;
+      color: inherit;
+    }
+  }
 }

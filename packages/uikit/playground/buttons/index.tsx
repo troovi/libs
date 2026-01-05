@@ -73,7 +73,11 @@ export const ButtonsExample = () => {
         </Button>
       </div>
       <div className="row-group">
-        <Button loading>Button fullwidth</Button>
+        <Button loading />
+        <Button loading>Loading</Button>
+        <Button loading appearance="primary">
+          Loading
+        </Button>
         <Button disabled>Button disabled</Button>
         <Button fill>Button fullwidth</Button>
       </div>
