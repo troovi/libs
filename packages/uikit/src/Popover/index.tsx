@@ -56,7 +56,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
     minimal,
     className,
     fitMaxHeight = true,
-    zIndex = 100,
+    zIndex = 9999,
     side,
     showArrows
   } = props
