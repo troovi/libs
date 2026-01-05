@@ -1,6 +1,7 @@
 import { Button, ButtonProps } from '@/Button'
 import { useState } from 'react'
 import { Dialog, DialogProps } from '@/Dialog'
+import { SelectItem } from '../select'
 
 export const DialogExample = () => {
   return (
@@ -19,6 +20,7 @@ export const DialogExample = () => {
                 fuse, and transform data into any shape they desire. Business analysts become data
                 engineers — and leaders in their organizations data revolution.
               </div>
+              <SelectItem />
             </div>
             <div className="w-full pt-20">
               <DialogControlled buttonProps={{ fill: true }}>

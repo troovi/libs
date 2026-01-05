@@ -11,10 +11,19 @@ export const SelectExample = () => {
           <SelectItem />
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', minWidth: '240px', width: '240px' }}>
-          <SelectItemClosable icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />} />
+          <SelectItemClosable
+            leftElement={<Icon icon={faGift} size="xxs" className="form-space-margin" />}
+          />
         </div>
         <div style={{ minWidth: 0, width: '100%' }}>
-          <SelectItem fill icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />} />
+          <SelectItem
+            fill
+            leftElement={<Icon icon={faGift} size="xxs" className="form-space-margin" />}
+            addOption={{
+              text: 'Добавить вариант',
+              onClick: () => {}
+            }}
+          />
         </div>
       </div>
       {/* <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
@@ -38,8 +47,13 @@ export const SelectExample = () => {
 
 interface ItemProps {
   fill?: boolean
-  icon?: React.ReactNode
+  leftElement?: React.ReactNode
   size?: 'sm' | 'md' | 'lg'
+  addOption?: {
+    text: string
+    closeOnClick?: boolean
+    onClick: () => void
+  }
 }
 
 const options = [
@@ -52,33 +66,29 @@ const options = [
   }))
 ]
 
-const SelectItem = ({ fill, icon, size }: ItemProps) => {
+export const SelectItem = (props: ItemProps) => {
   const [value, onChange] = useState<null | number>(null)
 
   return (
     <Select<number>
       value={value}
       onChange={onChange}
-      leftElement={icon}
-      fill={fill}
-      size={size}
+      {...props}
       placeholder="Не выбрано"
       options={options}
     />
   )
 }
 
-const SelectItemClosable = ({ fill, icon, size }: ItemProps) => {
+const SelectItemClosable = (props: ItemProps) => {
   const [value, onChange] = useState<null | number>(null)
 
   return (
     <Select<number>
       value={value}
       onChange={onChange}
-      leftElement={icon}
       clearButton
-      fill={fill}
-      size={size}
+      {...props}
       placeholder="Не выбрано"
       options={options}
     />

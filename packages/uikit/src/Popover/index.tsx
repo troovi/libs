@@ -96,6 +96,8 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
           onAnimationEnd={onAnimationEnd}
           onOpenAutoFocus={onOpenAutoFocus}
           onCloseAutoFocus={onCloseAutoFocus}
+          // https://github.com/radix-ui/primitives/issues/1159
+          onWheel={(e) => e.stopPropagation()}
         >
           <PopoverPrimitive.Close ref={buttonRef} style={{ display: 'none' }} />
           {showArrows && (

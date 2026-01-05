@@ -28,6 +28,10 @@ export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'close
     matchTarget?: 'width' | 'min-width'
     popoverRef?: React.Ref<HTMLDivElement>
     scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
+    addOption?: {
+      text: string
+      onClick: () => void
+    }
   }
 
 export const Select = <T,>(props: SelectProps<T>) => {
@@ -42,6 +46,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
     scrollRef,
     popoverRef: propPopoverRef,
     clearButton,
+    addOption,
     ...selectProps
   } = props
 
@@ -68,6 +73,11 @@ export const Select = <T,>(props: SelectProps<T>) => {
   const handleChange = (value: T, close: () => void) => {
     froozePopoverPosition()
     onChange(value)
+    close()
+  }
+
+  const handleClose = (close: () => void) => {
+    froozePopoverPosition()
     close()
   }
 
@@ -102,6 +112,8 @@ export const Select = <T,>(props: SelectProps<T>) => {
           scrollboxRef={scrollBoxRef}
           optionsWrapperRef={optionsWrapperRef}
           minimalOptions={minimalOptions}
+          close={() => handleClose(close)}
+          addOption={addOption}
           onOpened={onOpened}
           onSelect={(value) => handleChange(value, close)}
         />
