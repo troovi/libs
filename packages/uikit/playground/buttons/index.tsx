@@ -34,6 +34,12 @@ export const ButtonsExample = () => {
                 Button
               </Button>
             ))}
+            <Button appearance={appearance} loading>
+              Button
+            </Button>
+            <Button appearance={appearance} mode="outline" loading>
+              Button
+            </Button>
           </div>
         )
       })}
@@ -74,10 +80,6 @@ export const ButtonsExample = () => {
       </div>
       <div className="row-group">
         <Button loading />
-        <Button loading>Loading</Button>
-        <Button loading appearance="primary">
-          Loading
-        </Button>
         <Button disabled>Button disabled</Button>
         <Button fill>Button fullwidth</Button>
       </div>

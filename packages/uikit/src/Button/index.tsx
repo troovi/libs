@@ -62,7 +62,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? (
           <>
-            <Spinner size={14} className="button-spinner" />
+            <Spinner size={16} className="button-spinner" />
             <span className="button-text">{text ?? children}</span>
           </>
         ) : (

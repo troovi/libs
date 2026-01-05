@@ -20,11 +20,14 @@
   }
 
   &[data-loading] {
-    @include mixins.use-styles(button, $appearance, $mode, loading);
+    &:hover,
+    &[data-active],
+    &:active {
+      @include mixins.use-styles(button, $appearance, $mode, enabled);
+    }
   }
 
   &[disabled] {
-    cursor: not-allowed;
     @include mixins.use-styles(button, $appearance, $mode, disabled);
   }
 }
@@ -69,6 +72,12 @@
 
   &[data-fill] {
     width: 100%;
+  }
+
+  // disabled
+
+  &[disabled] {
+    cursor: not-allowed;
   }
 
   // align
@@ -127,6 +136,7 @@
   @include use-appearance(positive);
 
   &[data-loading] {
+    cursor: progress;
     position: relative;
 
     .button-text {
