@@ -1,6 +1,6 @@
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
-import { OptionItem, OptionsList, Popover } from '..'
+import { OptionItem, OptionsList, Popover, Spinner } from '..'
 import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
@@ -22,6 +22,7 @@ export interface SelectTagsProps<T> {
   fill?: boolean
   inputRef?: React.Ref<HTMLInputElement>
   required?: boolean
+  isLoading?: boolean
 }
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
@@ -35,6 +36,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     size = 'md',
     value: values,
     inputRef: propInputRef,
+    isLoading,
     disabled,
     required
   } = props
@@ -130,20 +132,30 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onAnimationEnd={handleAnimationEnd}
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
-      content={({ close }) => (
-        <OptionsList maxHeight={300}>
-          {options.length === 0 && <div className="select-tags-empty">{emptyText}</div>}
-          {options.map(({ value, title, icon }, i) => (
-            <OptionItem
-              key={`option-item-${value}-${i}`}
-              active={values.includes(value)}
-              onClick={() => handleSelect(add(value), close)}
-              title={title}
-              icon={icon}
-            />
-          ))}
-        </OptionsList>
-      )}
+      content={({ close }) => {
+        if (isLoading) {
+          return (
+            <div className="select-popover-loading">
+              <Spinner size={24} />
+            </div>
+          )
+        }
+
+        return (
+          <OptionsList maxHeight={300}>
+            {options.length === 0 && <div className="select-tags-empty">{emptyText}</div>}
+            {options.map(({ value, title, icon }, i) => (
+              <OptionItem
+                key={`option-item-${value}-${i}`}
+                active={values.includes(value)}
+                onClick={() => handleSelect(add(value), close)}
+                title={title}
+                icon={icon}
+              />
+            ))}
+          </OptionsList>
+        )
+      }}
     >
       <div
         className="form"
