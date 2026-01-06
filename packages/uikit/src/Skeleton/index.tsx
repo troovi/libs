@@ -1,4 +1,15 @@
-export interface SkeletonProps extends Pick<React.CSSProperties, 'width' | 'height' | 'borderRadius'> {}
+export interface SkeletonProps
+  extends Pick<
+    React.CSSProperties,
+    | 'width'
+    | 'height'
+    | 'inlineSize'
+    | 'blockSize'
+    | 'maxWidth'
+    | 'maxInlineSize'
+    | 'borderRadius'
+    | 'margin'
+  > {}
 
 /**
  * > Старайтесь минимизировать количество заглушек на экране. Не каждый элемент
