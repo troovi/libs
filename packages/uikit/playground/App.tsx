@@ -28,6 +28,7 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 import { AvatarExample } from './avatars'
 import { SegmentsExample } from './segments'
 import { PopupsRegistry } from './__registries/popups/registry'
+import { SkeletonExample } from './skeleton'
 
 export const App = () => {
   return (
@@ -116,6 +117,9 @@ const AppLayout = () => {
         </Example>
         <Example name="Avatar">
           <AvatarExample />
+        </Example>
+        <Example name="Skeleton">
+          <SkeletonExample />
         </Example>
         <Example name="ProgressBar">
           <ProgressBarExample />

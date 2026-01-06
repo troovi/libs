@@ -94,10 +94,14 @@ export type { IconProps, IconDefinition } from './Icon'
 export { ProgressBar } from './Progress'
 export type { ProgressBarProps } from './Progress'
 
+export { Skeleton } from './Skeleton'
+export type { SkeletonProps } from './Skeleton'
+
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
 export { useLocalStorage } from './__hooks/use-local-storage'
+export { useBooleanState } from './__hooks/use-boolean-state'
 // agents
 export { createAlertAgent } from './DialogAlert'
 export { createToaster } from './Toaster'

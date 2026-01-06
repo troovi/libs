@@ -1,0 +1,29 @@
+@use '../mixins.scss';
+
+.skeleton {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 1;
+  border-radius: 6px;
+  background-clip: padding-box !important;
+
+  animation-name: skeleton-glow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-duration: 750ms;
+
+  @include mixins.use-styles(skeleton);
+}
+
+@keyframes skeleton-glow {
+  from {
+    @include mixins.use-styles(skeleton);
+  }
+  to {
+    @include mixins.use-styles(skeleton, to);
+  }
+}

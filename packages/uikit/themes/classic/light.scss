@@ -223,6 +223,10 @@ $theme-light: (
   ),
   spinner: (
     color: rgb(0 0 0 / 25%)
+  ),
+  skeleton: (
+    background: rgba(211, 216, 222, 0.2),
+    to_background: rgba(95, 107, 124, 0.2)
   )
 );
 
