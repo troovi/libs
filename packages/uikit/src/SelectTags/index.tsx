@@ -35,7 +35,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     closeAfterSelect,
     placeholder,
     onChange,
-    emptyText = 'Ничего не найдено',
+    emptyText,
     readOnly,
     size = 'md',
     value: values,

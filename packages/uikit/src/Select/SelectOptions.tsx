@@ -30,7 +30,7 @@ export const SelectOptionsList = <T,>(props: SelectPopoverProps<T>) => {
     options,
     onSelect,
     minimalOptions,
-    emptyText
+    emptyText = 'Ничего не найдено'
   } = props
 
   useEffect(() => {
