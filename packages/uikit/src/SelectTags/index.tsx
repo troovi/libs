@@ -7,7 +7,7 @@ import { attr, contains, getActiveElementByAnotherElement } from '@companix/util
 import { mergeRefs } from 'react-merge-refs'
 import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { matchPattern } from '@companix/utils-js'
-import { SelectOptionsList } from '../Select/SelectOptions'
+import { SelectAddOption, SelectOptionsList } from '../Select/SelectOptions'
 import { SelectLoader } from '../Select/SelectLoader'
 
 export interface SelectTagsProps<T> {
@@ -26,6 +26,7 @@ export interface SelectTagsProps<T> {
   inputRef?: React.Ref<HTMLInputElement>
   required?: boolean
   isLoading?: boolean
+  addOption?: SelectAddOption
 }
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
@@ -42,7 +43,8 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     minimalOptions,
     isLoading,
     disabled,
-    required
+    required,
+    addOption
   } = props
 
   const [inputValue, setInputValue] = useState('')
@@ -148,6 +150,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
             emptyText={emptyText}
             onSelect={(value) => handleSelect(add(value), close)}
             minimalOptions={minimalOptions}
+            addOption={addOption}
           />
         )
       }}
