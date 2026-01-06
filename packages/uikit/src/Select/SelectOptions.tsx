@@ -13,22 +13,24 @@ interface SelectPopoverProps<T> {
   optionsWrapperRef?: React.RefObject<HTMLDivElement>
   options: Option<T>[]
   minimalOptions?: boolean
-  active?: T | null
+  isActive: (value: T) => boolean
   onSelect?: (value: T) => void
   onOpened?: () => void
   addOption?: SelectAddOption
+  emptyText?: string
 }
 
-export const SelectOptions = <T,>(props: SelectPopoverProps<T>) => {
+export const SelectOptionsList = <T,>(props: SelectPopoverProps<T>) => {
   const {
-    active,
+    isActive,
     onOpened,
     addOption,
     scrollboxRef,
     optionsWrapperRef,
     options,
     onSelect,
-    minimalOptions
+    minimalOptions,
+    emptyText
   } = props
 
   useEffect(() => {
@@ -45,10 +47,11 @@ export const SelectOptions = <T,>(props: SelectPopoverProps<T>) => {
           onClick={addOption.onClick}
         />
       )}
+      {options.length === 0 && !addOption && <div className="select-tags-empty">{emptyText}</div>}
       {options.map((option, i) => (
         <OptionItem
           key={`select-option-${i}`}
-          active={active === option.value}
+          active={isActive(option.value)}
           onClick={() => onSelect?.(option.value)}
           minimal={minimalOptions}
           {...option}

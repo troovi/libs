@@ -4,9 +4,9 @@ import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
 import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
-import { SelectAddOption, SelectOptions } from './SelectOptions'
+import { SelectAddOption, SelectOptionsList } from './SelectOptions'
 import { mergeRefs } from 'react-merge-refs'
-import { Spinner } from '..'
+import { SelectLoader } from './SelectLoader'
 
 interface Cleanable<T> {
   clearButton: true
@@ -27,6 +27,7 @@ export interface SelectParams {
   scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
   addOption?: SelectAddOption
   isLoading?: boolean
+  emptyText?: string
 }
 
 export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
@@ -49,6 +50,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
     scrollRef,
     popoverRef: propPopoverRef,
     clearButton,
+    emptyText,
     addOption,
     isLoading,
     ...selectProps
@@ -106,17 +108,14 @@ export const Select = <T,>(props: SelectProps<T>) => {
       disabled={disabled}
       content={({ close }) => {
         if (isLoading) {
-          return (
-            <div className="select-popover-loading">
-              <Spinner size={24} />
-            </div>
-          )
+          return <SelectLoader />
         }
 
         return (
-          <SelectOptions<T>
+          <SelectOptionsList<T>
             options={options}
-            active={active}
+            isActive={(value) => value === active}
+            emptyText={emptyText}
             scrollboxRef={scrollBoxRef}
             optionsWrapperRef={optionsWrapperRef}
             minimalOptions={minimalOptions}

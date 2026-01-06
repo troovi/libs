@@ -1,12 +1,14 @@
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
-import { OptionItem, OptionsList, Popover, Spinner } from '..'
+import { Popover } from '../Popover'
 import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
 import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { matchPattern } from '@companix/utils-js'
+import { SelectOptionsList } from '../Select/SelectOptions'
+import { SelectLoader } from '../Select/SelectLoader'
 
 export interface SelectTagsProps<T> {
   options: Option<T>[]
@@ -20,6 +22,7 @@ export interface SelectTagsProps<T> {
   emptyText?: string
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
+  minimalOptions?: boolean
   inputRef?: React.Ref<HTMLInputElement>
   required?: boolean
   isLoading?: boolean
@@ -36,6 +39,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     size = 'md',
     value: values,
     inputRef: propInputRef,
+    minimalOptions,
     isLoading,
     disabled,
     required
@@ -134,26 +138,17 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onCloseAutoFocus={(e) => e.preventDefault()}
       content={({ close }) => {
         if (isLoading) {
-          return (
-            <div className="select-popover-loading">
-              <Spinner size={24} />
-            </div>
-          )
+          return <SelectLoader />
         }
 
         return (
-          <OptionsList maxHeight={300}>
-            {options.length === 0 && <div className="select-tags-empty">{emptyText}</div>}
-            {options.map(({ value, title, icon }, i) => (
-              <OptionItem
-                key={`option-item-${value}-${i}`}
-                active={values.includes(value)}
-                onClick={() => handleSelect(add(value), close)}
-                title={title}
-                icon={icon}
-              />
-            ))}
-          </OptionsList>
+          <SelectOptionsList
+            isActive={(value) => values.includes(value)}
+            options={options}
+            emptyText={emptyText}
+            onSelect={(value) => handleSelect(add(value), close)}
+            minimalOptions={minimalOptions}
+          />
         )
       }}
     >
