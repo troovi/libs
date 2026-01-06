@@ -15,6 +15,9 @@ export const SelectExample = () => {
             leftElement={<Icon icon={faGift} size="xxs" className="form-space-margin" />}
           />
         </div>
+        <div style={{ minWidth: '200px', width: '200px' }}>
+          <SelectItem fill isLoading />
+        </div>
         <div style={{ minWidth: 0, width: '100%' }}>
           <SelectItem
             fill
@@ -26,21 +29,6 @@ export const SelectExample = () => {
           />
         </div>
       </div>
-      {/* <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
-      <div className="row-group">
-        <div style={{ minWidth: '200px', width: '200px' }}>
-          <SelectItem />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', minWidth: '240px', width: '240px' }}>
-          <SelectItem
-            clearButton
-            icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />}
-          />
-        </div>
-        <div style={{ minWidth: 0, width: '100%' }}>
-          <SelectItem fill icon={<Icon icon={faGift} size="xxs" className="form-space-margin" />} />
-        </div>
-      </div> */}
     </div>
   )
 }

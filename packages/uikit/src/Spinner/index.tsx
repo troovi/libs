@@ -6,7 +6,7 @@ export interface SpinnerProps {
   color?: string
 }
 
-export const Spinner = ({ size = 40, className, color }: SpinnerProps) => {
+export const Spinner = ({ size = 18, className, color }: SpinnerProps) => {
   return (
     <div
       style={{ width: `${size}px`, height: `${size}px`, color }}
