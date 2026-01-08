@@ -3,9 +3,10 @@ export interface SkeletonProps
     React.CSSProperties,
     | 'width'
     | 'height'
+    | 'minWidth'
+    | 'maxWidth'
     | 'inlineSize'
     | 'blockSize'
-    | 'maxWidth'
     | 'maxInlineSize'
     | 'borderRadius'
     | 'margin'
@@ -27,8 +28,8 @@ export interface SkeletonProps
  */
 export const Skeleton = ({ ...styles }: SkeletonProps) => {
   return (
-    <span className="skeleton" style={styles}>
+    <div className="skeleton" style={styles}>
       <>&zwnj;</>
-    </span>
+    </div>
   )
 }
