@@ -59,7 +59,7 @@
     flex-direction: column;
     left: var(--toaster_viewport_offset);
     right: var(--toaster_viewport_offset);
-    z-index: 9999;
+    z-index: 10000;
     outline: none;
     pointer-events: none;
     gap: var(--toasters-gap, 0);
