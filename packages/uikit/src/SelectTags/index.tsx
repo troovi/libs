@@ -13,6 +13,8 @@ import { SelectLoader } from '../Select/SelectLoader'
 export interface SelectTagsProps<T> {
   options: Option<T>[]
   onChange: (event: T[]) => void
+  onInputChange?: (text: string) => void
+  onPopoverOpen?: (open: boolean) => void
   placeholder?: string
   value: T[]
   children?: React.ReactNode
@@ -35,11 +37,13 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     closeAfterSelect,
     placeholder,
     onChange,
+    onInputChange,
     emptyText,
     readOnly,
     size = 'md',
     value: values,
     inputRef: propInputRef,
+    onPopoverOpen,
     minimalOptions,
     isLoading,
     disabled,
@@ -127,6 +131,11 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     onChange(remove(value))
   }
 
+  const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(target.value)
+    onInputChange?.(target.value)
+  }
+
   // const
 
   return (
@@ -138,6 +147,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onAnimationEnd={handleAnimationEnd}
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
+      onOpenChange={onPopoverOpen}
       content={({ close }) => {
         if (isLoading) {
           return <SelectLoader />
@@ -171,14 +181,18 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                 role="listbox"
                 data-readonly={attr(readOnly)}
               >
-                {values.map((value, i) => (
-                  <div key={`tag-option-${value}-${i}`} className="tag">
-                    <span className="tag-name">{store[value].title}</span>
-                    <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
-                      <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
-                    </button>
-                  </div>
-                ))}
+                {values.map((value, i) => {
+                  if (!store[value]) return null
+
+                  return (
+                    <div key={`tag-option-${value}-${i}`} className="tag">
+                      <span className="tag-name">{store[value].title}</span>
+                      <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
+                        <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             )}
             {(!readOnly || values.length === 0) && (
@@ -194,7 +208,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                 disabled={disabled}
                 readOnly={readOnly}
                 placeholder={placeholder}
-                onChange={({ target }) => setInputValue(target.value)}
+                onChange={handleInputChange}
               />
             )}
           </div>

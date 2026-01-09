@@ -24,6 +24,10 @@ interface Props {
 export const DatePickerControl = ({ size, disabled, required }: Props) => {
   const [value, onChange] = useState<null | Date>(new Date())
 
+  console.log(value)
+  console.log(value?.toISOString())
+  console.log('')
+
   return (
     <DatePicker
       fill
