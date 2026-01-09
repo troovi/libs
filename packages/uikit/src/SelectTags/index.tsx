@@ -9,7 +9,7 @@ import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { OptionsSource, SelectAddOption, OptionsPopover } from '../Select/OptionsPopover'
 import { matchPattern } from '@companix/utils-js'
 
-export type SelectTagsProps<T> = OptionsSource<T> & {
+export interface SelectParams<T> {
   closeAfterSelect?: boolean
   onInputChange?: (text: string) => void
   onChange: (event: T[]) => void
@@ -26,6 +26,8 @@ export type SelectTagsProps<T> = OptionsSource<T> & {
   addOption?: SelectAddOption
   emptyText?: string
 }
+
+export type SelectTagsProps<T> = OptionsSource<T> & SelectParams<T>
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
   const {

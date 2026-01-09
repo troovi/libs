@@ -28,6 +28,7 @@ export interface SelectParams {
   minimalOptions?: boolean
   addOption?: SelectAddOption
 }
+
 export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
   DependedValueType<T> &
   SelectParams &
