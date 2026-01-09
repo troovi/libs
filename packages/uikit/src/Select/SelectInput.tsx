@@ -6,7 +6,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { mergeRefs } from 'react-merge-refs'
 import { SelectRightElements } from './SelectRight'
 
-export interface SelectFormProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SelectFormProps {
   required?: boolean
   disabled?: boolean
   className?: string
@@ -19,6 +19,7 @@ export interface SelectFormProps extends React.HTMLAttributes<HTMLDivElement> {
   clearButtonIcon?: boolean
   inputRef?: React.Ref<HTMLInputElement>
   onClear?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: () => void
 }
 
 export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
@@ -36,7 +37,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
       disabled,
       onClear,
       inputRef,
-      ...containerProps
+      onClick
     },
     ref
   ) => {
@@ -72,12 +73,12 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
       }
     }
 
-    const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
       if (disabled) return
       passClickAndFocusToInputOnClick(event)
     }
 
-    const onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
       preventInputBlurWhenClickInsideFocusedSelectArea(event)
     }
 
@@ -94,9 +95,8 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
         data-fill={attr(fill)}
         data-required={attr(required)}
         data-disabled={attr(disabled)}
-        onMouseDown={onMouseDown}
-        {...containerProps}
-        onClick={onClick}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
       >
         <div className="select-layout form-input">
           {leftElement && <div className="select-element">{leftElement}</div>}
@@ -123,7 +123,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
             autoCorrect="off"
             spellCheck="false"
             aria-autocomplete="none"
-            onClick={containerProps.onClick}
+            onClick={onClick}
             readOnly
           />
         </VisuallyHidden>

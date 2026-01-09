@@ -11,9 +11,9 @@ export const SelectTagsExample = () => {
         <div style={{ maxWidth: '380px' }}>
           <SelectTagsControl required />
         </div>
-        <div style={{ maxWidth: '380px' }}>
-          <SelectTagsControl2 />
-        </div>
+        {/* <div style={{ minWidth: 0, width: '100%' }}>
+          <SelectTagsControl fill />
+        </div> */}
       </div>
     </div>
   )
@@ -42,20 +42,18 @@ const SelectTagsControl = ({ fill, required }: { fill?: boolean; required?: bool
   )
 }
 
-const SelectTagsControl2 = ({ fill, required }: { fill?: boolean; required?: boolean } = {}) => {
-  const [value, onChange] = useState<number[]>([])
-  const [isLoading, setLoading] = useState(false)
+// const SelectTagsControl2 = ({ fill, required }: { fill?: boolean; required?: boolean } = {}) => {
+//   const [value, onChange] = useState<number[]>([])
 
-  return (
-    <SelectTags<number>
-      value={value}
-      onChange={onChange}
-      fill={fill}
-      required={required}
-      isLoading={isLoading}
-      onPopoverOpen={setLoading}
-      placeholder="Выберите варианты"
-      options={[]}
-    />
-  )
-}
+//   return (
+//     <SelectTags<number>
+//       value={value}
+//       onChange={onChange}
+//       required={required}
+//       placeholder="Выберите варианты"
+//       useOptions={() => ({ options: [], isLoading: false })}
+//       defaultOptions={[]}
+//       // options={[]}
+//     />
+//   )
+// }

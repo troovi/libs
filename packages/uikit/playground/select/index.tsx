@@ -16,7 +16,7 @@ export const SelectExample = () => {
           />
         </div>
         <div style={{ minWidth: '200px', width: '200px' }}>
-          <SelectItem fill isLoading />
+          <SelectItem fill />
         </div>
         <div style={{ minWidth: 0, width: '100%' }}>
           <SelectItem

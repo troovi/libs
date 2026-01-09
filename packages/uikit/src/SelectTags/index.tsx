@@ -6,65 +6,49 @@ import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
 import { faXmark, faChevronDown } from '@companix/icons-solid'
+import { OptionsSource, SelectAddOption, OptionsPopover } from '../Select/OptionsPopover'
 import { matchPattern } from '@companix/utils-js'
-import { SelectAddOption, SelectOptionsList } from '../Select/SelectOptions'
-import { SelectLoader } from '../Select/SelectLoader'
 
-export interface SelectTagsProps<T> {
-  options: Option<T>[]
-  onChange: (event: T[]) => void
+export type SelectTagsProps<T> = OptionsSource<T> & {
+  closeAfterSelect?: boolean
   onInputChange?: (text: string) => void
-  onPopoverOpen?: (open: boolean) => void
+  onChange: (event: T[]) => void
   placeholder?: string
   value: T[]
-  children?: React.ReactNode
   disabled?: boolean
   readOnly?: boolean
-  closeAfterSelect?: boolean
-  emptyText?: string
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
-  minimalOptions?: boolean
   inputRef?: React.Ref<HTMLInputElement>
   required?: boolean
-  isLoading?: boolean
+  // options list
+  minimalOptions?: boolean
   addOption?: SelectAddOption
+  emptyText?: string
 }
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
   const {
-    options: optionsProp,
     closeAfterSelect,
     placeholder,
     onChange,
     onInputChange,
-    emptyText,
     readOnly,
     size = 'md',
+    fill,
     value: values,
     inputRef: propInputRef,
-    onPopoverOpen,
-    minimalOptions,
-    isLoading,
     disabled,
     required,
-    addOption
+    // options popover
+    ...optionsPopoverProps
   } = props
 
   const [inputValue, setInputValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const listboxRef = useRef<HTMLDivElement>(null)
+
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
-
-  const store = useMemo(() => {
-    const store = {} as { [value in T]: Option<T> }
-
-    optionsProp.forEach((option) => {
-      store[option.value] = option
-    })
-
-    return store
-  }, [optionsProp])
 
   const add = (value: T) => {
     if (values.includes(value)) {
@@ -87,16 +71,6 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onChange(value)
     }
   }
-
-  const options = useMemo(() => {
-    if (!inputValue.trim()) {
-      return optionsProp
-    }
-
-    return optionsProp.filter(({ title }) => {
-      return matchPattern(title, inputValue)
-    })
-  }, [inputValue, optionsProp])
 
   const handleRootClick = (event: React.MouseEvent) => {
     if (disabled) return
@@ -136,7 +110,17 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
     onInputChange?.(target.value)
   }
 
-  // const
+  // store
+  const optionsStore = useMemo(() => {
+    const store = {} as { [value in T]: Option<T> }
+    const startupOptions = props.options ?? props.defaultOptions ?? []
+
+    startupOptions.forEach((option) => {
+      store[option.value] = option
+    })
+
+    return store
+  }, [props.options, props.defaultOptions])
 
   return (
     <Popover
@@ -147,30 +131,29 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onAnimationEnd={handleAnimationEnd}
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
-      onOpenChange={onPopoverOpen}
-      content={({ close }) => {
-        if (isLoading) {
-          return <SelectLoader />
-        }
-
-        return (
-          <SelectOptionsList
-            isActive={(value) => values.includes(value)}
-            options={options}
-            emptyText={emptyText}
-            onSelect={(value) => handleSelect(add(value), close)}
-            minimalOptions={minimalOptions}
-            addOption={addOption}
-          />
-        )
-      }}
+      content={({ close }) => (
+        <OptionsPopover<T>
+          {...optionsPopoverProps}
+          isActive={(value) => values.includes(value)}
+          onSelect={(value) => handleSelect(add(value), close)}
+          disableFiltering={!inputValue.trim()}
+          filterOptions={({ title }) => matchPattern(title, inputValue)}
+          onOptionsLoaded={(newOptions) => {
+            newOptions.forEach((option) => {
+              optionsStore[option.value] = option
+            })
+          }}
+        />
+      )}
     >
       <div
         className="form"
         onClick={handleRootClick}
         onMouseDown={handleRootMouseDown}
-        data-size={size}
+        data-size={size ?? 'md'}
+        data-fill={attr(fill)}
         data-required={attr(required)}
+        data-disabled={attr(disabled)}
       >
         <div className="select-tags-container">
           <div className="select-tags">
@@ -182,11 +165,11 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                 data-readonly={attr(readOnly)}
               >
                 {values.map((value, i) => {
-                  if (!store[value]) return null
+                  if (!optionsStore[value]) return null
 
                   return (
                     <div key={`tag-option-${value}-${i}`} className="tag">
-                      <span className="tag-name">{store[value].title}</span>
+                      <span className="tag-name">{optionsStore[value].title}</span>
                       <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
                         <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
                       </button>
