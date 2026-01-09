@@ -28,6 +28,9 @@ export type { TooltipProps } from './Tooltip'
 export { Select } from './Select'
 export type { SelectProps, SelectParams } from './Select'
 
+export { SelectTags } from './SelectTags'
+export type { SelectTagsProps, SelectTagsParams } from './SelectTags'
+
 export { Input } from './Input/Input'
 export type { InputProps } from './Input/Input'
 
@@ -69,9 +72,6 @@ export type { CountDownProps } from './Countdown'
 
 export { TextArea } from './TextArea'
 export type { TextAreaProps } from './TextArea'
-
-export { SelectTags } from './SelectTags'
-export type { SelectTagsProps } from './SelectTags'
 
 export { DatePicker } from './DatePicker'
 export type { DatePickerProps } from './DatePicker'

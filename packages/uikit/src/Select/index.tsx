@@ -3,41 +3,37 @@ import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import { SelectFormProps, SelectInput } from './SelectInput'
 import { useScrollListController } from '../__hooks/use-scrollbox'
-import { OptionsSource, SelectAddOption, OptionsPopover } from './OptionsPopover'
+import { OptionsSource, OptionsPopover, SelectOptionsPopoverParams } from './OptionsPopover'
 import { mergeRefs } from 'react-merge-refs'
 import type { Option } from '../types'
 
 interface Cleanable<T> {
   clearButton: true
-  onChange: (event: T | null) => void
+  onChange: (value: T | null) => void
 }
 
 interface UnCleanable<T> {
   clearButton?: false
-  onChange: (event: T) => void
+  onChange: (value: T) => void
 }
 
-type DependedValueType<T> = Cleanable<T> | UnCleanable<T>
+type OnChangeValueType<T> = Cleanable<T> | UnCleanable<T>
 
-export interface SelectParams {
+export interface SelectParams extends SelectOptionsPopoverParams {
   matchTarget?: 'width' | 'min-width'
   popoverRef?: React.Ref<HTMLDivElement>
   scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
-  // options list
-  emptyText?: string
-  minimalOptions?: boolean
-  addOption?: SelectAddOption
 }
 
-export type SelectProps<T> = Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
-  DependedValueType<T> &
+export type SelectProps<T> = OptionsSource<T> &
+  Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
   SelectParams &
-  OptionsSource<T> & {
+  OnChangeValueType<T> & {
     value: T | null
     children?: React.ReactNode
   }
 
-export const Select = <T extends string | number>(props: SelectProps<T>) => {
+export const Select = <T,>(props: SelectProps<T>) => {
   const {
     onChange,
     value,
@@ -64,17 +60,17 @@ export const Select = <T extends string | number>(props: SelectProps<T>) => {
 
   // store
   const optionsStore = useMemo(() => {
-    const store = {} as { [value in T]: Option<T> }
+    const store = {} as Record<symbol, Option<T>>
     const startupOptions = props.options ?? props.defaultOptions ?? []
 
     startupOptions.forEach((option) => {
-      store[option.value] = option
+      store[option.value as symbol] = option
     })
 
     return store
   }, [props.options, props.defaultOptions])
 
-  const activeOption: Option<T> | null = value === null ? null : optionsStore[value] ?? null
+  const activeOption: Option<T> | null = value === null ? null : optionsStore[value as symbol] ?? null
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
   const { scrollToElement, optionsWrapperRef, scrollBoxRef } = useScrollListController()
@@ -119,7 +115,7 @@ export const Select = <T extends string | number>(props: SelectProps<T>) => {
           onOpened={(activeIndex) => scrollToElement(activeIndex, 'center')}
           onOptionsLoaded={(newOptions) => {
             newOptions.forEach((option) => {
-              optionsStore[option.value] = option
+              optionsStore[option.value as symbol] = option
             })
           }}
         />

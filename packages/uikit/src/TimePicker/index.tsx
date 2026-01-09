@@ -121,6 +121,7 @@ export const TimePicker = (props: TimePickerProps) => {
       if (patternValue) {
         const index = patternValue.hours * 6 + Math.trunc(patternValue.minutes / 10)
 
+        // TODO: применяется после выбора значения
         if (index !== -1 && scrollRef.current) {
           scrollRef.current.scrollTo(index)
         }

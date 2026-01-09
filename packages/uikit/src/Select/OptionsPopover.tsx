@@ -32,7 +32,13 @@ export interface SelectAddOption {
   onClick: () => void
 }
 
-interface InternalListProps<T> {
+export interface SelectOptionsPopoverParams {
+  minimalOptions?: boolean
+  addOption?: SelectAddOption
+  emptyText?: string
+}
+
+interface InternalListProps<T> extends SelectOptionsPopoverParams {
   options: Option<T>[]
   // internal params
   scrollboxRef?: React.RefObject<HTMLDivElement>
@@ -42,10 +48,6 @@ interface InternalListProps<T> {
   onOpened?: (activeIndex: number) => void
   filterOptions?: (option: Option<T>) => boolean
   disableFiltering?: boolean
-  // client params
-  minimalOptions?: boolean
-  addOption?: SelectAddOption
-  emptyText?: string
 }
 
 const useOptionsDefault = <T,>(): UseOptionsResponse<T> => {
@@ -133,6 +135,7 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
   } = props
 
   useEffect(() => {
+    console.log('onOpened')
     onOpened?.(options.findIndex((option) => isActive(option.value)))
   }, [])
 

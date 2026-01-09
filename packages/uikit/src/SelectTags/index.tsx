@@ -6,28 +6,24 @@ import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
 import { faXmark, faChevronDown } from '@companix/icons-solid'
-import { OptionsSource, SelectAddOption, OptionsPopover } from '../Select/OptionsPopover'
+import { OptionsSource, OptionsPopover, SelectOptionsPopoverParams } from '../Select/OptionsPopover'
 import { matchPattern } from '@companix/utils-js'
 
-export interface SelectParams<T> {
+export interface SelectTagsParams<T> extends SelectOptionsPopoverParams {
   closeAfterSelect?: boolean
   onInputChange?: (text: string) => void
   onChange: (event: T[]) => void
-  placeholder?: string
   value: T[]
+  placeholder?: string
   disabled?: boolean
   readOnly?: boolean
   size?: 'sm' | 'md' | 'lg'
   fill?: boolean
   inputRef?: React.Ref<HTMLInputElement>
   required?: boolean
-  // options list
-  minimalOptions?: boolean
-  addOption?: SelectAddOption
-  emptyText?: string
 }
 
-export type SelectTagsProps<T> = OptionsSource<T> & SelectParams<T>
+export type SelectTagsProps<T> = OptionsSource<T> & SelectTagsParams<T>
 
 export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>) => {
   const {
@@ -47,6 +43,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
   } = props
 
   const [inputValue, setInputValue] = useState('')
+
   const inputRef = useRef<HTMLInputElement>(null)
   const listboxRef = useRef<HTMLDivElement>(null)
 
