@@ -109,6 +109,7 @@ export { Toast } from './Toaster/Toast'
 // types
 export * from './types'
 export type { CalendarProps } from './Calendar/Calendar'
+export type { OptionsSource, UseOptionsResponse } from './Select/OptionsPopover'
 // helpers
 export { createDialogsRegistry, DialogShell } from './__helpers/createDialogRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'
