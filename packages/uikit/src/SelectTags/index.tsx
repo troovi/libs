@@ -1,13 +1,14 @@
+import { mergeRefs } from 'react-merge-refs'
+import { useMemo, useRef, useState } from 'react'
+import { matchPattern } from '@companix/utils-js'
+import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import type { Option } from '../types'
 import { Popover } from '../Popover'
-import { useMemo, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { attr, contains, getActiveElementByAnotherElement } from '@companix/utils-browser'
-import { mergeRefs } from 'react-merge-refs'
-import { faXmark, faChevronDown } from '@companix/icons-solid'
 import { OptionsSource, OptionsPopover, SelectOptionsPopoverParams } from '../Select/OptionsPopover'
-import { matchPattern } from '@companix/utils-js'
+import { arrays } from '../__utils/utils'
 
 export interface SelectTagsParams<T> extends SelectOptionsPopoverParams {
   closeAfterSelect?: boolean
@@ -46,20 +47,18 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const listboxRef = useRef<HTMLDivElement>(null)
+  const optionsStore = useRef({} as { [value in T]: Option<T> })
+
+  // startup store
+  useMemo(() => {
+    const startupOptions = props.options ?? props.defaultOptions ?? []
+
+    startupOptions.forEach((option) => {
+      optionsStore.current[option.value] = option
+    })
+  }, [props.options, props.defaultOptions])
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
-
-  const add = (value: T) => {
-    if (values.includes(value)) {
-      return [...values]
-    }
-
-    return [...values, value]
-  }
-
-  const remove = (value: T) => {
-    return values.filter((item) => value !== item)
-  }
 
   const handleSelect = (value: T[], close: () => void) => {
     if (closeAfterSelect) {
@@ -101,25 +100,13 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
 
   const handleRemove = (e: React.MouseEvent, value: T) => {
     e.stopPropagation()
-    onChange(remove(value))
+    onChange(arrays.remove(values, value))
   }
 
   const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(target.value)
     onInputChange?.(target.value)
   }
-
-  // store
-  const optionsStore = useMemo(() => {
-    const store = {} as { [value in T]: Option<T> }
-    const startupOptions = props.options ?? props.defaultOptions ?? []
-
-    startupOptions.forEach((option) => {
-      store[option.value] = option
-    })
-
-    return store
-  }, [props.options, props.defaultOptions])
 
   return (
     <Popover
@@ -134,12 +121,12 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
         <OptionsPopover<T>
           {...optionsPopoverProps}
           isActive={(value) => values.includes(value)}
-          onSelect={(value) => handleSelect(add(value), close)}
+          onSelect={(value) => handleSelect(arrays.add(values, value), close)}
           disableFiltering={!inputValue.trim()}
           filterOptions={({ title }) => matchPattern(title, inputValue)}
           onOptionsLoaded={(newOptions) => {
             newOptions.forEach((option) => {
-              optionsStore[option.value] = option
+              optionsStore.current[option.value] = option
             })
           }}
         />
@@ -164,11 +151,13 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                 data-readonly={attr(readOnly)}
               >
                 {values.map((value, i) => {
-                  if (!optionsStore[value]) return null
+                  if (!optionsStore.current[value]) {
+                    return null
+                  }
 
                   return (
                     <div key={`tag-option-${value}-${i}`} className="tag">
-                      <span className="tag-name">{optionsStore[value].title}</span>
+                      <span className="tag-name">{optionsStore.current[value].title}</span>
                       <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
                         <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
                       </button>

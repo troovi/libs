@@ -135,8 +135,7 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
   } = props
 
   useEffect(() => {
-    console.log('onOpened')
-    onOpened?.(options.findIndex((option) => isActive(option.value)))
+    onOpened?.(options.findIndex(({ value }) => isActive(value)))
   }, [])
 
   return (

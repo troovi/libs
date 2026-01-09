@@ -19,6 +19,19 @@ export const createVoids = (length: number) => {
   return new Array(length).fill(0)
 }
 
+export const arrays = {
+  add: <T>(values: T[], value: T) => {
+    if (values.includes(value)) {
+      return [...values]
+    }
+
+    return [...values, value]
+  },
+  remove: <T>(values: T[], value: T) => {
+    return values.filter((item) => value !== item)
+  }
+}
+
 export const dateToFormat = (date: Date): DateFormat => {
   return {
     day: date.getDate(),

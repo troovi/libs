@@ -1,4 +1,5 @@
 import { SelectTags } from '@/SelectTags'
+import { createOptions, useServerOptions } from '../helpers'
 import { useState } from 'react'
 
 export const SelectTagsExample = () => {
@@ -11,9 +12,9 @@ export const SelectTagsExample = () => {
         <div style={{ maxWidth: '380px' }}>
           <SelectTagsControl required />
         </div>
-        {/* <div style={{ minWidth: 0, width: '100%' }}>
-          <SelectTagsControl fill />
-        </div> */}
+        <div style={{ maxWidth: '380px' }}>
+          <SelectTagsLoading />
+        </div>
       </div>
     </div>
   )
@@ -29,31 +30,21 @@ const SelectTagsControl = ({ fill, required }: { fill?: boolean; required?: bool
       fill={fill}
       required={required}
       placeholder="Выберите варианты"
-      options={[
-        { value: 1, title: 'Vladimir Putin' },
-        { value: 2, title: 'Donald Trump' },
-        { value: 3, title: 'Sergey Lavrov' },
-        ...new Array(10).fill(0).map((_, i) => ({
-          title: `Value ${i + 4}`,
-          value: i + 4
-        }))
-      ]}
+      options={createOptions()}
     />
   )
 }
 
-// const SelectTagsControl2 = ({ fill, required }: { fill?: boolean; required?: boolean } = {}) => {
-//   const [value, onChange] = useState<number[]>([])
+const SelectTagsLoading = ({ required }: { required?: boolean } = {}) => {
+  const [value, onChange] = useState<number[]>([])
 
-//   return (
-//     <SelectTags<number>
-//       value={value}
-//       onChange={onChange}
-//       required={required}
-//       placeholder="Выберите варианты"
-//       useOptions={() => ({ options: [], isLoading: false })}
-//       defaultOptions={[]}
-//       // options={[]}
-//     />
-//   )
-// }
+  return (
+    <SelectTags<number>
+      value={value}
+      onChange={onChange}
+      required={required}
+      placeholder="Загрузить варианты"
+      useOptions={useServerOptions}
+    />
+  )
+}

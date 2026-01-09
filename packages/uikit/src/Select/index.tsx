@@ -1,4 +1,4 @@
-import { useImperativeHandle, useMemo } from 'react'
+import { useImperativeHandle, useMemo, useRef } from 'react'
 import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import { SelectFormProps, SelectInput } from './SelectInput'
@@ -26,7 +26,7 @@ export interface SelectParams extends SelectOptionsPopoverParams {
 }
 
 export type SelectProps<T> = OptionsSource<T> &
-  Omit<SelectFormProps, 'value' | 'onChange' | 'closeButton'> &
+  Omit<SelectFormProps, 'value'> &
   SelectParams &
   OnChangeValueType<T> & {
     value: T | null
@@ -58,19 +58,19 @@ export const Select = <T,>(props: SelectProps<T>) => {
     ...optionPopoverProps
   } = props
 
-  // store
-  const optionsStore = useMemo(() => {
-    const store = {} as Record<symbol, Option<T>>
+  const optionsStore = useRef({} as Record<symbol, Option<T>>)
+
+  // startup store
+  useMemo(() => {
     const startupOptions = props.options ?? props.defaultOptions ?? []
 
     startupOptions.forEach((option) => {
-      store[option.value as symbol] = option
+      optionsStore.current[option.value as symbol] = option
     })
-
-    return store
   }, [props.options, props.defaultOptions])
 
-  const activeOption: Option<T> | null = value === null ? null : optionsStore[value as symbol] ?? null
+  const activeOption: Option<T> | null =
+    value === null ? null : optionsStore.current[value as symbol] ?? null
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
   const { scrollToElement, optionsWrapperRef, scrollBoxRef } = useScrollListController()
@@ -115,7 +115,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
           onOpened={(activeIndex) => scrollToElement(activeIndex, 'center')}
           onOptionsLoaded={(newOptions) => {
             newOptions.forEach((option) => {
-              optionsStore[option.value as symbol] = option
+              optionsStore.current[option.value as symbol] = option
             })
           }}
         />

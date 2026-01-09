@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Select, SelectParams } from '@/Select'
 import { Icon } from '@/Icon'
 import { faGift } from '@companix/icons-solid'
+import { useServerOptions } from '../helpers'
 
 export const SelectExample = () => {
   return (
@@ -16,7 +17,7 @@ export const SelectExample = () => {
           />
         </div>
         <div style={{ minWidth: '200px', width: '200px' }}>
-          <SelectItem fill />
+          <SelectItemLoading />
         </div>
         <div style={{ minWidth: 0, width: '100%' }}>
           <SelectItem
@@ -54,7 +55,7 @@ export const SelectItem = (props: ItemProps) => {
   return (
     <Select<number>
       value={value}
-      onChange={onChange}
+      onChange={(value) => onChange(value)}
       {...props}
       placeholder="Не выбрано"
       options={options}
@@ -73,6 +74,20 @@ const SelectItemClosable = (props: ItemProps) => {
       {...props}
       placeholder="Не выбрано"
       options={options}
+    />
+  )
+}
+
+const SelectItemLoading = ({ required }: { required?: boolean } = {}) => {
+  const [value, onChange] = useState<number | null>(null)
+
+  return (
+    <Select<number>
+      value={value}
+      onChange={onChange}
+      required={required}
+      placeholder="Выбрать вариант"
+      useOptions={useServerOptions}
     />
   )
 }

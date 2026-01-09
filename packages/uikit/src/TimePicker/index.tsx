@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { getNum } from '@companix/utils-js'
 import { removeDigits, convertTimeToOption, getTimeValue, getTimesOptions } from '../__utils/utils'
 import { SelectRightElements } from '../Select/SelectRight'
@@ -67,6 +67,7 @@ export const TimePicker = (props: TimePickerProps) => {
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
+    handleInput(value)
 
     const time = timeInput.toValue(value)
 
@@ -104,7 +105,7 @@ export const TimePicker = (props: TimePickerProps) => {
     onChange?.(null)
   }
 
-  useEffect(() => {
+  const handleInput = useCallback((inputValue: string) => {
     if (inputValue && inputValue !== '__:__') {
       const [hours, minutes] = inputValue.split(':')
 
@@ -121,13 +122,12 @@ export const TimePicker = (props: TimePickerProps) => {
       if (patternValue) {
         const index = patternValue.hours * 6 + Math.trunc(patternValue.minutes / 10)
 
-        // TODO: применяется после выбора значения
         if (index !== -1 && scrollRef.current) {
           scrollRef.current.scrollTo(index)
         }
       }
     }
-  }, [options, inputValue])
+  }, [])
 
   return (
     <Select
