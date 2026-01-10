@@ -1,0 +1,15 @@
+{
+  "name": "@companix/icons-brands",
+  "version": "0.0.01",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "echo": "echo \"@companix/icons-brands\"",
+    "make": "node ./make.js",
+    "build": "rm -rf dist && tsc"
+  }
+}

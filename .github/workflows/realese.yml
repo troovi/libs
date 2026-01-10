@@ -17,6 +17,7 @@ jobs:
       uikit: ${{ steps.filter.outputs.uikit }}
       icons-solid: ${{ steps.filter.outputs.icons-solid }}
       icons-regular: ${{ steps.filter.outputs.icons-regular }}
+      icons-brands: ${{ steps.filter.outputs.icons-brands }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -41,6 +42,9 @@ jobs:
               - 'icons/solid/package.json'
             icons-regular:
               - 'icons/regular/package.json'
+            icons-brands:
+              - 'icons/brands/package.json'
+
       - run: echo '${{ toJson(github.event) }}'
 
   utils-js:
@@ -229,5 +233,26 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: icons/regular
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  icons-brands:
+    needs: changes
+    if: ${{ needs.changes.outputs.icons-brands == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/icons-brands
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: icons/brands
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
