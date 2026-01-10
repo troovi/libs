@@ -1,3 +1,5 @@
+import cn from 'classnames'
+
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { Icon } from '../Icon'
 import { faCheck } from '@companix/icons-solid'
@@ -11,14 +13,16 @@ export interface CheckboxProps {
   label?: React.ReactNode
   disabled?: boolean
   required?: boolean
+  className?: string
 }
 
-const Checkbox = ({ checked, required, disabled, onCheckedChange, size, label }: CheckboxProps) => {
+const Checkbox = (props: CheckboxProps) => {
+  const { checked, className, required, disabled, onCheckedChange, size, label } = props
   const id = useId()
 
   return (
     <div
-      className="checkbox"
+      className={cn('checkbox', className)}
       data-size={size ?? 'md'}
       data-required={attr(required && !checked)}
       data-disabled={attr(disabled)}
