@@ -25,10 +25,6 @@ export const setCssVariable = (property: string, value: string) => {
 
 export const customCSS = (properties: CSSCustomProperties) => properties
 
-export const capitalize = (str: string) => {
-  return str[0].toUpperCase() + str.slice(1)
-}
-
 export const attr = (bool?: boolean | null) => {
   return bool ? '' : undefined
 }

@@ -53,3 +53,7 @@ export const roundSeparateArray = <T>(array: T[], size: number): T[][] => {
   const n = Math.round(array.length / size)
   return n > 1 ? separateArray(array, n) : [array]
 }
+
+export const contain = <T>(items: T[][]): T[] => {
+  return items.reduce((prev, curr) => [...prev, ...curr], [])
+}

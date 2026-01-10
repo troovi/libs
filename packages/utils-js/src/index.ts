@@ -15,3 +15,7 @@ export * from './bytes'
 export * from './time'
 export * from './candle'
 export * from './search'
+export * from './strings'
+// primitives
+export * from './primitives/date'
+export * from './primitives/fullname'
