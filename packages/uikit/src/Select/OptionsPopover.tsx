@@ -149,13 +149,17 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
         />
       )}
       {options.length === 0 && !addOption && <div className="select-tags-empty">{emptyText}</div>}
-      {options.map((option, i) => (
+      {options.map(({ title, value, className, icon, disabled, label }, i) => (
         <OptionItem
           key={`select-option-${i}`}
-          active={isActive(option.value)}
-          onClick={() => onSelect?.(option.value)}
+          active={isActive(value)}
+          onClick={() => onSelect?.(value)}
           minimal={minimalOptions}
-          {...option}
+          disabled={disabled}
+          className={className}
+          title={title}
+          label={label}
+          icon={icon}
         />
       ))}
     </OptionsList>
