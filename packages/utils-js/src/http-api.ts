@@ -7,6 +7,9 @@ export type IOpattern<T extends IOpattern<T>> = {
   }
 }
 
+export type GetParams<IO> = IO extends { params: infer T } ? T : never
+export type GetAnswer<IO> = IO extends { answer: infer T } ? T : never
+
 enum HttpVerb {
   Get = 'GET',
   Post = 'POST'
