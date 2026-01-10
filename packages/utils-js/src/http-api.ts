@@ -28,8 +28,14 @@ const defaultExceptionHandler = ({ response }: AxiosError) => {
 }
 
 type ServerSchemeStructure = {
-  [context: string]: IOpattern<any>
+  [context: string]: any
 }
+
+// Helper type to validate ServerScheme structure
+// Each value should be an IOpattern (routes type like WorkersRoutes, AuthRoutes, etc.)
+// type ValidateServerScheme<T> = {
+//   [K in keyof T]: T[K] extends IOpattern<any> ? T[K] : never
+// }
 
 /* HttpAPI class with typed contexts based on ServerScheme */
 export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
@@ -82,7 +88,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
 
 // Example of usage:
 
-// type AppHttpScheme = {
+// interface AppHttpScheme {
 //   app: {
 //     data: {
 //       params: {}
@@ -91,7 +97,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
 //   }
 //   sign: {
 //     login: {
-//       params: { email: string }
+//       // params: { email: string }
 //       answer: { token: string }
 //     }
 //   }
