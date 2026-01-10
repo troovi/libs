@@ -27,7 +27,12 @@ const defaultExceptionHandler = ({ response }: AxiosError) => {
   throw response
 }
 
-export class HttpAPI {
+type ServerSchemeStructure = {
+  [context: string]: IOpattern<any>
+}
+
+/* HttpAPI class with typed contexts based on ServerScheme */
+export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
   public http: AxiosInstance
   private handleException: (e: AxiosError) => void
 
@@ -45,31 +50,28 @@ export class HttpAPI {
       .catch(this.handleException)
   }
 
-  createClient<T extends IOpattern<T>>(context: string = '') {
+  /* Creates a typed client for a specific context  */
+  useContext<Ctx extends keyof ServerScheme, Routes extends ServerScheme[Ctx]>(context: Ctx & string) {
     const request = this.request.bind(this) as <T>(props: RequestInterface) => Promise<T>
 
-    if (context) {
-      context += '/'
-    }
-
     return {
-      post<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
-        return request<T[K]['answer']>({
+      post<K extends keyof Routes>(url: K, body: Routes[K]['params'], config?: AxiosRequestConfig) {
+        return request<Routes[K]['answer']>({
           method: HttpVerb.Post,
-          url: context + url.toString(),
+          url: context + '/' + url.toString(),
           config,
           body
         })
       },
-      get<K extends keyof T>(url: K, body: T[K]['params'], config?: AxiosRequestConfig) {
-        return request<T[K]['answer']>({
+      get<K extends keyof Routes>(url: K, body: Routes[K]['params'], config?: AxiosRequestConfig) {
+        return request<Routes[K]['answer']>({
           method: HttpVerb.Get,
-          url: context + url.toString(),
+          url: context + '/' + url.toString(),
           config,
           body
         })
       },
-      blob<K extends keyof T>(url: K, body: T[K]['params']) {
+      blob<K extends keyof Routes>(url: K, body: Routes[K]['params']) {
         return this.post(url, body, { responseType: 'arraybuffer' }).then((blobpart) => {
           return new Blob([blobpart as BlobPart])
         })
@@ -77,3 +79,27 @@ export class HttpAPI {
     }
   }
 }
+
+// Example of usage:
+
+// type AppHttpScheme = {
+//   app: {
+//     data: {
+//       params: {}
+//       answer: { data: string[] }
+//     }
+//   }
+//   sign: {
+//     login: {
+//       params: { email: string }
+//       answer: { token: string }
+//     }
+//   }
+// }
+
+// const http = new HttpAPI<AppHttpScheme>({})
+// const signApi = http.useContext('sign')
+
+// signApi.get('login', { email: 'email' }).then((x) => {
+//   //
+// })
