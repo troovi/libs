@@ -8,3 +8,4 @@ export type { FieldError } from './core/types'
 export type { FormManager } from './manager/manager'
 
 export type { FormControl } from './core/builders/create-form'
+export type { GetDefaultValues } from './useForm'

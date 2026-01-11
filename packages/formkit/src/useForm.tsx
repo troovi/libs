@@ -28,6 +28,10 @@ export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedVa
   onSubmit: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
 }
 
+export type GetDefaultValues<Items extends SchemeItems.All[]> = DeepPartial<
+  ExtractValues<Items[number]>
+>
+
 const useDynamicForm = (
   scheme: SchemeItems.All[],
   opts: MainOptions<FieldValues, FieldValues, FieldValues>
