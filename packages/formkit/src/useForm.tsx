@@ -3,7 +3,7 @@ import { useRef, useMemo, useEffect } from 'react'
 import { ExtractValues, ExtractFlatValues } from './core/extract'
 import { SchemeBuilder } from './SchemeBuilder'
 import { SchemeItems } from './core/types'
-import { FormManager, createFormManager } from './manager/manager'
+import { FormManager, ResetOptions, createFormManager } from './manager/manager'
 import { FormContext } from './context'
 import { DeepPartial, FieldValues } from './types'
 import { useValue } from './useValue'
@@ -63,8 +63,8 @@ const useForm = <
     useValue: <K extends keyof FlattenValues>(name: K): FlattenValues[K] => {
       return useValue(name as string)
     },
-    reset: (values: DeepPartial<Cloned>) => {
-      manager.reset(values)
+    reset: (values: DeepPartial<Cloned>, options: ResetOptions = {}) => {
+      manager.reset(values, options)
     },
     setFocus: (name: keyof FlattenValues) => {
       manager.setFocus(name)

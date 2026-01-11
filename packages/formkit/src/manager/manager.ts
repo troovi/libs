@@ -9,7 +9,7 @@ import { ChangeEvent, DirtyEvent, MainOptions, SetError, SubmitCallbacls } from 
 interface FormItem {
   isDirty: boolean
   error: FieldError | null
-  initValue: any
+  startValue: any
   defaultValue: any
   value: any
   rerender: () => void
@@ -20,6 +20,10 @@ interface FormItem {
 
 export interface Forms {
   [name: string]: FormItem
+}
+
+export interface ResetOptions {
+  asDirty?: boolean
 }
 
 export interface FormManager<Values, FlattenValues, ClonedValues> {
@@ -37,7 +41,7 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
   setFocus: (name: keyof FlattenValues) => void
   setValue: <K extends keyof FlattenValues>(name: K, value: FlattenValues[K]) => void
   setError: SetError<FlattenValues>
-  reset: (v: DeepPartial<ClonedValues>) => void
+  reset: (v: DeepPartial<ClonedValues>, options: ResetOptions) => void
   getValues: () => DeepPartial<ClonedValues>
 }
 
@@ -57,7 +61,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
   const forms: Forms = {}
 
   const extraForms = {
-    subscribers: [] as { callback: () => void }[],
+    subscribers: [] as { visualizeEvalueatedForms: () => void }[],
     names: {} as Record<string, boolean>
   }
 
@@ -65,9 +69,9 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
     forms[name] = {
       error: null,
       isDirty: false,
-      value: defaultValue,
-      initValue: defaultValue ?? form.defaultValue,
-      defaultValue: form.defaultValue,
+      value: defaultValue, // текущее (динамическое) состояние поля. Значение равно переданному дефолтному, либо: определяется как дефолтное значение компонента формы в момент его монтирования, а до этого - undefined.
+      startValue: defaultValue ?? form.defaultValue, // начальное (стартовое) значение (равно переданному дефолтному, либо значению формы по умолчанию). Исходя из сравнения текущего значения со стартовым, можно понять, модифицированно ли поле
+      defaultValue: form.defaultValue, // дефолтное значение компонента формы
       rerender: () => {},
       subscribers: [],
       validate: form.validate
@@ -180,39 +184,44 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
         })
       }
     },
-    reset(values) {
-      const updated_names: string[] = []
-
+    reset(values, { asDirty }) {
       readScheme(scheme, [], values, (form, name, value) => {
         // неопределенные значения не показанных условий/extra-полей
+        // note: если extra поле не смонтировано, его value равен undefined
         if (value === undefined && forms[name].value === undefined) {
           return
         }
 
         // удаление extra-поля, при неопределенном значении
         if (extraForms.names[name] && value === undefined) {
-          updated_names.push(name)
-
           forms[name].value = value
           return
         }
 
         const nextValue = value ?? form.defaultValue
 
+        if(!asDirty){
+          forms[name].startValue = nextValue
+          forms[name].isDirty = false
+        }
+        
         if (forms[name].value !== nextValue) {
-          updated_names.push(name)
           this.onChange(name, nextValue)
         }
       })
 
-      if (updated_names.some((name) => extraForms.names[name])) {
-        extraForms.subscribers.forEach(({ callback }) => {
-          callback()
-        })
+      if(!asDirty){
+        state.dirtyCount = 0
+        state.isSubmitted = false
       }
+      
+      // делаем ререндер extra формы, чтобы отобразить оцененные поля, либо убрать неоцененные
+      extraForms.subscribers.forEach(({ visualizeEvalueatedForms }) => {
+        visualizeEvalueatedForms()
+      })
     },
-    registry(name, callback) {
-      forms[name].rerender = callback
+    registry(name, rerenderCb) {
+      forms[name].rerender = rerenderCb
 
       if (forms[name].value === undefined) {
         forms[name].value = forms[name].defaultValue
@@ -223,10 +232,12 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
           forms[name].rerender = () => {}
           forms[name].focus = undefined
 
+          // при удалении поля из extraForm, должно возникать isDirty состояние, 
+          // если значение которое в нем хранилось, отличается от дефолтного значение формы
           if (state.isActive) {
             forms[name].value = undefined
 
-            const isDirty = !isEqual(forms[name].defaultValue, forms[name].initValue)
+            const isDirty = !isEqual(forms[name].startValue, forms[name].defaultValue)
 
             if (forms[name].isDirty !== isDirty) {
               handleDirty(name, isDirty)
@@ -252,8 +263,8 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
         }
       }
     },
-    registryExtraForm(names, callback) {
-      const observer = { callback }
+    registryExtraForm(names, visualizeEvalueatedForms) {
+      const observer = { visualizeEvalueatedForms }
 
       names.forEach((name) => {
         extraForms.names[name] = true
@@ -271,7 +282,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       const form = this.getForm(name)
 
       // checking dirty
-      const isDirty = !isEqual(value, form.initValue)
+      const isDirty = !isEqual(value, form.startValue)
 
       if (form.isDirty !== isDirty) {
         handleDirty(name, isDirty)
