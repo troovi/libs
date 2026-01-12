@@ -42,6 +42,7 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
   setValue: <K extends keyof FlattenValues>(name: K, value: FlattenValues[K]) => void
   setError: SetError<FlattenValues>
   reset: (v: DeepPartial<ClonedValues>, options: ResetOptions) => void
+  setAsDefault: () => void
   getValues: () => DeepPartial<ClonedValues>
 }
 
@@ -194,7 +195,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
 
         // удаление extra-поля, при неопределенном значении
         if (extraForms.names[name] && value === undefined) {
-          forms[name].value = value
+          forms[name].value = undefined
           return
         }
 
@@ -219,6 +220,15 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       extraForms.subscribers.forEach(({ visualizeEvalueatedForms }) => {
         visualizeEvalueatedForms()
       })
+    },
+    setAsDefault(){
+      readScheme(scheme, [], {}, ({}, name) => {
+        forms[name].startValue = forms[name].value
+        forms[name].isDirty = false
+      })
+
+      state.dirtyCount = 0
+      state.isSubmitted = false
     },
     registry(name, rerenderCb) {
       forms[name].rerender = rerenderCb
