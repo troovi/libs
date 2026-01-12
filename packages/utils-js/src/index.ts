@@ -19,3 +19,4 @@ export * from './strings'
 // primitives
 export * from './primitives/date'
 export * from './primitives/fullname'
+export * from './primitives/file'
