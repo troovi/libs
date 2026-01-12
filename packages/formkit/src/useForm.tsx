@@ -70,6 +70,9 @@ const useForm = <
     reset: (values: DeepPartial<Cloned>, options: ResetOptions = {}) => {
       manager.reset(values, options)
     },
+    setAsDefault: () => {
+      manager.setAsDefault()
+    },
     setFocus: (name: keyof FlattenValues) => {
       manager.setFocus(name)
     },
