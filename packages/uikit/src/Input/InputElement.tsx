@@ -6,7 +6,7 @@ interface InputProps
   defaultValue?: string
   value?: string
   mask?: string
-  maskChar?: string
+  maskChar?: string | null
   onValueChange?: (value: string, targetElement: HTMLInputElement) => void
 }
 

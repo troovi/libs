@@ -14,7 +14,7 @@ export interface InputProps extends Omit<InputContainerProps, 'inputRef' | 'chil
   inputClassName?: string
   inputType?: React.HTMLInputTypeAttribute
   mask?: string
-  maskChar?: string
+  maskChar?: string | null
 }
 
 export const Input = forwardRef<HTMLDivElement, InputProps>(
