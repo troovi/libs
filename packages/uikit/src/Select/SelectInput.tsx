@@ -37,7 +37,8 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
       disabled,
       onClear,
       inputRef,
-      onClick
+      onClick,
+      ...props
     },
     ref
   ) => {
@@ -97,6 +98,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
         data-disabled={attr(disabled)}
         onMouseDown={handleMouseDown}
         onClick={handleClick}
+        {...props}
       >
         <div className="select-layout form-input">
           {leftElement && <div className="select-element">{leftElement}</div>}

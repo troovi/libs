@@ -108,6 +108,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
       content={({ close }) => (
         <OptionsPopover<T>
           {...optionPopoverProps}
+          close={close}
           isActive={(optionValue) => optionValue === value}
           onSelect={(value) => handleChange(value, close)}
           scrollboxRef={scrollBoxRef}

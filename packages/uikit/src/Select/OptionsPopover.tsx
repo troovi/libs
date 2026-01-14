@@ -43,6 +43,7 @@ interface InternalListProps<T> extends SelectOptionsPopoverParams {
   // internal params
   scrollboxRef?: React.RefObject<HTMLDivElement>
   optionsWrapperRef?: React.RefObject<HTMLDivElement>
+  close: () => void
   isActive: (value: T) => boolean
   onSelect?: (value: T) => void
   onOpened?: (activeIndex: number) => void
@@ -85,6 +86,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
     minimalOptions,
     filterOptions,
     disableFiltering,
+    close,
     ...controlProps
   } = props
 
@@ -117,6 +119,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
       addOption={addOption}
       onOpened={onOpened}
       onSelect={onSelect}
+      close={close}
     />
   )
 }
@@ -131,7 +134,8 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
     options,
     onSelect,
     minimalOptions,
-    emptyText = 'Ничего не найдено'
+    emptyText = 'Ничего не найдено',
+    close
   } = props
 
   useEffect(() => {
@@ -146,6 +150,11 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
           icon={<Icon icon={faPlus} />}
           title={addOption.text}
           onClick={addOption.onClick}
+          onClickCapture={() => {
+            if (addOption.closeOnClick) {
+              close()
+            }
+          }}
         />
       )}
       {options.length === 0 && !addOption && <div className="select-tags-empty">{emptyText}</div>}

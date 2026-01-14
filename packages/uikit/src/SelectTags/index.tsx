@@ -120,6 +120,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       content={({ close }) => (
         <OptionsPopover<T>
           {...optionsPopoverProps}
+          close={close}
           isActive={(value) => values.includes(value)}
           onSelect={(value) => handleSelect(arrays.add(values, value), close)}
           disableFiltering={!inputValue.trim()}
