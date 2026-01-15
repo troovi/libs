@@ -6,6 +6,7 @@ import { Spinner } from '../Spinner'
 export interface UseOptionsResponse<T> {
   options: Option<T>[]
   isLoading: boolean
+  emptyText?: string
 }
 
 interface HookControlled<T> {
@@ -55,7 +56,7 @@ const useOptionsDefault = <T,>(): UseOptionsResponse<T> => {
   return { isLoading: false, options: [] }
 }
 
-const useOptionsControl = <T,>(props: OptionsSourceControl<T>) => {
+const useOptionsControl = <T,>(props: OptionsSourceControl<T>): UseOptionsResponse<T> => {
   const { onOptionsLoaded, useOptions = useOptionsDefault, options } = props
   const data = useOptions()
 
@@ -66,7 +67,7 @@ const useOptionsControl = <T,>(props: OptionsSourceControl<T>) => {
   }, [data.options])
 
   if (options) {
-    return { options, isLoading: undefined }
+    return { options, isLoading: false }
   }
 
   return data
@@ -77,7 +78,7 @@ export type OptionsPopoverProps<T> = OptionsSourceControl<T> & Omit<InternalList
 export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
   const {
     isActive,
-    emptyText,
+    emptyText: emptyTextProp,
     scrollboxRef,
     optionsWrapperRef,
     addOption,
@@ -90,7 +91,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
     ...controlProps
   } = props
 
-  const { options, isLoading } = useOptionsControl(controlProps)
+  const { emptyText, options, isLoading } = useOptionsControl(controlProps)
 
   const items = useMemo(() => {
     if (filterOptions && !disableFiltering) {
@@ -112,7 +113,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
     <SelectOptionsList<T>
       options={items}
       isActive={isActive}
-      emptyText={emptyText}
+      emptyText={emptyText ?? emptyTextProp}
       scrollboxRef={scrollboxRef}
       optionsWrapperRef={optionsWrapperRef}
       minimalOptions={minimalOptions}
