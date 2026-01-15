@@ -82,6 +82,9 @@ const useForm = <
     setValue: <K extends keyof FlattenValues>(name: K, value: FlattenValues[K]) => {
       manager.setValue(name, value)
     },
+    getValue: <K extends keyof FlattenValues>(name: K & string): FlattenValues[K] => {
+      return manager.getForm(name).value
+    },
     getValues: () => {
       return manager.getValues()
     },
