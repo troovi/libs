@@ -92,7 +92,7 @@ const useForm = <
       await manager.handleSubmit()
     },
     // prettier-ignore
-    subscribe: <K extends keyof FlattenValues>(name: K & string, callback: (value: FlattenValues[K]) => void) => {
+    subscribe: <K extends keyof FlattenValues>(name: K & string, callback: (value: FlattenValues[K], prevValue: FlattenValues[K]) => void) => {
       return manager.subscribeToForm(name, callback)
     }
   }
