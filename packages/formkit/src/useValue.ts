@@ -1,11 +1,26 @@
 import { FormContext } from './context'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { SchemeItems } from './core/types'
+import { ExtractFlatValues } from './core/extract'
 
-export const useValue = (name: string) => {
+export const useValue = <T = any>(name: string): T => {
   const [, rerender] = useState([])
 
-  const manager = useContext(FormContext)
-  const form = manager.getForm(name)
+  const { manager, form } = useMemo(() => {
+    const manager = useContext(FormContext)
+
+    if (!manager) {
+      throw new Error('useValue should be used in FormContext')
+    }
+
+    const form = manager.getForm(name)
+
+    if (!form) {
+      throw new Error(`form with name "${name}" doesnt exist in form`)
+    }
+
+    return { manager, form }
+  }, [name])
 
   useEffect(() => {
     const { unsubscribe } = manager.subscribeToForm(name, () => {
@@ -17,5 +32,12 @@ export const useValue = (name: string) => {
     }
   }, [])
 
-  return form?.value
+  return form.value
+}
+
+// prettier-ignore
+export const createUseValue = <Items extends SchemeItems.All[]>() => {
+  return <FlattenValues extends ExtractFlatValues<Items[number]>, K extends keyof FlattenValues>(name: K & string): FlattenValues[K] => {
+    return useValue(name)
+  }
 }
