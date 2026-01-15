@@ -15,7 +15,7 @@ interface FormItem {
   rerender: () => void
   focus?: () => void
   validate: (value: any) => FieldError | void
-  subscribers: { callback: () => void }[]
+  subscribers: { callback: (value: any) => void }[]
 }
 
 export interface Forms {
@@ -34,7 +34,10 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
   disactivate: () => void
   handleSubmit: () => Promise<void>
   registry: (name: string, callback: () => void) => { unregistry: () => void }
-  subscribeToForm: (name: string, callback: () => void) => { unsubscribe: () => void }
+  subscribeToForm: <K extends keyof FlattenValues>(
+    name: K & string,
+    callback: (value: FlattenValues[K]) => void
+  ) => () => void
   registryExtraForm: (names: string[], callback: () => void) => { unregistry: () => void }
   getForm: (name: string) => FormItem
   onChange: (name: string, value: any) => void
@@ -267,10 +270,8 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
 
       form.subscribers.push(observer)
 
-      return {
-        unsubscribe: () => {
-          form.subscribers = form.subscribers.filter((o) => o !== observer)
-        }
+      return () => {
+        form.subscribers = form.subscribers.filter((o) => o !== observer)
       }
     },
     registryExtraForm(names, visualizeEvalueatedForms) {
@@ -314,7 +315,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
 
       // trigger subscribers
       form.subscribers.forEach(({ callback }) => {
-        callback()
+        callback(value)
       })
     }
   }

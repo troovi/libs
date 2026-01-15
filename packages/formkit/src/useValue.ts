@@ -8,7 +8,7 @@ export const useValue = <T = any>(name: string): T => {
   const manager = useContext(FormContext)
 
   if (!manager) {
-    throw new Error('useValue should be used in FormContext')
+    throw new Error('useValue cannot be used outside Form context')
   }
 
   const form = useMemo(() => {
@@ -22,7 +22,7 @@ export const useValue = <T = any>(name: string): T => {
   }, [manager, name])
 
   useEffect(() => {
-    const { unsubscribe } = manager.subscribeToForm(name, () => {
+    const unsubscribe = manager.subscribeToForm(name, () => {
       rerender([])
     })
 
