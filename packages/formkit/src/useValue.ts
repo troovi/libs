@@ -5,22 +5,21 @@ import { ExtractFlatValues } from './core/extract'
 
 export const useValue = <T = any>(name: string): T => {
   const [, rerender] = useState([])
+  const manager = useContext(FormContext)
 
-  const { manager, form } = useMemo(() => {
-    const manager = useContext(FormContext)
+  if (!manager) {
+    throw new Error('useValue should be used in FormContext')
+  }
 
-    if (!manager) {
-      throw new Error('useValue should be used in FormContext')
-    }
-
+  const form = useMemo(() => {
     const form = manager.getForm(name)
 
     if (!form) {
       throw new Error(`form with name "${name}" doesnt exist in form`)
     }
 
-    return { manager, form }
-  }, [name])
+    return form
+  }, [manager, name])
 
   useEffect(() => {
     const { unsubscribe } = manager.subscribeToForm(name, () => {
