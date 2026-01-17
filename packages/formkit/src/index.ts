@@ -1,5 +1,5 @@
 export { useForm, FormLayout } from './useForm'
-export { createUseValue } from './useValue'
+export { useValue, createUseValue } from './useValue'
 export { createForm } from './core/builders/create-form'
 export { createLayout } from './core/builders/create-layout'
 export { createExtraForm } from './core/builders/create-extra-form'
