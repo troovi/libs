@@ -49,6 +49,13 @@ export const ButtonsExample = () => {
             Button
           </Button>
         ))}
+        {sizes.map((size) => (
+          <Button
+            key={`size-${size}`}
+            icon={<Icon icon={faBookmark} size="xxxs" />}
+            size={size}
+          ></Button>
+        ))}
       </div>
       <div className="row-group">
         <Button icon={<Icon icon={faPause} size="xxxs" />} size="md"></Button>
