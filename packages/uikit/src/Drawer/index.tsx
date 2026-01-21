@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { customCSS } from '@companix/utils-browser'
-import { RemoveListener } from '@/__utils/RemoveListener'
+import { RemoveListener } from '../__utils/RemoveListener'
 
 export interface DrawerProps {
   open: boolean
