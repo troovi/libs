@@ -2,12 +2,14 @@ import classNames from 'classnames'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { customCSS } from '@companix/utils-browser'
+import { RemoveListener } from '@/__utils/RemoveListener'
 
 export interface DrawerProps {
   open: boolean
   onOpenChange: (value: boolean) => void
   children: React.ReactNode
   direction?: 'bottom' | 'top' | 'left' | 'right'
+  onClosed?: () => void
   className?: string
   /**
    * CSS size of the drawer. This sets `width` if horizontal position (default)
@@ -23,7 +25,15 @@ export interface DrawerProps {
   size?: string
 }
 
-export const Drawer = ({ open, onOpenChange, children, size, direction, className }: DrawerProps) => {
+export const Drawer = ({
+  open,
+  onClosed,
+  onOpenChange,
+  children,
+  size,
+  direction,
+  className
+}: DrawerProps) => {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -33,6 +43,7 @@ export const Drawer = ({ open, onOpenChange, children, size, direction, classNam
           className={classNames('drawer', className)}
           data-direction={direction}
         >
+          <RemoveListener callback={onClosed} />
           <VisuallyHidden>
             <DialogPrimitive.Title />
           </VisuallyHidden>
