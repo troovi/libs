@@ -37,6 +37,7 @@ export interface SelectOptionsPopoverParams {
   minimalOptions?: boolean
   addOption?: SelectAddOption
   emptyText?: string
+  isLoading?: boolean
 }
 
 interface InternalListProps<T> extends SelectOptionsPopoverParams {
@@ -79,6 +80,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
   const {
     isActive,
     emptyText: emptyTextProp,
+    isLoading: isLoadingProp,
     scrollboxRef,
     optionsWrapperRef,
     addOption,
@@ -101,7 +103,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
     return options
   }, [options, filterOptions, disableFiltering])
 
-  if (isLoading) {
+  if (isLoading ?? isLoadingProp) {
     return (
       <div className="select-popover-loading">
         <Spinner size={24} />
