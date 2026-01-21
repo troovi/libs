@@ -36,6 +36,7 @@ export interface SelectAddOption {
 export interface SelectOptionsPopoverParams {
   minimalOptions?: boolean
   addOption?: SelectAddOption
+  addOptionPosition?: 'first' | 'last'
   emptyText?: string
   isLoading?: boolean
 }
@@ -138,6 +139,7 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
     onSelect,
     minimalOptions,
     emptyText = 'Ничего не найдено',
+    addOptionPosition = 'first',
     close
   } = props
 
@@ -145,21 +147,23 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
     onOpened?.(options.findIndex(({ value }) => isActive(value)))
   }, [])
 
+  const addOptionElement = addOption ? (
+    <OptionItem
+      className="select-add-option"
+      icon={<Icon icon={faPlus} />}
+      title={addOption.text}
+      onClick={addOption.onClick}
+      onClickCapture={() => {
+        if (addOption.closeOnClick) {
+          close()
+        }
+      }}
+    />
+  ) : undefined
+
   return (
     <OptionsList scrollboxRef={scrollboxRef} optionsWrapperRef={optionsWrapperRef} maxHeight={300}>
-      {addOption && (
-        <OptionItem
-          className="select-add-option"
-          icon={<Icon icon={faPlus} />}
-          title={addOption.text}
-          onClick={addOption.onClick}
-          onClickCapture={() => {
-            if (addOption.closeOnClick) {
-              close()
-            }
-          }}
-        />
-      )}
+      {addOptionPosition === 'first' && addOptionElement}
       {options.length === 0 && !addOption && <div className="select-tags-empty">{emptyText}</div>}
       {options.map(({ title, value, className, icon, disabled, label }, i) => (
         <OptionItem
@@ -174,6 +178,7 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
           icon={icon}
         />
       ))}
+      {addOptionPosition === 'last' && addOptionElement}
     </OptionsList>
   )
 }
