@@ -1,3 +1,6 @@
+import { DateFormat, dateFormat } from './primitives/date'
+import { TimeFormat } from './primitives/time'
+
 export const formatTime = (value: number) => {
   return value.toString().padStart(2, '0')
 }
@@ -44,6 +47,14 @@ export const getDate = (timestamp: number, { utc }: Options = {}) => {
 
 export const getDateTime = (timestamp: number, options: Options = {}) => {
   return [getDate(timestamp, options), getTime(timestamp, options)].join(' ')
+}
+
+export const getDateFromFormat = (date: DateFormat) => {
+  return getDate(dateFormat.getDate(date).getTime())
+}
+
+export const getTimeFromFormat = ({ hours, minutes }: TimeFormat) => {
+  return [formatTime(hours), formatTime(minutes)].join(':')
 }
 
 // export const timeDuration = (ms: number) => {
