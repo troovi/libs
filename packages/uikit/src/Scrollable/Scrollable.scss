@@ -1,3 +1,13 @@
+.scrollable {
+  &[data-scroll-x] {
+    overflow-x: scroll;
+  }
+
+  &[data-scroll-y] {
+    overflow-y: scroll;
+  }
+}
+
 .scrollable::-webkit-scrollbar {
   width: var(--scrollbar-width);
   height: var(--scrollbar-width);
@@ -31,6 +41,11 @@
 
   border-left-width: calc(var(--thumb-padding) * 2);
   border-top-width: calc(var(--thumb-padding) * 2);
+}
+
+.hidden-scroll {
+  overflow-y: scroll;
+  height: 100%;
 }
 
 .hidden-scroll::-webkit-scrollbar {

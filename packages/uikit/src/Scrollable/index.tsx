@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { forwardRef } from 'react'
-import { px, customCSS } from '@companix/utils-browser'
+import { px, customCSS, attr } from '@companix/utils-browser'
 
 interface OuterImplementation {
   implementation: 'outer'
@@ -123,13 +123,13 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
         ...customCSS({ '--thumb-padding': px(thumbPadding) }),
         ...customCSS({ '--thumb-color': thumbColor ?? '#c1c2c8bd' })
       }}
+      data-scroll-x={attr(scrollX)}
+      data-scroll-y={attr(scrollY)}
       className={classNames(
         !(window as any).IS_MOBILE && 'scrollable',
         className,
         heightAuto ? '' : 'h-full',
         {
-          'overflow-y-scroll': scrollY,
-          'overflow-x-scroll': scrollX,
           'scrollable-hover-interaction': interactionKind === 'hover',
           'scrollable-border-position': thumbPos === 'border'
         }

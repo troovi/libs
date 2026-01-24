@@ -118,7 +118,7 @@ const ImitateScroll = ({
   return (
     <div className="relative h-full overflow-hidden">
       <div
-        className={cn('hidden-scroll h-full overflow-y-scroll', scrollableClassName)}
+        className={cn('hidden-scroll', scrollableClassName)}
         onScroll={handleScroll}
         ref={scrollableRef}
       >
