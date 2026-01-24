@@ -113,6 +113,7 @@ export type { OptionsSource, UseOptionsResponse } from './Select/OptionsPopover'
 // helpers
 export { createDialogsRegistry, DialogShell } from './__helpers/createDialogRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'
+export { createScope } from './__helpers/createScope'
 // helpers types
 export type { PopupProps } from './__helpers/createDialogRegistry'
 export type { PopoverContentProps } from './__helpers/createPopoversRegistry'
