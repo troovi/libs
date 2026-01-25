@@ -117,10 +117,10 @@ export * from './types'
 export type { CalendarProps } from './Calendar/Calendar'
 export type { OptionsSource, UseOptionsResponse } from './Select/OptionsPopover'
 // helpers
-export { createDialogsRegistry, DialogShell } from './__helpers/createDialogRegistry'
+export { createPopupRegistry, DialogShell, DrawerShell } from './__helpers/createPopupRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'
 export { createScope, createStaticScope } from './__helpers/createScope'
 // helpers types
-export type { PopupProps } from './__helpers/createDialogRegistry'
+export type { PopupProps } from './__helpers/createPopupRegistry'
 export type { PopoverContentProps } from './__helpers/createPopoversRegistry'
 export { RemoveListener } from './__utils/RemoveListener'

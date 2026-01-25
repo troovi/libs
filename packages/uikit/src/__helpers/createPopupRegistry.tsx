@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { Dialog, DialogProps } from '../Dialog'
 import { hash } from '@companix/utils-js'
+
+import { Dialog, DialogProps } from '../Dialog'
+import { Drawer, DrawerProps } from '../Drawer'
 
 export interface PopupProps<T> {
   data: T
@@ -26,7 +28,7 @@ type PopupsRegistry<T extends Store> = {
   Open: OpenAgent<T>
 }
 
-export const createDialogsRegistry = <T extends Store>(mapping: T): PopupsRegistry<T> => {
+export const createPopupRegistry = <T extends Store>(mapping: T): PopupsRegistry<T> => {
   const Open = {} as OpenAgent<T>
   const Close = {} as CloseAgent<T>
   const popups: (() => JSX.Element)[] = []
@@ -91,39 +93,61 @@ const Popup = <T extends Store>({ name, Open, Close, Content }: SinglePopupProps
 
   if (data) {
     return (
-      <DialogContext.Provider value={{ open, onOpenChange, onClosed }}>
+      <PopupContext.Provider value={{ open, onOpenChange, onClosed }}>
         <Content data={data} close={onClose} />
-      </DialogContext.Provider>
+      </PopupContext.Provider>
     )
   }
 
   return null
 }
 
-// dialog
+interface PopupContextValue {
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  onClosed: () => void
+}
 
-interface PopupLayer extends Omit<DialogProps, 'open' | 'onOpenChange' | 'onClosed'> {}
+const PopupContext = createContext<PopupContextValue | null>(null)
 
-interface DialogContextValue extends Pick<DialogProps, 'open' | 'onOpenChange' | 'onClosed'> {}
-
-const DialogContext = createContext<DialogContextValue | null>(null)
-
-const useDialog = () => {
-  const state = useContext(DialogContext)
+const usePopup = () => {
+  const state = useContext(PopupContext)
 
   if (!state) {
-    throw new Error('Dialog context not provided')
+    throw new Error('Popup context not provided')
   }
 
   return state
 }
 
-export const DialogShell = ({ children, ...props }: PopupLayer) => {
-  const control = useDialog()
+/* -------------------------------------------------------------------------------------------------
+ * Dialog
+ * -----------------------------------------------------------------------------------------------*/
+
+interface DialogShellProps extends Omit<DialogProps, 'open' | 'onOpenChange' | 'onClosed'> {}
+
+export const DialogShell = ({ children, ...props }: DialogShellProps) => {
+  const control = usePopup()
 
   return (
     <Dialog {...control} {...props}>
       {children}
     </Dialog>
+  )
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Drawer
+ * -----------------------------------------------------------------------------------------------*/
+
+interface DrawerShellProps extends Omit<DrawerProps, 'open' | 'onOpenChange' | 'onClosed'> {}
+
+export const DrawerShell = ({ children, ...props }: DrawerShellProps) => {
+  const control = usePopup()
+
+  return (
+    <Drawer {...control} {...props}>
+      {children}
+    </Drawer>
   )
 }
