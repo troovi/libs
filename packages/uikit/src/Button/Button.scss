@@ -70,6 +70,10 @@
 
   // fill
 
+  &:active {
+    @include mixins.use-styles(button, active);
+  }
+
   &[data-fill] {
     width: 100%;
   }
