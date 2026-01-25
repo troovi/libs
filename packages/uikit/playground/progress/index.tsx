@@ -1,4 +1,4 @@
-import { ProgressBar, ProgressBarProps } from '@/Progress'
+import { ProgressBar, ProgressBarProps } from '@/ProgressBar'
 import { useState } from 'react'
 
 export const ProgressBarExample = () => {

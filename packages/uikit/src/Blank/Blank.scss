@@ -1,0 +1,66 @@
+@use '../mixins.scss';
+
+@mixin use-appearance($appearance) {
+  &[data-appearance='#{$appearance}'] {
+    @include mixins.use-styles(blank, $appearance);
+
+    .blank-icon {
+      @include mixins.use-styles(blank, $appearance, icon);
+    }
+
+    .blank-title {
+      @include mixins.use-styles(blank, $appearance, title);
+    }
+
+    .blank-description {
+      @include mixins.use-styles(blank, $appearance, description);
+    }
+  }
+}
+
+.blank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+
+  @include mixins.use-styles(blank);
+
+  @include use-appearance(neutral);
+  @include use-appearance(negative);
+
+  &-icon {
+    @include mixins.use-styles(blank, icon);
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    @include mixins.use-styles(blank, text);
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+
+  &-title {
+    font-weight: 600;
+    font-size: 18px;
+
+    @include mixins.use-styles(blank, title);
+  }
+
+  &-description {
+    @include mixins.use-styles(blank, description);
+  }
+}

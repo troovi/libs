@@ -13,7 +13,7 @@ export const FormGroupExample = () => {
         <FormGroup label="Event name" caption="Field is required">
           <Input placeholder="What is your event?" />
         </FormGroup>
-        <FormGroup label="Event name" caption="Field is required" apperance="negative">
+        <FormGroup label="Event name" caption="Field is required" appearance="negative">
           <Input placeholder="What is your event?" required />
         </FormGroup>
         <FormGroup label="Birthday">

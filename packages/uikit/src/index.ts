@@ -91,11 +91,17 @@ export type { TimePickerProps } from './TimePicker'
 export { Icon } from './Icon'
 export type { IconProps, IconDefinition } from './Icon'
 
-export { ProgressBar } from './Progress'
-export type { ProgressBarProps } from './Progress'
+export { ProgressBar } from './ProgressBar'
+export type { ProgressBarProps } from './ProgressBar'
 
 export { Skeleton } from './Skeleton'
 export type { SkeletonProps } from './Skeleton'
+
+export { Blank } from './Blank'
+export type { BlankProps } from './Blank'
+
+export { ProgressRing } from './ProgressRing'
+export type { ProgressRingProps } from './ProgressRing'
 
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'

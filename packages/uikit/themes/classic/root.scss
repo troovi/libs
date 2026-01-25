@@ -282,6 +282,21 @@ $layout: (
     option_padding: 0px 20px,
     option_justify-content: center,
     option_transition: background 80ms
+  ),
+  blank: (
+    neutral_color: #5f6b7c,
+    neutral_icon_color: #8f99a8,
+    negative_color: #d30101b1,
+    negative_icon_color: #d30101,
+    negative_title_color: #d30101
+  ),
+  progress-ring: (
+    track_stroke: rgba(95, 107, 124, 0.2),
+    indicator_transition-duration: 400ms,
+    primary_indicator_stroke: #2d72d2,
+    neutral_indicator_stroke: #3f3f3f,
+    positive_indicator_stroke: #238551,
+    negative_indicator_stroke: #c20000
   )
 );
 

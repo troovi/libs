@@ -29,6 +29,8 @@ import { AvatarExample } from './avatars'
 import { SegmentsExample } from './segments'
 import { PopupsRegistry } from './__registries/popups/registry'
 import { SkeletonExample } from './skeleton'
+import { BlanksExample } from './blanks'
+import { ProgressCircleExample } from './progress-ring'
 
 export const App = () => {
   return (
@@ -121,8 +123,14 @@ const AppLayout = () => {
         <Example name="Skeleton">
           <SkeletonExample />
         </Example>
+        <Example name="Blank">
+          <BlanksExample />
+        </Example>
         <Example name="ProgressBar">
           <ProgressBarExample />
+        </Example>
+        <Example name="ProgressCircle">
+          <ProgressCircleExample />
         </Example>
         <Example name="Toaster">
           <ToasterExample />

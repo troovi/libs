@@ -23,7 +23,9 @@ export const setCssVariable = (property: string, value: string) => {
   document.documentElement.style.setProperty(property, value)
 }
 
-export const customCSS = (properties: CSSCustomProperties) => properties
+export const customCSS = <T extends string | number | undefined = string>(
+  properties: CSSCustomProperties<T>
+) => properties
 
 export const attr = (bool?: boolean | null) => {
   return bool ? '' : undefined

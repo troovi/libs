@@ -1,0 +1,64 @@
+@use '../mixins.scss';
+
+@mixin use-appearance($appearance) {
+  &[data-appearance='#{$appearance}'] {
+    .progress-ring-track {
+      @include mixins.use-styles(progress-ring, $appearance, track);
+    }
+
+    .progress-ring-indicator {
+      @include mixins.use-styles(progress-ring, $appearance, indicator);
+    }
+  }
+}
+
+.progress-ring {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @include use-appearance(neutral);
+  @include use-appearance(negative);
+  @include use-appearance(positive);
+  @include use-appearance(primary);
+
+  &-image {
+    width: var(--size);
+    height: var(--size);
+    rotate: -90deg;
+    transform-origin: 50% 50%;
+  }
+
+  &-track,
+  &-indicator {
+    --radius: calc(var(--size) / 2 - var(--track-width) * 0.5);
+    --circumference: calc(var(--radius) * 2 * 3.141592654);
+    fill: none;
+    // svg properties
+    r: var(--radius);
+    cx: calc(var(--size) / 2);
+    cy: calc(var(--size) / 2);
+  }
+
+  &-indicator {
+    stroke-width: var(--track-width);
+    stroke-linecap: round;
+    transition-property: stroke-dashoffset;
+    stroke-dasharray: var(--circumference) var(--circumference);
+    stroke-dashoffset: calc(var(--circumference) - var(--percentage) * var(--circumference));
+
+    @include mixins.use-styles(progress-ring, indicator);
+  }
+
+  &-track {
+    // stroke: var(--track-color);
+    stroke-width: var(--track-width);
+
+    @include mixins.use-styles(progress-ring, track);
+  }
+
+  &-hint {
+    position: absolute;
+  }
+}

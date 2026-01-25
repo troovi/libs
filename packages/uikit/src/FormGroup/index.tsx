@@ -5,20 +5,20 @@ export interface FormGroupProps {
   label: React.ReactNode
   children: React.ReactNode
   caption?: React.ReactNode
-  apperance?: 'neutral' | 'positive' | 'negative'
+  appearance?: 'neutral' | 'positive' | 'negative'
   fill?: boolean
   className?: string
 }
 
 export const FormGroup = (props: FormGroupProps) => {
-  const { fill, className, label, children, caption, apperance = 'neutral' } = props
+  const { fill, className, label, children, caption, appearance = 'neutral' } = props
 
   return (
     <div className={cn('form-group', className)} data-fill={attr(fill)}>
       <div className="form-group-label">{label}</div>
       {children}
       {caption && (
-        <div className="form-group-caption" data-appearance={apperance}>
+        <div className="form-group-caption" data-appearance={appearance}>
           {caption}
         </div>
       )}

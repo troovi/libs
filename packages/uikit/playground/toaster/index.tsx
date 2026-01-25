@@ -1,9 +1,8 @@
 import { Button } from '@/Button'
 import { ButtonGroup } from '@/ButtonGroup'
 import { Icon } from '@/Icon'
-import { ProgressBar } from '@/Progress'
 import { ToastOptions, createToaster } from '@/Toaster'
-import { Toast } from '@/index'
+import { ProgressBar, Toast } from '@/index'
 import {
   faCircleCheck,
   faCircleInfo,
@@ -14,6 +13,7 @@ import { useState } from 'react'
 
 const { api: toaster, Viewport: ToasterViewport } = createToaster({
   duration: 2500,
+  swipeThreshold: 2,
   align: 'center'
 })
 
