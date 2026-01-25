@@ -123,3 +123,4 @@ export { createScope, createStaticScope } from './__helpers/createScope'
 // helpers types
 export type { PopupProps } from './__helpers/createDialogRegistry'
 export type { PopoverContentProps } from './__helpers/createPopoversRegistry'
+export { RemoveListener } from './__utils/RemoveListener'
