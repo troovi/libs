@@ -9,11 +9,18 @@ export interface BlankProps {
   children?: React.ReactNode
   className?: string
   appearance?: 'neutral' | 'negative'
+  style?: React.CSSProperties
 }
 
-const Blank = ({ appearance, icon, className, iconSize, title, description, children }: BlankProps) => {
+const Blank = (props: BlankProps) => {
+  const { appearance, icon, className, iconSize, title, description, children, style } = props
+
   return (
-    <div className={classNames('blank', className)} data-appearance={appearance ?? 'neutral'}>
+    <div
+      className={classNames('blank', className)}
+      data-appearance={appearance ?? 'neutral'}
+      style={style}
+    >
       <div className="blank-icon">
         <Icon icon={icon} size={iconSize} />
       </div>
