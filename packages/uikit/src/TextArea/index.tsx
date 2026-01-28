@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useResizeTextarea } from '../__hooks/use-resize'
 import { attr, callMultiple } from '@companix/utils-browser'
 import { useEffect } from 'react'
@@ -26,6 +27,7 @@ export const TextArea = ({
   rows = 2,
   fill = false,
   textAreaRef,
+  className,
   ...textAreaProps
 }: TextAreaProps) => {
   const [refResizeTextarea, resize] = useResizeTextarea(onResize, grow)
@@ -40,7 +42,7 @@ export const TextArea = ({
       data-fill={attr(fill)}
     >
       <textarea
-        className="form-input"
+        className={cn('form-input', className)}
         data-grow={attr(grow)}
         value={value}
         ref={mergeRefs([textAreaRef, refResizeTextarea])}
