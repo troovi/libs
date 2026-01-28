@@ -136,12 +136,25 @@ interface WriteBarIconProps {
   mode: 'send' | 'attach'
   isLoading?: boolean
   isHidden?: boolean
+  Component?: React.ElementType
 }
 
-WriteBar.IconButton = ({ icon, mode, onClick, isLoading, isHidden }: WriteBarIconProps) => {
+WriteBar.IconButton = ({
+  Component = 'button',
+  icon,
+  mode,
+  onClick,
+  isLoading,
+  isHidden
+}: WriteBarIconProps) => {
   return (
-    <button onClick={onClick} className="write-bar-icon" data-mode={mode} data-hidden={attr(isHidden)}>
+    <Component
+      onClick={onClick}
+      className="write-bar-icon"
+      data-mode={mode}
+      data-hidden={attr(isHidden)}
+    >
       {isLoading ? <Spinner size={18} /> : <Icon icon={icon} size="xxs" />}
-    </button>
+    </Component>
   )
 }

@@ -94,6 +94,7 @@
     min-width: 44px;
     width: 44px;
     transition: all 150ms;
+    outline: none;
 
     &[data-hidden] {
       transform: scale(0);
