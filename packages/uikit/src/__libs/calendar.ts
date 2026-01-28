@@ -1,7 +1,7 @@
 import { CalendarProps } from '../Calendar/Calendar'
 import { useCallback, useMemo } from 'react'
 
-export function isSameDate(d1: Date, d2: Date): boolean {
+export const isSameDate = (d1: Date, d2: Date): boolean => {
   return (
     d1.getDate() === d2.getDate() &&
     d1.getMonth() === d2.getMonth() &&
@@ -14,7 +14,7 @@ export const MONDAY = 1
 /**
  * Возвращает дату начала недели
  */
-export function startOfWeek(date: Date, { weekStartsOn = MONDAY }): Date {
+export const startOfWeek = (date: Date, { weekStartsOn = MONDAY }): Date => {
   const result = new Date(date)
   const day = result.getDay()
   const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn
@@ -27,7 +27,7 @@ export function startOfWeek(date: Date, { weekStartsOn = MONDAY }): Date {
 /**
  * Возвращает дату конца недели
  */
-export function endOfWeek(date: Date, { weekStartsOn = MONDAY }): Date {
+export const endOfWeek = (date: Date, { weekStartsOn = MONDAY }): Date => {
   const result = new Date(date)
   const day = result.getDay()
   const diff = (day < weekStartsOn ? -7 : 0) + 6 - (day - weekStartsOn)
@@ -40,7 +40,7 @@ export function endOfWeek(date: Date, { weekStartsOn = MONDAY }): Date {
 /**
  * Возвращает дату начала дня
  */
-export function startOfDay(date: Date): Date {
+export const startOfDay = (date: Date): Date => {
   const result = new Date(date)
   result.setHours(0, 0, 0, 0)
   return result
@@ -49,7 +49,7 @@ export function startOfDay(date: Date): Date {
 /**
  * Возвращает дату конца дня
  */
-export function endOfDay(date: Date): Date {
+export const endOfDay = (date: Date): Date => {
   const result = new Date(date)
   result.setHours(23, 59, 59, 999)
   return result
@@ -71,7 +71,7 @@ export function isDayMinMaxRestricted(
   return Boolean((min && day < min) || (max && day > max))
 }
 
-export function addMonths(date: Date, amount: number): Date {
+export const addMonths = (date: Date, amount: number): Date => {
   const result = new Date(date)
 
   if (!amount) {
@@ -92,13 +92,13 @@ export function addMonths(date: Date, amount: number): Date {
   return result
 }
 
-export function subMonths(date: Date, amount: number): Date {
+export const subMonths = (date: Date, amount: number): Date => {
   return addMonths(date, -amount)
 }
 
 // set
 
-function getDaysInMonth(date: Date): number {
+const getDaysInMonth = (date: Date): number => {
   const result = new Date(date)
   const lastDayOfMonth = new Date(result)
   lastDayOfMonth.setFullYear(result.getFullYear(), result.getMonth() + 1, 0)
@@ -106,13 +106,13 @@ function getDaysInMonth(date: Date): number {
   return lastDayOfMonth.getDate()
 }
 
-export function setYear(date: Date, year: number): Date {
+export const setYear = (date: Date, year: number): Date => {
   const result = new Date(date)
   result.setFullYear(year)
   return result
 }
 
-export function setMonth(date: Date, month: number): Date {
+export const setMonth = (date: Date, month: number): Date => {
   const result = new Date(date)
   const year = result.getFullYear()
   const day = result.getDate()
