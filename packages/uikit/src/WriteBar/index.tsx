@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { Spinner } from '..'
 import { Icon, IconDefinition } from '../Icon'
 import { useResizeTextarea } from '../__hooks/use-resize'
@@ -85,13 +86,13 @@ export const WriteBar = ({
   autoFocus,
   tabIndex,
   spellCheck,
-
+  className,
   ...restProps
 }: WriteBarProps) => {
   const [refResizeTextarea, resize] = useResizeTextarea(onHeightChange, true)
 
   return (
-    <div ref={containerRef} {...restProps} className="write-bar">
+    <div ref={containerRef} {...restProps} className={classNames('write-bar', className)}>
       {header}
       <div className="write-bar-content">
         {before && <div className="write-bar-before">{before}</div>}
