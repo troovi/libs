@@ -1,4 +1,4 @@
-import classNames from 'classnames'
+import cn from 'classnames'
 import { Spinner } from '..'
 import { Icon, IconDefinition } from '../Icon'
 import { useResizeTextarea } from '../__hooks/use-resize'
@@ -47,8 +47,9 @@ export interface WriteBarProps
   /**
    * Добавляет тень вокруг поля ввода.
    */
+  contnetClassName?: string
   shadow?: boolean
-  header?: React.ReactNode
+  attachbar?: React.ReactNode
   children?: never
 }
 
@@ -60,7 +61,8 @@ export const WriteBar = ({
   onHeightChange,
   shadow = false,
   containerRef,
-  header,
+  attachbar,
+  contnetClassName,
 
   // textarea props
   textareaRef,
@@ -92,9 +94,9 @@ export const WriteBar = ({
   const [refResizeTextarea, resize] = useResizeTextarea(onHeightChange, true)
 
   return (
-    <div ref={containerRef} {...restProps} className={classNames('write-bar', className)}>
-      {header}
-      <div className="write-bar-content">
+    <div ref={containerRef} {...restProps} className={cn('write-bar', className)}>
+      {attachbar}
+      <div className={cn('write-bar-content', contnetClassName)}>
         {before && <div className="write-bar-before">{before}</div>}
         <div className="write-bar-form">
           <textarea
