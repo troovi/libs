@@ -103,6 +103,9 @@ export type { BlankProps } from './Blank'
 export { ProgressRing } from './ProgressRing'
 export type { ProgressRingProps } from './ProgressRing'
 
+export { WriteBar } from './WriteBar'
+export type { WriteBarProps } from './WriteBar'
+
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'

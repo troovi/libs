@@ -31,6 +31,7 @@ import { PopupsRegistry } from './__registries/popups/registry'
 import { SkeletonExample } from './skeleton'
 import { BlanksExample } from './blanks'
 import { ProgressCircleExample } from './progress-ring'
+import { WriteBarExample } from './write-bar'
 
 export const App = () => {
   return (
@@ -125,6 +126,9 @@ const AppLayout = () => {
         </Example>
         <Example name="Blank">
           <BlanksExample />
+        </Example>
+        <Example name="WriteBar">
+          <WriteBarExample />
         </Example>
         <Example name="ProgressBar">
           <ProgressBarExample />

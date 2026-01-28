@@ -1,0 +1,119 @@
+@use '../mixins.scss';
+
+.write-bar {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: 100%;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+
+  @include mixins.use-styles(write-bar);
+
+  &-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0 6px;
+    -webkit-box-align: end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+    position: relative;
+  }
+
+  &-form {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-inline-size: 0;
+
+    textarea {
+      box-sizing: border-box;
+      flex: 1;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      resize: none;
+      background: transparent;
+      border: 0;
+      height: 56px;
+      max-height: 280px;
+      padding: 16px 12px;
+      width: 100%;
+      min-width: 0;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-corner {
+        visibility: hidden;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        visibility: hidden;
+      }
+
+      &::placeholder {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        opacity: 1;
+
+        @include mixins.use-styles(write-bar, placeholder);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  &-icon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    position: relative;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0.72;
+    height: 56px;
+    min-width: 44px;
+    width: 44px;
+    transition: all 150ms;
+
+    &[data-hidden] {
+      transform: scale(0);
+    }
+
+    &[data-mode='attach'] {
+      @include mixins.use-styles(write-bar, icon, attach);
+    }
+
+    &[data-mode='send'] {
+      @include mixins.use-styles(write-bar, icon, send);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    svg {
+      height: 22px;
+      width: 20px;
+    }
+  }
+}
