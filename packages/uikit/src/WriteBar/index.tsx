@@ -47,7 +47,7 @@ export interface WriteBarProps
   /**
    * Добавляет тень вокруг поля ввода.
    */
-  contnetClassName?: string
+  contentClassName?: string
   shadow?: boolean
   attachbar?: React.ReactNode
   children?: never
@@ -62,7 +62,7 @@ export const WriteBar = ({
   shadow = false,
   containerRef,
   attachbar,
-  contnetClassName,
+  contentClassName,
 
   // textarea props
   textareaRef,
@@ -96,7 +96,7 @@ export const WriteBar = ({
   return (
     <div ref={containerRef} {...restProps} className={cn('write-bar', className)}>
       {attachbar}
-      <div className={cn('write-bar-content', contnetClassName)}>
+      <div className={cn('write-bar-content', contentClassName)}>
         {before && <div className="write-bar-before">{before}</div>}
         <div className="write-bar-form">
           <textarea
