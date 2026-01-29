@@ -38,7 +38,7 @@ export namespace FileType {
 
   export interface Video extends MetaFile {
     type: 'video'
-    firstframe: string
+    thumbnail: string
   }
 
   export interface Document extends MetaFile {
