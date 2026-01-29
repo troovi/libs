@@ -28,19 +28,18 @@ export interface MetaFile {
   size: number
 }
 
-interface PhotoPreview {
-  size: 's' | 'm' | 'l'
+export interface PhotoPreview {
+  size: 's' | 'm' | 'base'
   width: number
   height: number
   filename: string
 }
 
 export namespace FileType {
-  export interface Photo extends Omit<MetaFile, 'originalname'> {
+  export interface Photo extends MetaFile {
     type: 'photo'
-    origphoto: { width: number; height: number; filename: string }
-    sizes: PhotoPreview[]
-    originalname?: string
+    origphoto: { width: number; height: number }
+    previews: PhotoPreview[]
   }
 
   export interface Video extends MetaFile {
@@ -50,6 +49,7 @@ export namespace FileType {
 
   export interface Document extends MetaFile {
     type: 'document'
+    extension: string
   }
 }
 
