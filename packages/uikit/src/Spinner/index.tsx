@@ -9,7 +9,7 @@ export interface SpinnerProps {
 export const Spinner = ({ size = 18, className, color }: SpinnerProps) => {
   return (
     <div
-      style={{ width: `${size}px`, height: `${size}px`, color }}
+      style={{ width: `${size}px`, minWidth: `${size}px`, height: `${size}px`, color }}
       className={cn('spinner', className)}
       role="status"
     />
