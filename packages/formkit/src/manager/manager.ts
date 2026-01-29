@@ -185,6 +185,8 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
 
             form.rerender()
           }
+        }).catch((e) => {
+          console.log('[formkit] submit exception:', e)
         })
       }
     },
