@@ -25,4 +25,32 @@ export interface FileEmpthy {
 export interface MetaFile {
   filename: string
   originalname: string
+  size: number
 }
+
+export namespace FileType {
+  export interface Photo extends Omit<MetaFile, 'originalname'> {
+    type: 'photo'
+    width: number
+    height: number
+    originalname?: string
+  }
+
+  export interface Video extends MetaFile {
+    type: 'video'
+    firstframe: string
+  }
+
+  export interface Document extends MetaFile {
+    type: 'document'
+  }
+}
+
+export type FilesTypes = FileType.Photo | FileType.Video | FileType.Document
+export type AttachmentType<T extends FilesTypes['type']> = T extends 'photo'
+  ? FileType.Photo
+  : T extends 'video'
+  ? FileType.Video
+  : T extends 'document'
+  ? FileType.Document
+  : never
