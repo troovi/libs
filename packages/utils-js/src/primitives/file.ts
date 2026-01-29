@@ -10,7 +10,7 @@ export type FileFormat<T extends FileStages = FileStages> = T extends 'assigned'
 
 export interface FileAssigned {
   stage: 'assigned'
-  meta: MetaFile
+  meta: FilesTypes
 }
 
 export interface FileEvaluated {
