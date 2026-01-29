@@ -28,11 +28,18 @@ export interface MetaFile {
   size: number
 }
 
+interface PhotoPreview {
+  size: 's' | 'm' | 'l'
+  width: number
+  height: number
+  filename: string
+}
+
 export namespace FileType {
   export interface Photo extends Omit<MetaFile, 'originalname'> {
     type: 'photo'
-    width: number
-    height: number
+    origphoto: { width: number; height: number; filename: string }
+    sizes: PhotoPreview[]
     originalname?: string
   }
 
