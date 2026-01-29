@@ -50,7 +50,6 @@ export namespace FileType {
 
   export interface Document extends MetaFile {
     type: 'document'
-    extension: string
   }
 }
 
