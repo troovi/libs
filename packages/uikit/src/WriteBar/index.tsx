@@ -8,6 +8,7 @@ import { mergeRefs } from 'react-merge-refs'
 export interface WriteBarProps
   extends Pick<
       React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      | 'onKeyDown'
       | 'autoComplete'
       | 'cols'
       | 'dirName'
@@ -25,7 +26,7 @@ export interface WriteBarProps
       | 'onFocus'
       | 'onBlur'
     >,
-    Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onFocus' | 'onBlur'> {
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onFocus' | 'onBlur' | 'onKeyDown'> {
   containerRef?: React.Ref<HTMLDivElement>
   textareaRef?: React.Ref<HTMLTextAreaElement>
   /**
@@ -89,6 +90,7 @@ export const WriteBar = ({
   tabIndex,
   spellCheck,
   className,
+  onKeyDown,
   ...restProps
 }: WriteBarProps) => {
   const [refResizeTextarea, resize] = useResizeTextarea(onHeightChange, true)
@@ -122,7 +124,8 @@ export const WriteBar = ({
               defaultValue,
               autoFocus,
               tabIndex,
-              spellCheck
+              spellCheck,
+              onKeyDown
             }}
           />
         </div>
