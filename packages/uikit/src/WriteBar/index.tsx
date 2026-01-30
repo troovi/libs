@@ -4,6 +4,7 @@ import { Icon, IconDefinition } from '../Icon'
 import { useResizeTextarea } from '../__hooks/use-resize'
 import { attr, callMultiple } from '@companix/utils-browser'
 import { mergeRefs } from 'react-merge-refs'
+import { useEffect } from 'react'
 
 export interface WriteBarProps
   extends Pick<
@@ -94,6 +95,8 @@ export const WriteBar = ({
   ...restProps
 }: WriteBarProps) => {
   const [refResizeTextarea, resize] = useResizeTextarea(onHeightChange, true)
+
+  useEffect(resize, [resize, value])
 
   return (
     <div ref={containerRef} {...restProps} className={cn('write-bar', className)}>

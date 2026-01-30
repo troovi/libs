@@ -13,7 +13,14 @@ export const WriteBarExample = () => {
         placeholder="Введите сообщение..."
         id="write-bar-textarea-id"
         before={<WriteBar.IconButton icon={faPaperclip} mode="attach" />}
-        after={<WriteBar.IconButton icon={faPaperPlaneTop} mode="send" isHidden={value === ''} />}
+        after={
+          <WriteBar.IconButton
+            icon={faPaperPlaneTop}
+            onClick={() => setValue('')}
+            mode="send"
+            isHidden={value === ''}
+          />
+        }
       />
     </div>
   )
