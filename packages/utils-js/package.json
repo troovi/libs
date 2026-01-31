@@ -1,6 +1,6 @@
 {
   "name": "@companix/utils-js",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./src/index.ts",

@@ -29,7 +29,7 @@ export interface MetaFile {
 }
 
 export interface PhotoPreview {
-  size: 's' | 'm' | 'base'
+  size: 'icon' | 'base'
   width: number
   height: number
   filename: string
