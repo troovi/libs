@@ -35,12 +35,6 @@ export interface PhotoPreview {
   filename: string
 }
 
-export interface FrameImage {
-  width: number
-  height: number
-  filename: string
-}
-
 export namespace FileType {
   export interface Photo extends MetaFile {
     type: 'photo'
@@ -50,8 +44,7 @@ export namespace FileType {
 
   export interface Video extends MetaFile {
     type: 'video'
-    // Изображение первого кадра. Содержит массив объектов:
-    first_frame: FrameImage[]
+    first_frame: PhotoPreview[]
   }
 
   export interface Document extends MetaFile {
