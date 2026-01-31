@@ -14,15 +14,19 @@ export const range = (from: number, to: number, step = 1) => {
   return arr
 }
 
-export const splitByChunks = <T>(items: T[], chunkSize: number): T[][] => {
-  const result: T[][] = []
+function splitByChunks(items: string, chunkSize: number): string[]
+function splitByChunks<T>(items: T[], chunkSize: number): T[][]
+function splitByChunks<T>(items: T[] | string, chunkSize: number): T[][] | T[] {
+  const result: unknown[] = []
 
   for (let i = 0; i < items.length; i += chunkSize) {
     result.push(items.slice(i, i + chunkSize))
   }
 
-  return result
+  return result as T[]
 }
+
+export { splitByChunks }
 
 export const separateArray = <T>(array: T[], parts: number): T[][] => {
   if (parts <= 0) throw new Error('Number of parts must be greater than 0')
