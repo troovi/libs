@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { box } from '@companix/utils-browser'
 import { getInitialsFontSize } from './helpers'
 import { AvatarSize } from './types'
@@ -50,6 +51,7 @@ export const Avatar = ({
   initials,
   noBorder,
   fallbackIcon: fallbackIconProp,
+  className,
   children
 }: AvatarProps) => {
   const hasSrc = src || srcSet
@@ -65,7 +67,7 @@ export const Avatar = ({
   const fallbackIcon = !hasSrc ? _fallbackIcon : null
 
   return (
-    <div className="avatar" style={box(size)}>
+    <div className={cn('avatar', className)} style={box(size)}>
       {hasSrc && (
         <img
           alt={alt}
