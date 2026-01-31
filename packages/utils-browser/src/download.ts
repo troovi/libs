@@ -24,7 +24,7 @@ export const generatePreview = (file: File) => {
 
   return {
     url,
-    destroy: () => {
+    cleanup: () => {
       URL.revokeObjectURL(url)
     }
   }
