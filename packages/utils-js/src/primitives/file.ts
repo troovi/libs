@@ -28,7 +28,7 @@ export interface MetaFile {
   size: number
 }
 
-export type PhotoSize = 'icon' | 'base'
+export type PhotoSize = 's' | 'base'
 
 export interface PhotoPreview<Size extends PhotoSize = PhotoSize> {
   size: Size
