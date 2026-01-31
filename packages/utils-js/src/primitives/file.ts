@@ -28,8 +28,10 @@ export interface MetaFile {
   size: number
 }
 
-export interface PhotoPreview {
-  size: 'icon' | 'base'
+export type PhotoSize = 'icon' | 'base'
+
+export interface PhotoPreview<Size extends PhotoSize = PhotoSize> {
+  size: Size
   width: number
   height: number
   filename: string
@@ -44,7 +46,7 @@ export namespace FileType {
 
   export interface Video extends MetaFile {
     type: 'video'
-    first_frame: PhotoPreview[]
+    first_frame: PhotoPreview<'base'>[]
   }
 
   export interface Document extends MetaFile {
