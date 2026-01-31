@@ -25,15 +25,9 @@ export interface DrawerProps {
   size?: string
 }
 
-export const Drawer = ({
-  open,
-  onClosed,
-  onOpenChange,
-  children,
-  size,
-  direction,
-  className
-}: DrawerProps) => {
+export const Drawer = (props: DrawerProps) => {
+  const { open, onClosed, onOpenChange, children, size, direction, className } = props
+
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>

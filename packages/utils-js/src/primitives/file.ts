@@ -46,7 +46,7 @@ export namespace FileType {
 
   export interface Video extends MetaFile {
     type: 'video'
-    first_frame: PhotoPreview<'base'>[]
+    first_frame: PhotoPreview[]
   }
 
   export interface Document extends MetaFile {
