@@ -83,3 +83,15 @@ export const getTimeFromFormat = ({ hours, minutes }: TimeFormat) => {
 
 //   return parts.join(' ')
 // }
+
+export const formatSecondsToTime = (sec: number) => {
+  const hours = Math.floor(sec / 3600)
+  const minutes = Math.floor((sec % 3600) / 60)
+  const seconds = Math.floor(sec % 60)
+
+  if (hours > 0) {
+    return `${hours}:${formatTime(minutes)}:${formatTime(seconds)}`
+  }
+
+  return `${minutes}:${formatTime(seconds)}`
+}
