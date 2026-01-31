@@ -235,6 +235,17 @@ $theme-light: (
     placeholder_color: #818c99,
     icon_attach_color: #6f7985,
     icon_send_color: #2688eb
+  ),
+  drop-area: (
+    background: #ffffff
+  ),
+  drop-target: (
+    icon_size: 38px,
+    rect_stroke: #818c99,
+    text_color: #818c99,
+    icon_color: #99a2ad,
+    hovered_rect_stroke: #447bba,
+    hovered_color: #447bba
   )
 );
 

@@ -32,6 +32,7 @@ import { SkeletonExample } from './skeleton'
 import { BlanksExample } from './blanks'
 import { ProgressCircleExample } from './progress-ring'
 import { WriteBarExample } from './write-bar'
+import { DropAreaExample } from './drop-area'
 
 export const App = () => {
   return (
@@ -126,6 +127,9 @@ const AppLayout = () => {
         </Example>
         <Example name="Blank">
           <BlanksExample />
+        </Example>
+        <Example name="DropArea">
+          <DropAreaExample />
         </Example>
         <Example name="WriteBar">
           <WriteBarExample />

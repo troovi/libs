@@ -1,0 +1,117 @@
+@use '../mixins.scss';
+
+.drop-area {
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  @include mixins.use-styles(drop-area);
+
+  &-hidden {
+    display: none;
+  }
+}
+
+.drop-target {
+  --margin: 12px;
+
+  position: relative;
+  width: calc(100% - var(--margin) * 2);
+  height: calc(100% - var(--margin) * 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--margin);
+  -webkit-transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease;
+
+  &-area {
+    pointer-events: none;
+    display: grid;
+    grid-template: 'icon' 56px 'info' auto/auto;
+    grid-gap: var(--margin);
+  }
+
+  &-icon {
+    grid-area: icon;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+
+    @include mixins.use-styles(drop-target, icon);
+
+    svg {
+      @include mixins.use-size(drop-target, icon, size);
+    }
+  }
+
+  &-info {
+    grid-area: info;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-title {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 24px;
+    transition: color 0.2s ease;
+  }
+
+  &-text {
+    margin-top: 8px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    white-space: pre-wrap;
+
+    @include mixins.use-styles(drop-target, text);
+  }
+
+  &-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  &-border rect {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-dasharray: 6.5;
+    transition: stroke 0.2s ease, stroke-width 0.2s ease;
+
+    @include mixins.use-styles(drop-target, rect);
+  }
+
+  &-hovered {
+    rect {
+      stroke-width: 4.5;
+      @include mixins.use-styles(drop-target, hovered, rect);
+    }
+
+    .drop-target-title,
+    .drop-target-icon {
+      @include mixins.use-styles(drop-target, hovered);
+    }
+  }
+
+  & + & {
+    margin-top: 0;
+  }
+}

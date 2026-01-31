@@ -106,6 +106,9 @@ export type { ProgressRingProps } from './ProgressRing'
 export { WriteBar } from './WriteBar'
 export type { WriteBarProps } from './WriteBar'
 
+export { DropArea, DropAreaProvider, useDragEnter } from './DropArea'
+export type { DropAreaProps } from './DropArea'
+
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
