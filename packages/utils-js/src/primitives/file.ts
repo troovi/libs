@@ -46,6 +46,7 @@ export namespace FileType {
 
   export interface Video extends MetaFile {
     type: 'video'
+    duration: number // Длительность ролика в секундах.
     first_frame: PhotoPreview[]
   }
 
