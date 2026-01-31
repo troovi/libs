@@ -57,33 +57,6 @@ export const getTimeFromFormat = ({ hours, minutes }: TimeFormat) => {
   return [formatTime(hours), formatTime(minutes)].join(':')
 }
 
-// export const timeDuration = (ms: number) => {
-//   const hours = Math.floor(ms / (1000 * 60 * 60))
-//   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
-//   const seconds = Math.floor((ms % (1000 * 60)) / 1000)
-//   const milliseconds = ms % 1000
-
-//   const parts: string[] = []
-
-//   if (hours > 0) {
-//     parts.push(`${hours} h.`)
-//   }
-
-//   if (minutes > 0) {
-//     parts.push(`${minutes} m.`)
-//   }
-
-//   if (parts.length !== 2 && seconds > 0) {
-//     parts.push(`${seconds} s.`)
-//   }
-
-//   if (parts.length === 0) {
-//     parts.push(`${milliseconds} ms`)
-//   }
-
-//   return parts.join(' ')
-// }
-
 export const formatSecondsToTime = (sec: number) => {
   const hours = Math.floor(sec / 3600)
   const minutes = Math.floor((sec % 3600) / 60)
