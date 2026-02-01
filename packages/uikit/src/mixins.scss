@@ -53,11 +53,11 @@
 
 @mixin set-style($property, $source, $keys...) {
   $path: list.append($keys, $property);
-  $var-name: get-value($source, $path...);
+  $value: get-value($source, $path...);
 
-  @if $var-name != null {
-    @if meta.type-of($var-name) != 'map' {
-      #{$property}: $var-name;
+  @if $value != null {
+    @if meta.type-of($value) != 'map' {
+      #{$property}: $value;
     }
   }
 }
@@ -68,6 +68,11 @@
   @each $property, $v in css-properties.$properties {
     @include set-style($property, $source, $keys...);
   }
+}
+
+@function get-style($component, $keys...) {
+  $source: map.get(theme.$tokens, $component);
+  @return get-value($source, $keys...);
 }
 
 @mixin use-styles-debug($component, $keys...) {

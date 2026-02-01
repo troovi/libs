@@ -6,6 +6,8 @@ interface Dialog1Props {
 }
 
 export default ({ close, data }: PopupProps<Dialog1Props>) => {
+  console.log('Dialog 1')
+
   return (
     <DialogShell size="m">
       <div>

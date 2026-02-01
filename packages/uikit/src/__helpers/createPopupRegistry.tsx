@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react'
 import { hash } from '@companix/utils-js'
 
 import { Dialog, DialogProps } from '../Dialog'
@@ -65,7 +65,10 @@ interface SinglePopupProps<T extends Store> {
 }
 
 const Popup = <T extends Store>({ name, Open, Close, Content }: SinglePopupProps<T>) => {
-  const [{ data, open }, setState] = useState({ data: null as null | unknown, open: false })
+  const [{ data, open }, setState] = useState({
+    data: null as null | unknown,
+    open: false
+  })
 
   useEffect(() => {
     Open[name] = (data) => {
@@ -94,13 +97,23 @@ const Popup = <T extends Store>({ name, Open, Close, Content }: SinglePopupProps
   if (data) {
     return (
       <PopupContext.Provider value={{ open, onOpenChange, onClosed }}>
-        <Content data={data} close={onClose} />
+        <ContentWraper data={data} close={onClose} Content={Content} />
       </PopupContext.Provider>
     )
   }
 
   return null
 }
+
+interface ContentWraperProps {
+  Content: PopupSignature
+  data: unknown
+  close: () => void
+}
+
+const ContentWraper = memo(({ data, close, Content }: ContentWraperProps) => {
+  return <Content data={data} close={close} />
+})
 
 interface PopupContextValue {
   open: boolean

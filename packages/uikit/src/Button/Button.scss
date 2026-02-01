@@ -118,7 +118,7 @@
     @include mixins.use-styles(button, size, sm);
 
     &:has(> svg:only-child) {
-      width: var(--button_size_sm_height);
+      width: mixins.get-style(button, size, sm, height);
     }
   }
 
@@ -126,7 +126,7 @@
     @include mixins.use-styles(button, size, md);
 
     &:has(> svg:only-child) {
-      width: var(--button_size_md_height);
+      width: mixins.get-style(button, size, md, height);
     }
   }
 
@@ -134,7 +134,7 @@
     @include mixins.use-styles(button, size, lg);
 
     &:has(> svg:only-child) {
-      width: var(--button_size_lg_height);
+      width: mixins.get-style(button, size, lg, height);
     }
   }
 

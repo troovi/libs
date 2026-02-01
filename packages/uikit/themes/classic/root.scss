@@ -299,8 +299,27 @@ $layout: (
   )
 );
 
+// $global: (
+//   toaster: (
+//     viewport_offset: 20px,
+//     close_space: 6px
+//   ),
+//   form: (
+//     space: 12px,
+//     space-y: 6px,
+//     border-radius: 8px
+//   ),
+//   switch: (
+//     track_width: 47px,
+//     track_height: 27px,
+//     track_outline_width: 2px,
+//     thumb_size: 23px
+//   )
+// );
+
 :root {
-  // TODO: layout не должны преобразовываться в переменные, а должны применяться как значения
-  // написать theme.use-layout($layout)
   @include theme.use-tokens($layout);
 }
+
+// TODO: layout не должны преобразовываться в переменные, а должны применяться как значения
+// @include theme.use-layout($layout);

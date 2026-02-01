@@ -92,8 +92,8 @@
 // expand icon
 
 .expand-icon {
-  color: var(--select_expand_color);
   transition: transform 0.2s;
+  @include mixins.use-styles(select, expand);
 }
 
 .form {

@@ -6,6 +6,8 @@ interface Dialog2Props {
 }
 
 export default ({ close, data }: PopupProps<Dialog2Props>) => {
+  console.log('Dialog 2')
+
   return (
     <DialogShell size="l" disableEsc>
       <div>
