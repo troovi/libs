@@ -1,54 +1,27 @@
-import classNames from 'classnames'
-import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import cn from 'classnames'
 import { customCSS } from '@companix/utils-browser'
-import { RemoveListener } from '../__utils/RemoveListener'
+import { PopupLayotProps, PopupLayout } from '../Popup'
 
-export interface DrawerProps {
-  open: boolean
-  onOpenChange: (value: boolean) => void
-  children: React.ReactNode
+export interface DrawerProps extends Omit<PopupLayotProps, 'content' | 'overlay'> {
   direction?: 'bottom' | 'top' | 'left' | 'right'
-  onClosed?: () => void
   className?: string
-  /**
-   * CSS size of the drawer. This sets `width` if horizontal position (default)
-   * and `height` otherwise.
-   *
-   * Constants are available for common sizes:
-   * - `DrawerSize.SMALL = 360px`
-   * - `DrawerSize.STANDARD = 50%`
-   * - `DrawerSize.LARGE = 90%`
-   *
-   * @default DrawerSize.STANDARD = "50%"
-   */
   size?: string
 }
 
-export const Drawer = (props: DrawerProps) => {
-  const { open, onClosed, onOpenChange, children, size, direction, className } = props
-
+export const Drawer = ({ direction, children, size, className, ...props }: DrawerProps) => {
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="drawer-overlay" />
-        <DialogPrimitive.Content
-          style={customCSS({ '--drawer-size': size ?? '50%' })}
-          className={classNames('drawer', className)}
-          data-direction={direction}
-        >
-          <RemoveListener callback={onClosed} />
-          <VisuallyHidden>
-            <DialogPrimitive.Title />
-          </VisuallyHidden>
-          <VisuallyHidden>
-            <DialogPrimitive.Description />
-          </VisuallyHidden>
-          {children}
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+    <PopupLayout
+      {...props}
+      overlay={{ className: 'drawer-overlay' }}
+      content={{
+        className: cn('popup drawer', className),
+        style: customCSS({ '--drawer-size': size ?? '50%' }),
+        'data-direction': direction
+      }}
+    >
+      {children}
+    </PopupLayout>
   )
 }
 
-Drawer.Close = DialogPrimitive.Close
+Drawer.Close = PopupLayout.Close

@@ -1,24 +1,47 @@
 @use '../mixins.scss';
 
 .dialog {
-  &-container {
-    @include mixins.use-styles(dialog, container);
-  }
+  @include mixins.use-styles(dialog);
 
   &-overlay {
     @include mixins.use-styles(dialog, overlay);
+
+    &[data-state='open'] {
+      @include mixins.use-styles(dialog, overlay, in);
+    }
+
+    &[data-state='closed'] {
+      @include mixins.use-styles(dialog, overlay, out);
+    }
   }
 
-  @include mixins.use-styles(dialog);
-}
+  &-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none !important;
+    outline: none;
 
-.dialog-container {
-  @each $size, $v in (xxs, xs, s, m, l, xl, xxl, full) {
-    &[data-size='#{$size}'] {
-      @include mixins.use-styles(dialog, size, $size, container);
+    @include mixins.use-styles(dialog, container);
 
-      .dialog {
-        @include mixins.use-styles(dialog, size, $size);
+    &[data-state='open'] {
+      @include mixins.use-styles(dialog, in);
+    }
+
+    &[data-state='closed'] {
+      @include mixins.use-styles(dialog, out);
+    }
+
+    @each $size, $v in (xxs, xs, s, m, l, xl, xxl, full) {
+      &[data-size='#{$size}'] {
+        @include mixins.use-styles(dialog, size, $size, container);
+
+        .dialog {
+          @include mixins.use-styles(dialog, size, $size);
+        }
       }
     }
   }

@@ -41,7 +41,7 @@ export const Viewport = forwardRef<ViewportRef, AlertBaseProps>((props, ref) => 
       {alerts.map(({ id, ...alert }) => (
         <AlertDialog
           defaultOpen
-          onUnMounted={() => handleClose(id)}
+          onClosed={() => handleClose(id)}
           key={`alert-${id}`}
           {...props}
           {...alert}

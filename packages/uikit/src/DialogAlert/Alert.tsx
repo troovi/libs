@@ -12,7 +12,7 @@ export interface AlertDialogProps {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (value: boolean) => void
-  onUnMounted?: () => void
+  onClosed?: () => void
   icon?: React.ReactNode
   title?: string
   description?: string
@@ -26,7 +26,7 @@ export const AlertDialog = ({
   open,
   defaultOpen,
   onOpenChange,
-  onUnMounted,
+  onClosed,
   icon,
   title,
   description,
@@ -37,11 +37,11 @@ export const AlertDialog = ({
 }: AlertDialogProps) => {
   return (
     <AlertPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
-      <RemoveListener callback={onUnMounted} />
       <AlertPrimitive.Portal>
         <AlertPrimitive.Overlay className="popup-overlay dialog-overlay" />
-        <AlertPrimitive.Content className="popup-container dialog-container">
-          <div className="popup alert">
+        <AlertPrimitive.Content className="dialog-container">
+          <RemoveListener callback={onClosed} />
+          <div className="popup dialog alert">
             <div className="alert-body">
               {icon && <span className="alert-icon">{icon}</span>}
               <div className="alert-content">

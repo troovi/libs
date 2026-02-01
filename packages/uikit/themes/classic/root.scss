@@ -102,15 +102,14 @@ $layout: (
     minimal_in_animation: 'fadeIn 100ms cubic-bezier(0.4, 1, 0.75, 0.9)',
     minimal_out_animation: 'fadeOut 100ms cubic-bezier(0.4, 1, 0.75, 0.9)'
   ),
-  popup: (
+  dialog: (
     border-radius: 4px,
+    in_animation: dialogIn 300ms cubic-bezier(0.54, 1.12, 0.38, 1.11),
+    out_animation: dialogOut 300ms cubic-bezier(0.54, 1.12, 0.38, 1.11),
+    container_padding: 20px,
+    // overlay
     overlay_in_animation: fadeIn 200ms cubic-bezier(0.4, 1, 0.75, 0.9),
     overlay_out_animation: fadeOut 200ms cubic-bezier(0.4, 1, 0.75, 0.9),
-    in_animation: dialogIn 300ms cubic-bezier(0.54, 1.12, 0.38, 1.11),
-    out_animation: dialogOut 300ms cubic-bezier(0.54, 1.12, 0.38, 1.11)
-  ),
-  dialog: (
-    container_padding: 20px,
     // size
     size_xxs_max-width: 500px,
     size_xs_max-width: 500px,
@@ -301,5 +300,7 @@ $layout: (
 );
 
 :root {
+  // TODO: layout не должны преобразовываться в переменные, а должны применяться как значения
+  // написать theme.use-layout($layout)
   @include theme.use-tokens($layout);
 }

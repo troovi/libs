@@ -58,6 +58,9 @@ export type { DrawerProps } from './Drawer'
 export { Dialog } from './Dialog'
 export type { DialogProps, DialogSize } from './Dialog'
 
+export { PopupLayout } from './Popup'
+export type { PopupLayotProps } from './Popup'
+
 export { AlertDialog } from './DialogAlert/Alert'
 export type { AlertDialogProps } from './DialogAlert/Alert'
 

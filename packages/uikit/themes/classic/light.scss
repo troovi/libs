@@ -167,12 +167,10 @@ $theme-light: (
     warning_border: 1px solid hsl(49deg 100% 45.5% / 60%)
   ),
   dialog: (
+    overlay_background: rgba(17, 20, 24, 0.7),
+    background: #f6f7f9,
     box-shadow:
       '0 0 0 1px rgba(17, 20, 24, 0.1), 0 2px 4px rgba(17, 20, 24, 0.2), 0 8px 24px rgba(17, 20, 24, 0.2)'
-  ),
-  popup: (
-    overlay_background: rgba(17, 20, 24, 0.7),
-    background: #f6f7f9
   ),
   form: (
     background: #ffffff,
@@ -180,7 +178,7 @@ $theme-light: (
     placeholder_color: #9899a3,
     color: #37352f,
     border: 1px solid rgba(17, 20, 24, 0.2),
-    box-shadow: '0 1px 2px rgba(17, 20, 24, 0.1)',
+    box-shadow: 0 1px 2px rgba(17, 20, 24, 0.1),
     disabled_background: rgba(211, 216, 222, 0.5),
     disabled_color: rgba(95, 107, 124, 0.6)
   ),
