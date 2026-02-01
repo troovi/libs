@@ -129,7 +129,12 @@ export * from './types'
 export type { CalendarProps } from './Calendar/Calendar'
 export type { OptionsSource, UseOptionsResponse } from './Select/OptionsPopover'
 // helpers
-export { createPopupRegistry, DialogShell, DrawerShell } from './__helpers/createPopupRegistry'
+export {
+  createPopupRegistry,
+  DialogShell,
+  DrawerShell,
+  usePopup
+} from './__helpers/createPopupRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'
 export { createScope, createStaticScope } from './__helpers/createScope'
 // helpers types

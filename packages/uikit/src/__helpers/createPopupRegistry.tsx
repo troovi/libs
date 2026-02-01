@@ -110,7 +110,7 @@ interface PopupContextValue {
 
 const PopupContext = createContext<PopupContextValue | null>(null)
 
-const usePopup = () => {
+export const usePopup = () => {
   const state = useContext(PopupContext)
 
   if (!state) {
