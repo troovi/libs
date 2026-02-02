@@ -11,6 +11,7 @@ export default ({ close, data }: PopupProps<Dialog1Props>) => {
   return (
     <DialogShell size="m">
       <div>
+        <Check />
         <div>{data.name}</div>
         <div>{data.surname}</div>
         <div className="p-20">
@@ -19,4 +20,9 @@ export default ({ close, data }: PopupProps<Dialog1Props>) => {
       </div>
     </DialogShell>
   )
+}
+
+const Check = () => {
+  console.log('Dialog 1 Inner Render')
+  return null
 }
