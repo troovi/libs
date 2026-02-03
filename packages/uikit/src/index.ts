@@ -120,6 +120,7 @@ export { useBooleanState } from './__hooks/use-boolean-state'
 export { useResizeTextarea } from './__hooks/use-resize'
 export { useLoading } from './__hooks/use-loading'
 export type { UseLoadingProps } from './__hooks/use-loading'
+export { useNow, NowContextProvider } from './__hooks/use-now'
 // agents
 export { createAlertAgent } from './DialogAlert'
 export { createToaster } from './Toaster'

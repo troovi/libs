@@ -33,6 +33,7 @@ import { BlanksExample } from './blanks'
 import { ProgressCircleExample } from './progress-ring'
 import { WriteBarExample } from './write-bar'
 import { DropAreaExample } from './drop-area'
+import { NowExample } from './now'
 
 export const App = () => {
   return (
@@ -149,6 +150,9 @@ const AppLayout = () => {
         </Example>
         <Example name="Popover Registry">
           <PopoverRegistries />
+        </Example>
+        <Example name="useNow">
+          <NowExample />
         </Example>
         <div />
         <div />
