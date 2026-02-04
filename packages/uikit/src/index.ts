@@ -2,6 +2,11 @@ export { Avatar } from './Avatar'
 export type { AvatarProps } from './Avatar'
 export type { AvatarSize } from './Avatar/types'
 export { avatarSizes } from './Avatar/types'
+export {
+  getInitialsFontSize,
+  getFallbackIconSizeByImageBaseSize,
+  getBadgeIconSizeByImageBaseSize
+} from './Avatar/helpers'
 
 export { Button } from './Button'
 export type { ButtonProps, Appearance, Mode, Size } from './Button'
