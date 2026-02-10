@@ -117,6 +117,7 @@ export type { WriteBarProps } from './WriteBar'
 export { DropArea, DropAreaProvider, useDragEnter } from './DropArea'
 export type { DropAreaProps } from './DropArea'
 
+export { Table } from './Table'
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
