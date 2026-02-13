@@ -1,7 +1,7 @@
 export interface TableProps<T> {
   header: { content: React.ReactNode; style?: React.CSSProperties }[]
   items: T[]
-  getItemLayout: (item: T) => React.ReactNode[]
+  getItemLayout: (item: T, index: number) => React.ReactNode[]
   onRowClick?: (item: T) => void
   className?: string
 }
@@ -24,7 +24,7 @@ export const Table = <T,>({ header, items, getItemLayout, className, onRowClick 
       <tbody>
         {items.map((item, i) => (
           <tr key={`table-tr-${i}`} onClick={() => onRowClick?.(item)}>
-            {getItemLayout(item).map((content, n) => (
+            {getItemLayout(item, i).map((content, n) => (
               <td key={`table-td-${i}-${n}`}>{content}</td>
             ))}
           </tr>
