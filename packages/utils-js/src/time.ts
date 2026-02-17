@@ -63,7 +63,7 @@ export const getTimeFromFormat = ({ hours, minutes }: TimeFormat) => {
   return [formatTime(hours), formatTime(minutes)].join(':')
 }
 
-export const formatSecondsToTime = (sec: number) => {
+export const getPrettyDuration = (sec: number) => {
   const hours = Math.floor(sec / 3600)
   const minutes = Math.floor((sec % 3600) / 60)
   const seconds = Math.floor(sec % 60)
