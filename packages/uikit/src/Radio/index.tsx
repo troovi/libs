@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useId } from 'react'
 import * as RadioPrimitive from '@radix-ui/react-radio-group'
 import { attr } from '@companix/utils-browser'
@@ -13,15 +14,16 @@ export interface RadioGroupProps<T> {
   value: T | null
   disabled?: boolean
   required?: boolean
+  className?: string
   size?: 'sm' | 'md'
 }
 
 export const RadioGroup = <T extends string>(props: RadioGroupProps<T>) => {
-  const { options, value, onChange, disabled, required, size } = props
+  const { options, value, onChange, disabled, required, size, className } = props
 
   return (
     <RadioPrimitive.Root
-      className="radio-group"
+      className={cn('radio-group', className)}
       disabled={disabled}
       data-required={attr(required && !value)}
       data-v={value}
