@@ -75,11 +75,55 @@ export const getDuration = (sec: number) => {
   return `${minutes}:${formatTime(seconds)}`
 }
 
-export const getTimestamp = ({ year, month, day }: DateFormat, { hours, minutes }: TimeFormat) => {
-  const date = new Date()
+export const getTimestamp = (date: DateFormat, time: TimeFormat, timezone?: string) => {
+  const { year, month, day } = date
+  const { hours, minutes } = time
 
-  date.setFullYear(year, month - 1, day)
-  date.setHours(hours, minutes, 0, 0)
+  if (!timezone) {
+    return new Date(year, month - 1, day, hours, minutes, 0, 0).getTime()
+  }
 
-  return date.getTime()
+  // Use the input values as a neutral UTC base to probe the target timezone's offset.
+  // Формат дат и их перевод задаётся с помощью средств браузера [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat).
+  const approxUtcMs = Date.UTC(year, month - 1, day, hours, minutes, 0, 0)
+
+  // Returns how far the target timezone's wall clock is ahead of UTC at a given UTC timestamp.
+  // e.g. UTC+5 → +5h, UTC-3 → -3h (in milliseconds)
+  const getTimezoneOffsetMs = (ms: number): number => {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false
+    })
+
+    const values = {} as Record<Intl.DateTimeFormatPartTypes, string>
+
+    for (const { type, value } of formatter.formatToParts(new Date(ms))) {
+      values[type] = value
+    }
+
+    // Reinterpret what the timezone clock shows as if it were UTC, then diff
+    const tzMs = Date.UTC(
+      Number(values.year),
+      Number(values.month) - 1,
+      Number(values.day),
+      Number(values.hour) % 24, // hour12: false can yield 24 for midnight
+      Number(values.minute),
+      Number(values.second)
+    )
+
+    return tzMs - ms
+  }
+
+  // To get the UTC timestamp for a wall-clock time in `timezone`:
+  //   UTC = wallClock - offset(UTC)
+  // Since offset depends on the timestamp itself (DST), we do two passes:
+  //   pass 1 → approx UTC using offset at the neutral base
+  //   pass 2 → refine using offset at the approx UTC (resolves DST boundary edge cases)
+  return approxUtcMs - getTimezoneOffsetMs(approxUtcMs - getTimezoneOffsetMs(approxUtcMs))
 }
