@@ -74,3 +74,12 @@ export const getDuration = (sec: number) => {
 
   return `${minutes}:${formatTime(seconds)}`
 }
+
+export const getTimestamp = ({ year, month, day }: DateFormat, { hours, minutes }: TimeFormat) => {
+  const date = new Date()
+
+  date.setFullYear(year, month - 1, day)
+  date.setHours(hours, minutes, 0, 0)
+
+  return date.getTime()
+}
