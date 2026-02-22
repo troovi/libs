@@ -22,7 +22,7 @@ export const SwitchExample = () => {
           <SwitchControl label="I want to recieve promote emails" disabled />
         </div>
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <div className="flex flex-col gap-12">
         <SwitchControl label="Accept terms and conditions" defaultChecked />
         <SwitchControl defaultChecked label={'Use the advanced form to create events'} />

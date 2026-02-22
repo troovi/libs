@@ -5,7 +5,7 @@ export const SkeletonExample = () => {
     <div className="col-group">
       <div className="flex gap-24">
         <div
-          className="p-12 rounded-lg bg-white"
+          className="p-12 rounded-lg skeleton-bg"
           style={{ boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.12)' }}
         >
           <div className="flex items-center gap-12">

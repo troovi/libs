@@ -49,8 +49,9 @@
       height: 20px;
       margin: 5px;
       width: 20px;
-      box-shadow: 1px 1px 6px rgba(17, 20, 24, 0.2);
       margin-top: -14px;
+
+      @include mixins.use-styles(popover, arrow);
     }
   }
 

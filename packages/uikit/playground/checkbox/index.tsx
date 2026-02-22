@@ -19,7 +19,7 @@ export const CheckboxExample = () => {
           <CheckboxControl label="I want to recieve promote emails" size="sm" disabled />
         </div>
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <div className="flex flex-col gap-12">
         <CheckboxControl label="Accept terms and conditions" size="md" defaultChecked />
         <CheckboxControl
@@ -38,7 +38,7 @@ export const CheckboxExample = () => {
         />
         <CheckboxControl label={longtext + ' ' + longtext} size="md" defaultChecked />
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <div>
         <div className="flex flex-col gap-12">
           <CheckboxControl label="Accept terms and conditions" size="md" required />

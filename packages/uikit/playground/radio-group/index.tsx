@@ -31,7 +31,7 @@ export const RadioGroupExample = () => {
           ]}
         />
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <RadioGroupControl
         options={[
           { value: 'soup', label: 'Basic plan' },
@@ -43,7 +43,7 @@ export const RadioGroupExample = () => {
           }
         ]}
       />
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <RadioGroupControl
         required
         options={[

@@ -73,10 +73,11 @@
     padding: 0px var(--form_space, 0);
     height: 100%;
     outline: none;
-    color: var(--select_clean_color);
+
+    @include mixins.use-styles(select, tools);
 
     &:hover {
-      color: var(--select_clean_hover_color);
+      @include mixins.use-styles(select, tools, hovered);
     }
   }
 
@@ -93,7 +94,7 @@
 
 .expand-icon {
   transition: transform 0.2s;
-  @include mixins.use-styles(select, expand);
+  @include mixins.use-styles(select, tools);
 }
 
 .form {

@@ -10,13 +10,13 @@
 
   &:not([data-disabled]):not([data-required]):hover {
     .checkbox-box[data-state='unchecked'] {
-      @include mixins.use-styles(checkbox, box, hover);
+      @include mixins.use-styles(checkbox, box, hovered);
     }
   }
 
   &:not([data-disabled]):not([data-required]):active {
     .checkbox-box[data-state='unchecked'] {
-      @include mixins.use-styles(checkbox, box, active);
+      @include mixins.use-styles(checkbox, box, pressed);
     }
   }
 

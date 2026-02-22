@@ -64,11 +64,11 @@
     cursor: pointer;
 
     &:hover {
-      @include mixins.use-styles(option, hover);
+      @include mixins.use-styles(option, hovered);
     }
 
     &:active {
-      @include mixins.use-styles(option, active);
+      @include mixins.use-styles(option, pressed);
     }
   }
 

@@ -49,10 +49,10 @@
   }
 
   &:not([data-disabled]):not([data-state='active']):hover {
-    @include mixins.use-styles(tab, hover);
+    @include mixins.use-styles(tab, hovered);
   }
 
   &[data-state='active'] {
-    @include mixins.use-styles(tab, active);
+    @include mixins.use-styles(tab, pressed);
   }
 }

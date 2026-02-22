@@ -16,7 +16,7 @@ export const AvatarExample = () => {
           fallbackIcon={<Icon icon={faImage} style={box(getFallbackIconSizeByImageBaseSize(64))} />}
         />
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <div className="row-group"></div>
       <div className="flex flex-wrap items-center gap-8">
         {avatarSizes.map((size) => (

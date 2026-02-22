@@ -12,11 +12,13 @@
 
   &:hover {
     @include mixins.use-styles(button, $appearance, $mode, hovered);
+    z-index: 1;
   }
 
   &[data-active],
   &:active {
     @include mixins.use-styles(button, $appearance, $mode, pressed);
+    z-index: 2;
   }
 
   &[data-loading] {
@@ -28,7 +30,7 @@
   }
 
   &[disabled] {
-    @include mixins.use-styles(button, $appearance, $mode, disabled);
+    @include mixins.use-styles(button, $appearance, $mode, disable);
   }
 }
 

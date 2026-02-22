@@ -15,13 +15,13 @@
 
   &:not([data-required]):not([data-disabled]):hover {
     .radio-box[data-state='unchecked'] {
-      @include mixins.use-styles(radio, box, hover);
+      @include mixins.use-styles(radio, box, hovered);
     }
   }
 
   &:not([data-required]):not([data-disabled]):active {
     .radio-box[data-state='unchecked'] {
-      @include mixins.use-styles(radio, box, active);
+      @include mixins.use-styles(radio, box, pressed);
     }
   }
 

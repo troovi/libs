@@ -22,7 +22,7 @@ export const InputsExample = () => {
           />
         </div>
       </div>
-      <div style={{ height: '1px', background: '#eeeeee', margin: '12px 0px' }} />
+      <div className="sample-splitter" />
       <div className="flex gap-10">
         <div className="flex flex-col gap-10">
           {sizes.map((size) => {

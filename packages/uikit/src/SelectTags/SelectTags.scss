@@ -9,8 +9,8 @@
     padding-left: var(--form_space, 0);
   }
 
-  &-empty {
-    @include mixins.use-styles(tag, empty);
+  &-noneresults {
+    @include mixins.use-styles(tag, noneresults);
   }
 
   &-container {

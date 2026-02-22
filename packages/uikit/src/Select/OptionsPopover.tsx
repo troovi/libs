@@ -163,7 +163,7 @@ export const SelectOptionsList = <T,>(props: InternalListProps<T>) => {
   return (
     <OptionsList scrollboxRef={scrollboxRef} optionsWrapperRef={optionsWrapperRef} maxHeight={300}>
       {(addOption?.position === undefined || addOption?.position === 'first') && addOptionElement}
-      {options.length === 0 && !addOption && <div className="select-tags-empty">{emptyText}</div>}
+      {options.length === 0 && !addOption && <div className="select-tags-noneresults">{emptyText}</div>}
       {options.map(({ title, value, className, icon, disabled, label }, i) => (
         <OptionItem
           key={`select-option-${i}`}

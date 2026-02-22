@@ -49,7 +49,7 @@ const AppLayout = () => {
   return (
     <div className="flex flex-col">
       <div className="header sticky flex items-center justify-between bg-white top-0 z-40">
-        <div className="font-semibold text-black">@companix/uikit</div>
+        <div className="font-semibold">@companix/uikit</div>
         <ThemeSwitcher />
       </div>
       <div className="examples-list">

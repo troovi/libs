@@ -42,11 +42,11 @@
 
     &:not([data-selected]) {
       &:hover {
-        @include mixins.use-styles(segment-control, option, hover);
+        @include mixins.use-styles(segment-control, option, hovered);
       }
 
       &:active {
-        @include mixins.use-styles(segment-control, option, active);
+        @include mixins.use-styles(segment-control, option, pressed);
       }
     }
 
