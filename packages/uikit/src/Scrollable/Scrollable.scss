@@ -1,4 +1,6 @@
 .scrollable {
+  --thumb-color: var(--scrollable-thumb-color, #c1c2c8bd);
+
   &[data-scroll-x] {
     overflow-x: scroll;
   }

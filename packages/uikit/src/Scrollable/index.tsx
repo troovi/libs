@@ -121,7 +121,7 @@ const Scrollable = forwardRef<HTMLDivElement, ScrollableProps & Implementation>(
         ...props.style,
         ...{ maxHeight: maxHeight ? px(maxHeight) : undefined },
         ...customCSS({ '--thumb-padding': px(thumbPadding) }),
-        ...customCSS({ '--thumb-color': thumbColor ?? '#c1c2c8bd' })
+        ...(thumbColor ? customCSS({ '--thumb-color': thumbColor }) : {})
       }}
       data-scroll-x={attr(scrollX)}
       data-scroll-y={attr(scrollY)}
