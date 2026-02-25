@@ -21,7 +21,7 @@
 }
 
 .toaster {
-  pointer-events: all;
+  pointer-events: all !important;
   position: absolute;
   outline: none;
   opacity: 1;
