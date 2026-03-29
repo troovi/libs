@@ -5,6 +5,8 @@ const dataSource = new DataSource(dataScheme, {
   createDriver: createBaseDriver
 })
 
+// dataSource.collections.worker.findBy({ tgid: '' })
+
 // dataSource.driver.relationsTable.bootstrap()
 // dataSource.driver.bootstrap({
 //   dictionaries: [{ dictionary: 'employment', name: '', options: [''] }],

@@ -4,10 +4,12 @@ import {
   CollectionScheme,
   DataScheme
 } from '@companix/xeo-scheme'
+import { isPlainObject } from '@companix/utils-js'
 import { MongoRelationsTable } from './table.driver'
 import { Connection, Model, Schema } from 'mongoose'
 import { DefinitionsFactory } from '../factories/definitions.factory'
 import { Logger } from '@nestjs/common'
+import { buildFlattenMap } from '../utils/flatten'
 
 interface DiscriminatedModels {
   [model: string]: {
@@ -65,6 +67,14 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
         }
       }
     }
+  }
+
+  async findOneBy({ model, filter }: CollectionDriverParams.Filter) {
+    return this.collections[model].findOne(buildFlattenMap(filter)).lean().exec()
+  }
+
+  async findBy({ model, filter }: CollectionDriverParams.Filter) {
+    return this.collections[model].find(buildFlattenMap(filter)).lean().exec()
   }
 
   async getAll({ model }: CollectionDriverParams.Model) {

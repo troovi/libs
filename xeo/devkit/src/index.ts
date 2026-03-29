@@ -12,4 +12,4 @@ export * from './scheme/keys'
 export * from './scheme/dictionary'
 
 export * from './cases'
-export type { BaseParams, DualCase, UnitCase } from './cases/tools'
+export type { BaseParams, DualCase, UnitCase, SearchCase } from './cases/tools'

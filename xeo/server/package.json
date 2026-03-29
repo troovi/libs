@@ -1,6 +1,6 @@
 {
   "name": "@companix/xeo-server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -9,7 +9,8 @@
   "scripts": {
     "echo": "echo \"@companix/xeo-server\"",
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
-    "test:unit": "tsc --noEmit && tsx ./tests/unit/definitions.ts",
+    "test:unit": "tsc --noEmit && tsx ./tests/unit/definitions.test.ts",
+    "test:unit:map": "tsc --noEmit && tsx ./tests/unit/flatten.test.ts",
     "test:app": "nest start --watch --builder tsc --path tsconfig.test-app.json --sourceRoot tests/app --entryFile main",
     "test:custom": "nest start --watch --builder tsc --path tsconfig.test-app.json --sourceRoot tests --entryFile integrations/custom.test",
     "test:cases": "jest --config ./jest.cases.config.cjs --runInBand"

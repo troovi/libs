@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { cases, MockKit, createMockKit, AppScheme, dataScheme } from '@companix/xeo-devkit'
 import { DataSource, createBaseDriver } from '../lib'
-import { BaseParams } from '@companix/xeo-devkit'
+import { BaseParams, SearchCase } from '@companix/xeo-devkit'
 
 type CommitChanges = (kit: MockKit, dataSource: DataSource<AppScheme>) => Promise<void>
 
-const runTest = async (params: BaseParams, commitChanges: CommitChanges) => {
+const runCaseTest = async (params: BaseParams, commitChanges: CommitChanges) => {
   const { expectations } = params
 
   const dataSource = new DataSource(dataScheme, {
@@ -40,20 +40,40 @@ const runTest = async (params: BaseParams, commitChanges: CommitChanges) => {
   }
 }
 
+const runSearchCase = async ({ params }: SearchCase) => {
+  const dataSource = new DataSource(dataScheme, {
+    createDriver: createBaseDriver
+  })
+
+  const result = await params.execute(createMockKit(dataSource), dataSource)
+
+  for (const item of result) {
+    expect(item.expect).toEqual(item.result)
+  }
+}
+
 describe('DataSource', async () => {
   for await (const item of cases) {
     if (item.type === 'unit') {
       test(item.name, async () => {
-        await runTest(item.params, (kit, dataSource) => item.params.execute(kit, dataSource))
+        await runCaseTest(item.params, (kit, dataSource) => item.params.execute(kit, dataSource))
       })
     }
 
     if (item.type === 'dual') {
       for await (const marker of item.markers) {
         test(`${item.name} / ${marker}`, async () => {
-          await runTest(item.params, (kit, dataSource) => item.params.execute(kit, dataSource, marker))
+          await runCaseTest(item.params, (kit, dataSource) =>
+            item.params.execute(kit, dataSource, marker)
+          )
         })
       }
+    }
+
+    if (item.type === 'search') {
+      test(item.name, async () => {
+        await runSearchCase(item)
+      })
     }
   }
 })

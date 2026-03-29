@@ -89,6 +89,12 @@ export interface DualCaseParams<T> extends BaseParams {
   execute: (kit: MockKit, dataSource: DataSource<AppScheme>, market: T) => Promise<void>
 }
 
+export interface SearchCaseParams {
+  type: 'search'
+  // prettier-ignore
+  execute: (kit: MockKit, dataSource: DataSource<AppScheme>) => Promise<{ result: object | null; expect: object | null }[]>
+}
+
 // prettier-ignore
 export function createDualCase<T extends string>(name: string, markers: readonly T[], params: Omit<DualCaseParams<T>, 'type'>) {
   return { type: 'dual' as const, markers, name, params }
@@ -98,5 +104,10 @@ export function createCase(name: string, params: Omit<UnitCaseParams, 'type'>) {
   return { type: 'unit' as const, name, params }
 }
 
+export function createSearchCase(name: string, params: Omit<SearchCaseParams, 'type'>) {
+  return { type: 'search' as const, name, params }
+}
+
 export type UnitCase = ReturnType<typeof createCase>
 export type DualCase = ReturnType<typeof createDualCase>
+export type SearchCase = ReturnType<typeof createSearchCase>

@@ -41,6 +41,10 @@ export namespace CollectionDriverParams {
   export interface Update extends Record {
     patches: UpdatePatch[]
   }
+
+  export interface Filter extends Model {
+    filter: object
+  }
 }
 
 export abstract class CollectionDriver {
@@ -51,6 +55,8 @@ export abstract class CollectionDriver {
   remove: (params: CollectionDriverParams.Record) => Promise<void>
   update: (params: CollectionDriverParams.Update) => Promise<void>
   exists: (params: CollectionDriverParams.Record) => Promise<boolean>
+  findOneBy: (params: CollectionDriverParams.Filter) => Promise<object | null>
+  findBy: (params: CollectionDriverParams.Filter) => Promise<object[]>
 }
 
 export interface TableRow {

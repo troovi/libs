@@ -6,7 +6,15 @@ import { getConnectionToken, getDataSourceToken } from '../../lib'
 
 import { bootstrap } from '../app/bootstrap'
 import { MongoCollectionDriver } from '../../lib/drivers/collection.driver'
-import { AppScheme, BaseParams, MockKit, cases, createMockKit, dataScheme } from '@companix/xeo-devkit'
+import {
+  AppScheme,
+  BaseParams,
+  MockKit,
+  SearchCase,
+  cases,
+  createMockKit,
+  dataScheme
+} from '@companix/xeo-devkit'
 import { Connection } from 'mongoose'
 import { INestApplication } from '@nestjs/common'
 
@@ -15,15 +23,18 @@ interface TestOptions {
   commitChanges: (kit: MockKit, dataSource: DataSource<AppScheme>) => Promise<void>
 }
 
-const normalizeCollection = <T>(records: T[]) => {
-  return records.map((record) => {
-    if (!record || typeof record !== 'object' || Array.isArray(record)) {
-      return record
-    }
+const normalizeMongoResult = <T>(record: T) => {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    return record
+  }
 
-    const { _id, __v, ...rest } = record as Record<string, unknown>
-    return rest as T
-  })
+  const { _id, __v, ...rest } = record as Record<string, unknown>
+
+  return rest as T
+}
+
+const normalizeCollection = <T>(records: T[]) => {
+  return records.map(normalizeMongoResult)
 }
 
 const normalizeTableState = (tableState: { m1: TableStore; m2: TableStore }) => {
@@ -55,7 +66,7 @@ const getTablesState = async (tables: { [name: string]: TableRow[] }) => {
   return state
 }
 
-const runTest = async (app: INestApplication<any>, { params, commitChanges }: TestOptions) => {
+const runCaseTest = async (app: INestApplication<any>, { params, commitChanges }: TestOptions) => {
   const { expectations } = params
   const dataSource = app.get<DataSource<AppScheme, MongoCollectionDriver<AppScheme>>>(
     getDataSourceToken(dataScheme)
@@ -94,6 +105,30 @@ const runTest = async (app: INestApplication<any>, { params, commitChanges }: Te
   return snapshot
 }
 
+const runSearchCase = async (app: INestApplication<any>, { params }: SearchCase) => {
+  const dataSource = app.get<DataSource<AppScheme, MongoCollectionDriver<AppScheme>>>(
+    getDataSourceToken(dataScheme)
+  )
+
+  const result = await params.execute(createMockKit(dataSource), dataSource)
+
+  const normalize = (item: object | null | object[]) => {
+    if (item === null) {
+      return item
+    }
+
+    if (Array.isArray(item)) {
+      return item.map(normalizeMongoResult)
+    }
+
+    return normalizeMongoResult(item)
+  }
+
+  for (const item of result) {
+    expect(normalize(item.result)).toEqual(item.expect)
+  }
+}
+
 describe('DataSource', () => {
   let app: INestApplication
 
@@ -129,7 +164,7 @@ describe('DataSource', () => {
   for (const item of cases) {
     if (item.type === 'unit') {
       test(item.name, async () => {
-        const snapshot = await runTest(app, {
+        const snapshot = await runCaseTest(app, {
           params: item.params,
           commitChanges: (kit, dataSource) => item.params.execute(kit, dataSource)
         })
@@ -141,7 +176,7 @@ describe('DataSource', () => {
     if (item.type === 'dual') {
       for (const marker of item.markers) {
         test(`${item.name} / ${marker}`, async () => {
-          const snapshot = await runTest(app, {
+          const snapshot = await runCaseTest(app, {
             params: item.params,
             commitChanges: (kit, dataSource) => item.params.execute(kit, dataSource, marker)
           })
@@ -149,6 +184,12 @@ describe('DataSource', () => {
           buffer.push({ name: item.name, snapshot })
         })
       }
+    }
+
+    if (item.type === 'search') {
+      test(item.name, async () => {
+        await runSearchCase(app, item)
+      })
     }
   }
 })

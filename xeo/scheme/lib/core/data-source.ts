@@ -1,5 +1,5 @@
 import { xRay } from '../utils/x-ray'
-import { __DEV__, ExtractType } from '../utils'
+import { __DEV__, DeepPartial, ExtractType } from '../utils'
 
 import { DataProcessor, IType } from './data-processor'
 import { DataScheme, CollectionScheme } from './data-scheme'
@@ -11,6 +11,8 @@ interface CollectionApi<T = object, I extends IType = IType> {
   create: (model: T) => Promise<void>
   remove: (id: I) => Promise<void>
   update: (id: I, mutate: (model: T) => void) => void
+  findOneBy: (filter: DeepPartial<T>) => Promise<T | null>
+  findBy: (filter: DeepPartial<T>) => Promise<T[]>
 }
 
 interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends CollectionDriver> {
@@ -45,6 +47,12 @@ export class DataSource<
         },
         get: async (id) => {
           return driver.get({ model: collection.name, id })
+        },
+        findOneBy: (filter) => {
+          return driver.findOneBy({ model: collection.name, filter })
+        },
+        findBy: (filter) => {
+          return driver.findBy({ model: collection.name, filter })
         },
         create: async (data) => {
           return processor.create(data, collection.name)

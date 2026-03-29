@@ -1,6 +1,7 @@
 import { caseAAA } from './basic/creating'
 import { caseDWO } from './basic/creating-discriminated'
 import { caseFIX, caseJRO, caseKRO } from './basic/error-model-not-exists'
+import { caseFIA, caseFIB, caseFIC } from './basic/find-methods'
 import { caseVIA } from './basic/update'
 import { caseXNI } from './basic/update-discriminated'
 import { caseNIX } from './complex/check-removing'
@@ -52,6 +53,9 @@ export const cases = [
   caseFIX,
   caseJRO,
   caseKRO,
+  caseFIA,
+  caseFIB,
+  caseFIC,
   caseXNI,
   caseVIA,
   // relations/reference-set
@@ -113,6 +117,9 @@ export {
   caseFIX,
   caseJRO,
   caseKRO,
+  caseFIA,
+  caseFIB,
+  caseFIC,
   caseXNI,
   caseVIA,
   // relations/reference-set

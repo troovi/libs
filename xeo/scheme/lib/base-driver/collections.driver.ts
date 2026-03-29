@@ -103,6 +103,49 @@ export class IndexedCollectionStore<T> {
     return this.store[id] !== undefined
   }
 
+  findOneBy(filter: object = {}) {
+    for (const item of this.data) {
+      if (this.matchesFilter(item, filter)) {
+        return item
+      }
+    }
+
+    return null
+  }
+
+  findBy(filter: object = {}) {
+    return this.data.filter((item) => {
+      return this.matchesFilter(item, filter)
+    })
+  }
+
+  /** Сопоставляет item с вложенным объектом фильтра (все листовые значения — через ===). */
+  private matchesFilter(item: unknown, filter: unknown): boolean {
+    if (filter === null || typeof filter !== 'object') {
+      return item === filter
+    }
+
+    if (Array.isArray(filter)) {
+      if (!Array.isArray(item) || item.length !== filter.length) {
+        return false
+      }
+
+      return filter.every((entry, index) => this.matchesFilter(item[index], entry))
+    }
+
+    if (!isObjectLike(item)) {
+      return false
+    }
+
+    for (const key of Object.keys(filter as object)) {
+      if (!this.matchesFilter(item[key as keyof object], filter[key as keyof object])) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   private apply(target: object, address: string, change: (source: object, key: keyof object) => void) {
     const path = address.split('.')
 
@@ -156,6 +199,14 @@ export class BaseCollectionDriver<T extends CollectionScheme> implements Collect
 
   async get({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].get(id)
+  }
+
+  async findOneBy({ model, filter }: CollectionDriverParams.Filter) {
+    return this.collections[model].findOneBy(filter)
+  }
+
+  async findBy({ model, filter }: CollectionDriverParams.Filter) {
+    return this.collections[model].findBy(filter)
   }
 
   async create({ model, data }: CollectionDriverParams.Create) {

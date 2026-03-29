@@ -13,3 +13,5 @@ export type KeyOfType<T, V> = keyof {
 export type TargetHost = {
   target: Function
 }
+
+export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> }
