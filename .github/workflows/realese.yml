@@ -18,6 +18,8 @@ jobs:
       icons-solid: ${{ steps.filter.outputs.icons-solid }}
       icons-regular: ${{ steps.filter.outputs.icons-regular }}
       icons-brands: ${{ steps.filter.outputs.icons-brands }}
+      xeo-scheme: ${{ steps.filter.outputs.xeo-scheme }}
+      xeo-server: ${{ steps.filter.outputs.xeo-server }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -44,6 +46,10 @@ jobs:
               - 'icons/regular/package.json'
             icons-brands:
               - 'icons/brands/package.json'
+            xeo-scheme:
+              - 'xeo/scheme/package.json'
+            xeo-server:
+              - 'xeo/server/package.json'
 
       - run: echo '${{ toJson(github.event) }}'
 
@@ -254,5 +260,47 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: icons/brands
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  xeo-scheme:
+    needs: changes
+    if: ${{ needs.changes.outputs.xeo-scheme == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/xeo-scheme
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: xeo/scheme
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  xeo-server:
+    needs: changes
+    if: ${{ needs.changes.outputs.xeo-server == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/xeo-server
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: xeo/server
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

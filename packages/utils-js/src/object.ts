@@ -30,3 +30,20 @@ export const partial = <T extends object>(object: T): T => {
 
   return response
 }
+
+export const isObjectLike = (value: unknown): value is object => {
+  return typeof value === 'object' && value !== null
+}
+
+export const isPlainObject = (value: unknown): value is object => {
+  if (isObjectLike(value)) {
+    const prototype = Object.getPrototypeOf(value)
+    return prototype === Object.prototype || prototype === null
+  }
+
+  return false
+}
+
+export const isDraftable = (value: unknown): value is object => {
+  return Array.isArray(value) || isPlainObject(value)
+}

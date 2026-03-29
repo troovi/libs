@@ -2,7 +2,8 @@
   "name": "libs",
   "workspaces": [
     "packages/*",
-    "icons/*"
+    "icons/*",
+    "xeo/*"
   ],
   "scripts": {
     "github:setup": "node ./setup.js",

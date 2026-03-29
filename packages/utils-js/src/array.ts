@@ -61,3 +61,55 @@ export const roundSeparateArray = <T>(array: T[], size: number): T[][] => {
 export const contain = <T>(items: T[][]): T[] => {
   return items.reduce((prev, curr) => [...prev, ...curr], [])
 }
+
+interface Options<C, P> {
+  getCommonKey: (value: C | P) => string
+  isChanged: (prev: P, curr: C) => boolean
+}
+
+const getArrayCommits = <P, C>(prev: P[], curr: C[], { getCommonKey, isChanged }: Options<C, P>) => {
+  const removed: P[] = []
+  const updated: { prev: P; curr: C }[] = []
+  const unchanged: P[] = []
+  const added: C[] = []
+
+  const prevMap: { [key: string]: P } = {}
+  const currMap: { [key: string]: C } = {}
+
+  for (const item of prev) {
+    prevMap[getCommonKey(item)] = item
+  }
+
+  for (const item of curr) {
+    currMap[getCommonKey(item)] = item
+  }
+
+  for (const prevItem of prev) {
+    const currItem = currMap[getCommonKey(prevItem)]
+
+    if (currItem) {
+      if (isChanged(prevItem, currItem)) {
+        updated.push({ prev: prevItem, curr: currItem })
+      } else {
+        unchanged.push(prevItem)
+      }
+    } else {
+      removed.push(prevItem)
+    }
+  }
+
+  for (const currItem of curr) {
+    if (!prevMap[getCommonKey(currItem)]) {
+      added.push(currItem)
+    }
+  }
+
+  return {
+    removed,
+    added: added as C[],
+    updated,
+    unchanged
+  }
+}
+
+export { getArrayCommits }

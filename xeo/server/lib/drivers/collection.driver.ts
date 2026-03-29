@@ -1,0 +1,157 @@
+import {
+  CollectionDriver,
+  CollectionDriverParams,
+  CollectionScheme,
+  DataScheme
+} from '@companix/xeo-scheme'
+import { MongoRelationsTable } from './table.driver'
+import { Connection, Model, Schema } from 'mongoose'
+import { DefinitionsFactory } from '../factories/definitions.factory'
+import { Logger } from '@nestjs/common'
+
+interface DiscriminatedModels {
+  [model: string]: {
+    discriminatorKey: string
+    models: {
+      [value: string]: Model<any>
+    }
+  }
+}
+
+export class MongoCollectionDriver<T extends CollectionScheme> implements CollectionDriver {
+  private collections: { [model: string]: Model<any> } = {}
+  private discriminatedModels: DiscriminatedModels = {}
+
+  public tables: MongoRelationsTable<T>
+
+  constructor(private dataScheme: DataScheme<T>, private connection: Connection) {
+    Logger.log('Driver bootstrap', 'MongoDriver')
+
+    this.tables = new MongoRelationsTable(dataScheme, connection)
+
+    const factory = new DefinitionsFactory(dataScheme)
+
+    for (const name in dataScheme.collections) {
+      const model = dataScheme.collections[name].name
+      const scheme = dataScheme.models[model].scheme
+
+      const baseDefinition = factory.createForScheme(scheme)
+
+      if (scheme.type === 'base') {
+        this.collections[model] = this.useModel(model, new Schema(baseDefinition))
+      }
+
+      if (scheme.type === 'discriminated') {
+        this.collections[model] = this.useModel(
+          model,
+          new Schema(baseDefinition, {
+            discriminatorKey: scheme.discriminatorKey
+          })
+        )
+
+        this.discriminatedModels[model] = {
+          discriminatorKey: scheme.discriminatorKey,
+          models: {}
+        }
+
+        for (const discriminator of scheme.discriminators) {
+          const discriminatedModel = this.collections[model].discriminator(
+            discriminator.name,
+            new Schema(factory.createDefinitionScheme(discriminator)),
+            discriminator.value
+          )
+
+          this.discriminatedModels[model].models[discriminator.value] = discriminatedModel
+        }
+      }
+    }
+  }
+
+  async getAll({ model }: CollectionDriverParams.Model) {
+    return this.collections[model].find().lean().exec()
+  }
+
+  async get({ model, id }: CollectionDriverParams.Record) {
+    return this.collections[model].findOne({ [this.getIdentifierKey(model)]: id }).lean()
+  }
+
+  async create({ model, data }: CollectionDriverParams.Create) {
+    await new this.collections[model](data).save()
+  }
+
+  async remove({ model, id }: CollectionDriverParams.Record) {
+    await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
+  }
+
+  // при update для discriminated collection нельзя всегда использовать только this.collections[model]
+  // нужно сначала получить документ по id, узнать его discriminatorKey (type), и если это дискриминатор, выполнять updateOne() через соответствующую discriminator model
+  async update({ model, id, patches }: CollectionDriverParams.Update) {
+    const identifierKey = this.getIdentifierKey(model)
+    const collection = await this.getCollection({ model, id })
+
+    const responses = await Promise.all(
+      patches.map(async (patch) => {
+        switch (patch.type) {
+          case 'set': {
+            return collection.updateOne(
+              { [identifierKey]: id },
+              { $set: { [patch.address]: patch.value } }
+            )
+          }
+          case 'push': {
+            return collection.updateOne(
+              { [identifierKey]: id },
+              { $push: { [patch.address]: { $each: patch.items } } }
+            )
+          }
+          case 'pull': {
+            return collection.updateOne(
+              { [identifierKey]: id },
+              { $pull: { [patch.address]: { $in: patch.items } } }
+            )
+          }
+        }
+      })
+    )
+
+    // check transaction
+    for (const response of responses) {
+      if (!response.acknowledged) {
+        console.log('MongoDB Write Warning', { model, id, patches }, responses)
+      }
+    }
+  }
+
+  private async getCollection({ model, id }: CollectionDriverParams.Record) {
+    if (this.discriminatedModels[model]) {
+      const target = await this.get({ model, id })
+      const discriminatorValue = target[this.discriminatedModels[model].discriminatorKey] as string
+
+      return this.discriminatedModels[model].models[discriminatorValue]
+    }
+
+    return this.collections[model]
+  }
+
+  async exists({ model, id }: CollectionDriverParams.Record) {
+    const result = await this.collections[model].exists({
+      [this.getIdentifierKey(model)]: id
+    })
+
+    return result !== null
+  }
+
+  private getIdentifierKey(model: string) {
+    return this.dataScheme.models[model].scheme.identifier.propertyKey
+  }
+
+  private useModel<T>(model: string, schema: Schema): Model<T> {
+    return this.connection.models[model] ?? this.connection.model(model, schema)
+  }
+}
+
+export const createMongoDriver = (connection: Connection) => {
+  return <T extends CollectionScheme>(dataScheme: DataScheme<T>) => {
+    return new MongoCollectionDriver(dataScheme, connection)
+  }
+}

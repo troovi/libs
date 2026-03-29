@@ -1,0 +1,26 @@
+{
+  "name": "@companix/xeo-devkit",
+  "version": "1.0.0",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "echo": "echo \"@companix/xeo-devkit\"",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs"
+  },
+  "dependencies": {
+    "@companix/utils-js": "file:../../packages/utils-js",
+    "@companix/xeo-scheme": "file:../scheme"
+  },
+  "devDependencies": {
+    "zod": "^4.3.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-strip": "^3.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.18.1",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "@types/big.js": "^6.2.2"
+  }
+}

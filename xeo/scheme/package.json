@@ -1,0 +1,41 @@
+{
+  "name": "@companix/xeo-scheme",
+  "version": "0.0.1",
+  "main": "dist/bundle.cjs.js",
+  "module": "dist/bundle.esm.js",
+  "types": "./lib/index.ts",
+  "scripts": {
+    "echo": "echo \"@companix/xeo-scheme\"",
+    "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
+    "dev": "tsc --noEmit && tsx ./playground/run.ts",
+    "dev:browser": "vite --config vite.config.ts",
+    "test:observer": "vitest run ./tests/observer/observer.test.ts",
+    "test:cases": "disableDev=true vitest run ./tests/cases.test.ts"
+  },
+  "devDependencies": {
+    "@companix/xeo-devkit": "file:../devkit",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^6.0.3",
+    "@rollup/plugin-strip": "^3.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-webpack-plugin": "^4.2.0",
+    "rollup": "^4.18.1",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "tsx": "^4.19.2",
+    "vite": "^7.0.0",
+    "vite-plugin-checker": "^0.9.3",
+    "vitest": "^3.2.4",
+    "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "@companix/utils-js": "file:../../packages/utils-js",
+    "fast-deep-equal": "^3.1.3"
+  }
+}
