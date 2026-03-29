@@ -100,6 +100,10 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
     return result !== null
   }
 
+  async count({ model }: CollectionDriverParams.Model) {
+    return this.collections[model].countDocuments()
+  }
+
   async existsBy({ model, filter }: CollectionDriverParams.Filter) {
     const result = await this.collections[model].exists(buildFlattenMap(filter))
 

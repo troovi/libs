@@ -129,6 +129,10 @@ export class IndexedCollectionStore<T> {
     })
   }
 
+  count() {
+    return this.data.length
+  }
+
   /** Сопоставляет item с вложенным объектом фильтра (все листовые значения — через ===). */
   private matchesFilter(item: unknown, filter: unknown): boolean {
     if (filter === null || typeof filter !== 'object') {
@@ -237,6 +241,10 @@ export class BaseCollectionDriver<T extends CollectionScheme> implements Collect
 
   async existsBy({ model, filter }: CollectionDriverParams.Filter) {
     return this.collections[model].existsBy(filter)
+  }
+
+  async count({ model }: CollectionDriverParams.Model) {
+    return this.collections[model].count()
   }
 }
 

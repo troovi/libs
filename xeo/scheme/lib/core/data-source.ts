@@ -15,6 +15,7 @@ interface CollectionApi<T = object, I extends IType = IType> {
   findBy: (filter: DeepPartial<T>) => Promise<T[]>
   existsBy: (filter: DeepPartial<T>) => Promise<boolean>
   exists: (id: I) => Promise<boolean>
+  count: () => Promise<number>
 }
 
 interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends CollectionDriver> {
@@ -63,6 +64,9 @@ export class DataSource<
         },
         exists: (id) => {
           return driver.exists({ model: collection.name, id })
+        },
+        count: () => {
+          return driver.count({ model: collection.name })
         },
         create: async (data) => {
           return processor.create(data, collection.name)
