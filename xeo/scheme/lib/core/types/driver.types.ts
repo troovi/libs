@@ -57,6 +57,7 @@ export abstract class CollectionDriver {
   exists: (params: CollectionDriverParams.Record) => Promise<boolean>
   findOneBy: (params: CollectionDriverParams.Filter) => Promise<object | null>
   findBy: (params: CollectionDriverParams.Filter) => Promise<object[]>
+  existsBy: (filter: CollectionDriverParams.Filter) => Promise<boolean>
 }
 
 export interface TableRow {

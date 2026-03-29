@@ -13,10 +13,16 @@ interface CollectionApi<T = object, I extends IType = IType> {
   update: (id: I, mutate: (model: T) => void) => void
   findOneBy: (filter: DeepPartial<T>) => Promise<T | null>
   findBy: (filter: DeepPartial<T>) => Promise<T[]>
+  existsBy: (filter: DeepPartial<T>) => Promise<boolean>
+  exists: (id: I) => Promise<boolean>
 }
 
 interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends CollectionDriver> {
   createDriver: (dataScheme: DataScheme<Scheme>) => Driver
+}
+
+export type Collections<Scheme extends CollectionScheme> = {
+  [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType']>
 }
 
 export class DataSource<
@@ -24,9 +30,7 @@ export class DataSource<
   Driver extends CollectionDriver = CollectionDriver
 > {
   public driver: Driver
-  public collections = {} as {
-    [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType']>
-  }
+  public collections = {} as Collections<Scheme>
 
   constructor(dataScheme: DataScheme<Scheme>, { createDriver }: DataSourceOptions<Scheme, Driver>) {
     const driver = createDriver(dataScheme)
@@ -53,6 +57,12 @@ export class DataSource<
         },
         findBy: (filter) => {
           return driver.findBy({ model: collection.name, filter })
+        },
+        existsBy: (filter) => {
+          return driver.existsBy({ model: collection.name, filter })
+        },
+        exists: (id) => {
+          return driver.exists({ model: collection.name, id })
         },
         create: async (data) => {
           return processor.create(data, collection.name)

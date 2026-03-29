@@ -103,6 +103,16 @@ export class IndexedCollectionStore<T> {
     return this.store[id] !== undefined
   }
 
+  existsBy(filter: object = {}) {
+    for (const item of this.data) {
+      if (this.matchesFilter(item, filter)) {
+        return true
+      }
+    }
+
+    return false
+  }
+
   findOneBy(filter: object = {}) {
     for (const item of this.data) {
       if (this.matchesFilter(item, filter)) {
@@ -223,6 +233,10 @@ export class BaseCollectionDriver<T extends CollectionScheme> implements Collect
 
   async exists({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].exists(id)
+  }
+
+  async existsBy({ model, filter }: CollectionDriverParams.Filter) {
+    return this.collections[model].existsBy(filter)
   }
 }
 

@@ -4,7 +4,6 @@ import {
   CollectionScheme,
   DataScheme
 } from '@companix/xeo-scheme'
-import { isPlainObject } from '@companix/utils-js'
 import { MongoRelationsTable } from './table.driver'
 import { Connection, Model, Schema } from 'mongoose'
 import { DefinitionsFactory } from '../factories/definitions.factory'
@@ -93,6 +92,20 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
     await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
   }
 
+  async exists({ model, id }: CollectionDriverParams.Record) {
+    const result = await this.collections[model].exists({
+      [this.getIdentifierKey(model)]: id
+    })
+
+    return result !== null
+  }
+
+  async existsBy({ model, filter }: CollectionDriverParams.Filter) {
+    const result = await this.collections[model].exists(buildFlattenMap(filter))
+
+    return result !== null
+  }
+
   // при update для discriminated collection нельзя всегда использовать только this.collections[model]
   // нужно сначала получить документ по id, узнать его discriminatorKey (type), и если это дискриминатор, выполнять updateOne() через соответствующую discriminator model
   async update({ model, id, patches }: CollectionDriverParams.Update) {
@@ -141,14 +154,6 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
     }
 
     return this.collections[model]
-  }
-
-  async exists({ model, id }: CollectionDriverParams.Record) {
-    const result = await this.collections[model].exists({
-      [this.getIdentifierKey(model)]: id
-    })
-
-    return result !== null
   }
 
   private getIdentifierKey(model: string) {
