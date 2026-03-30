@@ -2,7 +2,8 @@ import {
   CollectionDriver,
   CollectionDriverParams,
   CollectionScheme,
-  DataScheme
+  DataScheme,
+  ExtractType
 } from '@companix/xeo-scheme'
 import { MongoRelationsTable } from './table.driver'
 import { Connection, Model, Schema } from 'mongoose'
@@ -19,13 +20,14 @@ interface DiscriminatedModels {
   }
 }
 
-export class MongoCollectionDriver<T extends CollectionScheme> implements CollectionDriver {
+export class MongoCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriver {
+  private clenupCallbacks: { [model: string]: ((data: any) => void)[] } = {}
   private collections: { [model: string]: Model<any> } = {}
   private discriminatedModels: DiscriminatedModels = {}
 
-  public tables: MongoRelationsTable<T>
+  public tables: MongoRelationsTable<Scheme>
 
-  constructor(private dataScheme: DataScheme<T>, private connection: Connection) {
+  constructor(private dataScheme: DataScheme<Scheme>, private connection: Connection) {
     Logger.log('Driver bootstrap', 'MongoDriver')
 
     this.tables = new MongoRelationsTable(dataScheme, connection)
@@ -68,6 +70,17 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
     }
   }
 
+  // prettier-ignore
+  subscribeCleanup<K extends keyof Scheme>(name: K, callback: (data: ExtractType<Scheme[K]['model']>) => void){
+    const model = this.dataScheme.collections[name].name
+
+    if(!this.clenupCallbacks[model]){
+      this.clenupCallbacks[model] = []
+    }
+
+    this.clenupCallbacks[model].push(callback)
+  }
+
   async findOneBy({ model, filter }: CollectionDriverParams.Filter) {
     return this.collections[model].findOne(buildFlattenMap(filter)).lean().exec()
   }
@@ -89,7 +102,19 @@ export class MongoCollectionDriver<T extends CollectionScheme> implements Collec
   }
 
   async remove({ model, id }: CollectionDriverParams.Record) {
+    const cache = { data: null as null | object }
+
+    if (this.clenupCallbacks[model]) {
+      cache.data = await this.get({ model, id })
+    }
+
     await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
+
+    if (cache.data) {
+      this.clenupCallbacks[model].forEach((cb) => {
+        cb(cache.data)
+      })
+    }
   }
 
   async exists({ model, id }: CollectionDriverParams.Record) {
