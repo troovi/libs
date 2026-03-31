@@ -25,7 +25,7 @@ export const dataScheme = new DataScheme({
   // chat
   chat: defineDiscriminatedCollection({
     baseScheme: ChatEntities.BaseChat,
-    discriminators: [ChatEntities.BaseChat, ChatEntities.NoteChat],
+    discriminators: [ChatEntities.SeatChat, ChatEntities.NoteChat],
     identifier: 'chatId'
   }),
   // client

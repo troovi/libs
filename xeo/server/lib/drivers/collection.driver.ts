@@ -21,7 +21,7 @@ interface DiscriminatedModels {
 }
 
 export class MongoCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriver {
-  private clenupCallbacks: { [model: string]: ((data: any) => void)[] } = {}
+  private onClenupCallbacks: { [model: string]: ((data: any) => void)[] } = {}
   private collections: { [model: string]: Model<any> } = {}
   private discriminatedModels: DiscriminatedModels = {}
 
@@ -74,11 +74,11 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
   subscribeCleanup<K extends keyof Scheme>(name: K, callback: (data: ExtractType<Scheme[K]['model']>) => void){
     const model = this.dataScheme.collections[name].name
 
-    if(!this.clenupCallbacks[model]){
-      this.clenupCallbacks[model] = []
+    if(!this.onClenupCallbacks[model]){
+      this.onClenupCallbacks[model] = []
     }
 
-    this.clenupCallbacks[model].push(callback)
+    this.onClenupCallbacks[model].push(callback)
   }
 
   async findOneBy({ model, filter }: CollectionDriverParams.Filter) {
@@ -104,14 +104,14 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
   async remove({ model, id }: CollectionDriverParams.Record) {
     const cache = { data: null as null | object }
 
-    if (this.clenupCallbacks[model]) {
+    if (this.onClenupCallbacks[model]) {
       cache.data = await this.get({ model, id })
     }
 
     await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
 
     if (cache.data) {
-      this.clenupCallbacks[model].forEach((cb) => {
+      this.onClenupCallbacks[model].forEach((cb) => {
         cb(cache.data)
       })
     }

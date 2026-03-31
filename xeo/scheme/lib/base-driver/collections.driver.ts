@@ -187,11 +187,13 @@ export class IndexedCollectionStore<T> {
   }
 }
 
-export class BaseCollectionDriver<T extends CollectionScheme> implements CollectionDriver {
-  private collections: { [model: string]: IndexedCollectionStore<object> } = {}
-  public tables: BaseTableDriver<T>
+export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriver {
+  private onCreateCallbacks: { [model: string]: ((data: any) => void)[] } = {}
 
-  constructor(private dataScheme: DataScheme<T>) {
+  private collections: { [model: string]: IndexedCollectionStore<object> } = {}
+  public tables: BaseTableDriver<Scheme>
+
+  constructor(private dataScheme: DataScheme<Scheme>) {
     this.tables = new BaseTableDriver(dataScheme)
 
     for (const model in dataScheme.collections) {
@@ -201,10 +203,21 @@ export class BaseCollectionDriver<T extends CollectionScheme> implements Collect
     }
   }
 
-  bootstrap(data: { [K in keyof T]: ExtractType<T[K]['model']>[] }) {
+  bootstrap(data: { [K in keyof Scheme]: ExtractType<Scheme[K]['model']>[] }) {
     for (const key in data) {
       this.collections[this.dataScheme.collections[key].name].initialize(data[key])
     }
+  }
+
+  // prettier-ignore
+  subscribeCreate<K extends keyof Scheme>(name: K, callback: (data: ExtractType<Scheme[K]['model']>) => void) {
+    const model = this.dataScheme.collections[name].name
+
+    if (!this.onCreateCallbacks[model]) {
+      this.onCreateCallbacks[model] = []
+    }
+
+    this.onCreateCallbacks[model].push(callback)
   }
 
   async getAll({ model }: CollectionDriverParams.Model) {
@@ -224,6 +237,10 @@ export class BaseCollectionDriver<T extends CollectionScheme> implements Collect
   }
 
   async create({ model, data }: CollectionDriverParams.Create) {
+    if (this.onCreateCallbacks[model]) {
+      this.onCreateCallbacks[model].forEach((cb) => cb(data))
+    }
+
     return this.collections[model].create(data)
   }
 
