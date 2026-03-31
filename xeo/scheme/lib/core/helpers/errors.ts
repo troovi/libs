@@ -9,13 +9,23 @@ interface Exists {
 interface RelationRestrict {
   reason: 'RELATION_RESTRICT'
   address: string
-  info: string
+  info: RelationRestrictInfo
 }
 
 interface DependencyRestrict {
   reason: 'DEPENDENCY_RESTRICT'
   model: string
 }
+
+export type RelationRestrictInfo =
+  | 'unique'
+  | 'owner'
+  | 'owner-fallback'
+  | 'belongs-to'
+  | 'has-many'
+  | 'has-many >0'
+  | 'has-many !== 0'
+  | 'invalid discriminator'
 
 export type CoreErrorData = Exists | NotExists | RelationRestrict | DependencyRestrict
 
