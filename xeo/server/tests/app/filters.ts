@@ -52,7 +52,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const modelsNames: { [model: string]: string } = {}
 
     for (const collectionName in collectionsNames) {
-      modelsNames[dataScheme.collections[collectionName].name] = collectionsNames[collectionName]
+      const name = collectionName as keyof AppScheme
+      modelsNames[dataScheme.collections[name].name] = collectionsNames[name]
     }
 
     const getModelTitle = (modelName: string) => {

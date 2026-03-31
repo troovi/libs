@@ -76,14 +76,14 @@ const runCaseTest = async (app: INestApplication<any>, { params, commitChanges }
     expect(error).toEqual(expectations.error)
   })
 
-  const snapshot = { result: {} as object, table: {} as object }
+  const snapshot = { result: {} as any, table: {} as object }
 
   for (const collection in dataSource.collections) {
     const collectionName = collection as keyof AppScheme
 
     await dataSource.collections[collectionName].getAll().then((result) => {
       snapshot.result[collectionName] = result
-      expect(normalizeCollection(result)).toEqual(expectations.scheme[collectionName] ?? [])
+      expect(normalizeCollection(result as object[])).toEqual(expectations.scheme[collectionName] ?? [])
     })
   }
 
