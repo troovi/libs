@@ -12,26 +12,41 @@ import { DataSourceStorage } from './storages/data-source'
  */
 @Module({})
 export class MongooseDriverModule {
-  static forRoot(uri: string, options: MongooseModuleOptions = {}): DynamicModule {
-    return {
-      module: MongooseDriverModule,
-      imports: [MongooseCoreModule.forRoot(uri, options)]
-    }
-  }
-
-  static forFeature(dataSource: DataScheme<CollectionScheme>, connectionName?: string): DynamicModule {
+  static forRoot(
+    uri: string,
+    dataSource: DataScheme<CollectionScheme>,
+    options: MongooseModuleOptions = {}
+  ): DynamicModule {
     const provider: Provider = {
       provide: getDataSourceToken(dataSource),
       useFactory: (connection: Connection): DataSource<CollectionScheme> => {
         return DataSourceStorage.getSource(dataSource, connection)
       },
-      inject: [getConnectionToken(connectionName)]
+      inject: [getConnectionToken(options.connectionName)]
     }
 
     return {
+      global: true,
       module: MongooseDriverModule,
+      imports: [MongooseCoreModule.forRoot(uri, options)],
       providers: [provider],
       exports: [provider]
     }
   }
+
+  // static forFeature(dataSource: DataScheme<CollectionScheme>, connectionName?: string): DynamicModule {
+  //   const provider: Provider = {
+  //     provide: getDataSourceToken(dataSource),
+  //     useFactory: (connection: Connection): DataSource<CollectionScheme> => {
+  //       return DataSourceStorage.getSource(dataSource, connection)
+  //     },
+  //     inject: [getConnectionToken(connectionName)]
+  //   }
+
+  //   return {
+  //     module: MongooseDriverModule,
+  //     providers: [provider],
+  //     exports: [provider]
+  //   }
+  // }
 }
