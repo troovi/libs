@@ -15,15 +15,16 @@ interface DriverApiMethods<T = object, I extends IType = IType> {
   count: () => number
 }
 
-type DriverApiSync = DriverApiMethods
-type DriverApiAsync = Promisify<DriverApiMethods>
+type DriverApiSync<T = object, I extends IType = IType> = DriverApiMethods<T, I>
+type DriverApiAsync<T = object, I extends IType = IType> = Promisify<DriverApiMethods<T, I>>
 
 type DriverType = 'sync' | 'async'
 
-type DriverApi<T extends DriverType = DriverType> = T extends 'sync' ? DriverApiSync : DriverApiAsync
+// prettier-ignore
+type DriverApi<T = object,I extends IType = IType, DT extends DriverType = DriverType> = DT extends 'sync' ? DriverApiSync<T, I> : DriverApiAsync<T, I>
 
 // prettier-ignore
-type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<DT> & {
+type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<T, I, DT> & {
   // data changing
   update: (id: I, mutate: (model: T) => void) => void
   create: (model: T) => Promise<void>
