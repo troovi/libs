@@ -95,8 +95,6 @@ export class MongoRelationsTable<T extends CollectionScheme> implements TableDri
     return this.tables[tableName].getRelations(modelSide, modelId)
   }
 
-  // development
-
   async getTables() {
     const state: { [name: string]: TableRow[] } = {}
 

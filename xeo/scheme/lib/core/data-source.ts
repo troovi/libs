@@ -1,37 +1,51 @@
 import { xRay } from '../utils/x-ray'
-import { __DEV__, DeepPartial, ExtractType } from '../utils'
+import { __DEV__, DeepPartial, ExtractType, Promisify } from '../utils'
 
 import { DataProcessor, IType } from './data-processor'
 import { DataScheme, CollectionScheme } from './data-scheme'
-import { CollectionDriver } from './types/driver.types'
+import { AppCollectionDriver } from './types/driver.types'
 
-interface CollectionApi<T = object, I extends IType = IType> {
-  getAll: () => Promise<T[]>
-  get: (id: I) => Promise<T | null>
-  create: (model: T) => Promise<void>
-  remove: (id: I) => Promise<void>
-  update: (id: I, mutate: (model: T) => void) => void
-  findOneBy: (filter: DeepPartial<T>) => Promise<T | null>
-  findBy: (filter: DeepPartial<T>) => Promise<T[]>
-  existsBy: (filter: DeepPartial<T>) => Promise<boolean>
-  exists: (id: I) => Promise<boolean>
-  count: () => Promise<number>
+interface DriverApiMethods<T = object, I extends IType = IType> {
+  get: (id: I) => T | null
+  getAll: () => T[]
+  findOneBy: (filter: DeepPartial<T>) => T | null
+  findBy: (filter: DeepPartial<T>) => T[]
+  existsBy: (filter: DeepPartial<T>) => boolean
+  exists: (id: I) => boolean
+  count: () => number
 }
 
-interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends CollectionDriver> {
+type DriverApiSync = DriverApiMethods
+type DriverApiAsync = Promisify<DriverApiMethods>
+
+type DriverType = 'sync' | 'async'
+
+type DriverApi<T extends DriverType = DriverType> = T extends 'sync' ? DriverApiSync : DriverApiAsync
+
+// prettier-ignore
+type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<DT> & {
+  // data changing
+  update: (id: I, mutate: (model: T) => void) => void
+  create: (model: T) => Promise<void>
+  remove: (id: I) => Promise<void>
+}
+
+type CollectionApiShape = {
+  [K in keyof CollectionApi]: (...params: Parameters<CollectionApi[K]>) => unknown
+}
+
+interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends AppCollectionDriver> {
   createDriver: (dataScheme: DataScheme<Scheme>) => Driver
 }
 
-export type Collections<Scheme extends CollectionScheme> = {
-  [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType']>
+export type Collections<Scheme extends CollectionScheme, DT extends DriverType = DriverType> = {
+  [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType'], DT>
 }
 
-export class DataSource<
-  Scheme extends CollectionScheme,
-  Driver extends CollectionDriver = CollectionDriver
-> {
+// prettier-ignore
+export class DataSource<Scheme extends CollectionScheme, Driver extends AppCollectionDriver = AppCollectionDriver> {
   public driver: Driver
-  public collections = {} as Collections<Scheme>
+  public collections = {} as Collections<Scheme, Driver['type']>
 
   constructor(dataScheme: DataScheme<Scheme>, { createDriver }: DataSourceOptions<Scheme, Driver>) {
     const driver = createDriver(dataScheme)
@@ -46,11 +60,12 @@ export class DataSource<
     for (const name in dataScheme.collections) {
       const collection = dataScheme.collections[name]
 
-      const api: CollectionApi = {
-        getAll: async () => {
+      const base: CollectionApiShape = {
+        // driver methods
+        getAll: () => {
           return driver.getAll({ model: collection.name })
         },
-        get: async (id) => {
+        get: (id) => {
           return driver.get({ model: collection.name, id })
         },
         findOneBy: (filter) => {
@@ -68,7 +83,8 @@ export class DataSource<
         count: () => {
           return driver.count({ model: collection.name })
         },
-        create: async (data) => {
+        // data changing
+        create: (data) => {
           return processor.create(data, collection.name)
         },
         remove: (id) => {
@@ -79,7 +95,7 @@ export class DataSource<
         }
       }
 
-      this.collections[name] = api as CollectionApi<any>
+      this.collections[name] = base as CollectionApi<any, any, Driver['type']>
     }
   }
 }

@@ -19,10 +19,9 @@ const runCaseTest = async (params: BaseParams, commitChanges: CommitChanges) => 
   for (const collection in dataSource.collections) {
     const collectionName = collection as keyof AppScheme
 
-    await dataSource.collections[collectionName].getAll().then((result) => {
-      // если схема не передана, значит, мы считаем, что она должна быть пустой
-      expect(expectations.scheme[collectionName] ?? []).toEqual(result)
-    })
+    const result = await dataSource.collections[collectionName].getAll()
+    // если схема не передана, значит, мы считаем, что она должна быть пустой
+    expect(expectations.scheme[collectionName] ?? []).toEqual(result)
   }
 
   const tables = dataSource.driver.tables.getTables()

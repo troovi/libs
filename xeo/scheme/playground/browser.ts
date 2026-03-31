@@ -5,6 +5,10 @@ const dataSource = new DataSource(dataScheme, {
   createDriver: createBaseDriver
 })
 
+dataSource.collections.worker.getAll()
+
+// dataSource.collections.contact.getAll()
+
 // dataSource.collections.worker.findBy({ tgid: '' })
 
 // dataSource.driver.relationsTable.bootstrap()

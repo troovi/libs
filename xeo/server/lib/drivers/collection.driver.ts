@@ -1,5 +1,5 @@
 import {
-  CollectionDriver,
+  CollectionDriverAsync,
   CollectionDriverParams,
   CollectionScheme,
   DataScheme,
@@ -20,7 +20,9 @@ interface DiscriminatedModels {
   }
 }
 
-export class MongoCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriver {
+export class MongoCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverAsync {
+  readonly type = 'async'
+
   private onClenupCallbacks: { [model: string]: ((data: any) => void)[] } = {}
   private collections: { [model: string]: Model<any> } = {}
   private discriminatedModels: DiscriminatedModels = {}

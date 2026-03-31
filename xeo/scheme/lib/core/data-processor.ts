@@ -3,7 +3,7 @@ import { __DEV__ } from '../utils'
 import { getGuaranteedValueByAddress } from '../utils/get-deep-value'
 import { CoreError } from './helpers/errors'
 import { DataScheme, ModelData, CollectionScheme, PropertyMap } from './data-scheme'
-import { CollectionDriver } from './types/driver.types'
+import { AppCollectionDriver } from './types/driver.types'
 import { TargetReferencesStore } from './types/refscheme.types'
 import { changesTracker } from './changes-tracker'
 import { styles, xRay } from '../utils/x-ray'
@@ -22,7 +22,7 @@ const isUniqe = (items: (string | number)[]) => {
 }
 
 export class DataProcessor<T extends CollectionScheme> {
-  constructor(private dataScheme: DataScheme<T>, private driver: CollectionDriver) {}
+  constructor(private dataScheme: DataScheme<T>, private driver: AppCollectionDriver) {}
 
   async create(data: object, model: string) {
     const modeldata = this.dataScheme.models[model]

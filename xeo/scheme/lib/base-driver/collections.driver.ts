@@ -1,12 +1,12 @@
 import { isObjectLike } from '@companix/utils-js'
 import {
   UpdatePatch,
-  CollectionDriver,
   DataScheme,
   IType,
   CollectionScheme,
   CollectionInfo,
-  CollectionDriverParams
+  CollectionDriverParams,
+  CollectionDriverSync
 } from '../core'
 import { BaseTableDriver } from './table.driver'
 import { __DEV__, ExtractType, KeyOfType, styles, xRay } from '../utils'
@@ -187,7 +187,9 @@ export class IndexedCollectionStore<T> {
   }
 }
 
-export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriver {
+export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverSync {
+  readonly type = 'sync'
+
   private onCreateCallbacks: { [model: string]: ((data: any) => void)[] } = {}
 
   private collections: { [model: string]: IndexedCollectionStore<object> } = {}
@@ -220,23 +222,23 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
     this.onCreateCallbacks[model].push(callback)
   }
 
-  async getAll({ model }: CollectionDriverParams.Model) {
+  getAll({ model }: CollectionDriverParams.Model) {
     return this.collections[model].getAll()
   }
 
-  async get({ model, id }: CollectionDriverParams.Record) {
+  get({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].get(id)
   }
 
-  async findOneBy({ model, filter }: CollectionDriverParams.Filter) {
+  findOneBy({ model, filter }: CollectionDriverParams.Filter) {
     return this.collections[model].findOneBy(filter)
   }
 
-  async findBy({ model, filter }: CollectionDriverParams.Filter) {
+  findBy({ model, filter }: CollectionDriverParams.Filter) {
     return this.collections[model].findBy(filter)
   }
 
-  async create({ model, data }: CollectionDriverParams.Create) {
+  create({ model, data }: CollectionDriverParams.Create) {
     if (this.onCreateCallbacks[model]) {
       this.onCreateCallbacks[model].forEach((cb) => cb(data))
     }
@@ -244,23 +246,23 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
     return this.collections[model].create(data)
   }
 
-  async remove({ model, id }: CollectionDriverParams.Record) {
+  remove({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].remove(id)
   }
 
-  async update({ model, id, patches }: CollectionDriverParams.Update) {
+  update({ model, id, patches }: CollectionDriverParams.Update) {
     return this.collections[model].update(id, patches)
   }
 
-  async exists({ model, id }: CollectionDriverParams.Record) {
+  exists({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].exists(id)
   }
 
-  async existsBy({ model, filter }: CollectionDriverParams.Filter) {
+  existsBy({ model, filter }: CollectionDriverParams.Filter) {
     return this.collections[model].existsBy(filter)
   }
 
-  async count({ model }: CollectionDriverParams.Model) {
+  count({ model }: CollectionDriverParams.Model) {
     return this.collections[model].count()
   }
 }
