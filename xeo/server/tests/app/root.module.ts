@@ -6,7 +6,11 @@ import { dataScheme } from '@companix/xeo-devkit'
 
 @Module({
   imports: [
-    MongooseDriverModule.forRoot(getMongoConnectionURL(), dataScheme, getMongoConnectionOptions()),
+    MongooseDriverModule.forRoot({
+      uri: getMongoConnectionURL(),
+      dataScheme,
+      mongoOptions: getMongoConnectionOptions()
+    }),
     AppModule //
   ]
 })

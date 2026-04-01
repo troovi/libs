@@ -1,6 +1,5 @@
 import { CollectionScheme, DataScheme, DataSource } from '@companix/xeo-scheme'
-import { Connection } from 'mongoose'
-import { createMongoDriver } from '../drivers/collection.driver'
+import { MongoDriverOptions, createMongoDriver } from '../drivers/collection.driver'
 import { DATA_SOURCE_TOKEN } from '../constants'
 
 class DataSourceStorageService {
@@ -19,14 +18,14 @@ class DataSourceStorageService {
     return DATA_SOURCE_TOKEN
   }
 
-  getSource(dataScheme: DataScheme<CollectionScheme>, connection: Connection) {
+  getSource(dataScheme: DataScheme<CollectionScheme>, options: MongoDriverOptions) {
     if (this.dataScheme !== dataScheme) {
       throw new Error(`[MongoDriver] driver cannot work with several dataSchemes`)
     }
 
     if (!this.dataSource) {
       this.dataSource = new DataSource(dataScheme, {
-        createDriver: createMongoDriver(connection)
+        createDriver: createMongoDriver(options)
       })
     }
 

@@ -20,21 +20,32 @@ interface DiscriminatedModels {
   }
 }
 
+export interface MongoDriverOptions {
+  connection: Connection
+  dev?: boolean
+}
+
 export class MongoCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverAsync {
   readonly type = 'async'
 
+  private dev = false
   private onClenupCallbacks: { [model: string]: ((data: any) => void)[] } = {}
   private collections: { [model: string]: Model<any> } = {}
   private discriminatedModels: DiscriminatedModels = {}
 
   public tables: MongoRelationsTable<Scheme>
 
-  constructor(private dataScheme: DataScheme<Scheme>, private connection: Connection) {
+  constructor(private dataScheme: DataScheme<Scheme>, { connection, dev }: MongoDriverOptions) {
     Logger.log('Driver bootstrap', 'MongoDriver')
 
+    this.dev = dev ?? false
     this.tables = new MongoRelationsTable(dataScheme, connection)
 
     const factory = new DefinitionsFactory(dataScheme)
+
+    const useModel = <T>(model: string, schema: Schema): Model<T> => {
+      return connection.models[model] ?? connection.model(model, schema)
+    }
 
     for (const name in dataScheme.collections) {
       const model = dataScheme.collections[name].name
@@ -43,11 +54,11 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
       const baseDefinition = factory.createForScheme(scheme)
 
       if (scheme.type === 'base') {
-        this.collections[model] = this.useModel(model, new Schema(baseDefinition))
+        this.collections[model] = useModel(model, new Schema(baseDefinition))
       }
 
       if (scheme.type === 'discriminated') {
-        this.collections[model] = this.useModel(
+        this.collections[model] = useModel(
           model,
           new Schema(baseDefinition, {
             discriminatorKey: scheme.discriminatorKey
@@ -99,26 +110,6 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
     return this.collections[model].findOne({ [this.getIdentifierKey(model)]: id }).lean()
   }
 
-  async create({ model, data }: CollectionDriverParams.Create) {
-    await new this.collections[model](data).save()
-  }
-
-  async remove({ model, id }: CollectionDriverParams.Record) {
-    const cache = { data: null as null | object }
-
-    if (this.onClenupCallbacks[model]) {
-      cache.data = await this.get({ model, id })
-    }
-
-    await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
-
-    if (cache.data) {
-      this.onClenupCallbacks[model].forEach((cb) => {
-        cb(cache.data)
-      })
-    }
-  }
-
   async exists({ model, id }: CollectionDriverParams.Record) {
     const result = await this.collections[model].exists({
       [this.getIdentifierKey(model)]: id
@@ -135,6 +126,36 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
     const result = await this.collections[model].exists(buildFlattenMap(filter))
 
     return result !== null
+  }
+
+  // setters
+
+  async create({ model, data }: CollectionDriverParams.Create) {
+    if (this.dev) {
+      this.log({ op: 'COLLECTIONS:CREATE', model, data })
+    }
+
+    await new this.collections[model](data).save()
+  }
+
+  async remove({ model, id }: CollectionDriverParams.Record) {
+    if (this.dev) {
+      this.log({ op: 'COLLECTIONS:REMOVE', model, id })
+    }
+
+    const cache = { data: null as null | object }
+
+    if (this.onClenupCallbacks[model]) {
+      cache.data = await this.get({ model, id })
+    }
+
+    await this.collections[model].deleteOne({ [this.getIdentifierKey(model)]: id }).exec()
+
+    if (cache.data) {
+      this.onClenupCallbacks[model].forEach((cb) => {
+        cb(cache.data)
+      })
+    }
   }
 
   // при update для discriminated collection нельзя всегда использовать только this.collections[model]
@@ -174,6 +195,10 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
         console.log('MongoDB Write Warning', { model, id, patches }, responses)
       }
     }
+
+    if (this.dev) {
+      this.log({ op: 'COLLECTIONS:UPDATE', id, patches })
+    }
   }
 
   private async getCollection({ model, id }: CollectionDriverParams.Record) {
@@ -191,13 +216,13 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
     return this.dataScheme.models[model].scheme.identifier.propertyKey
   }
 
-  private useModel<T>(model: string, schema: Schema): Model<T> {
-    return this.connection.models[model] ?? this.connection.model(model, schema)
+  private log(item: object) {
+    console.dir(item, { depth: null, colors: true })
   }
 }
 
-export const createMongoDriver = (connection: Connection) => {
+export const createMongoDriver = (options: MongoDriverOptions) => {
   return <T extends CollectionScheme>(dataScheme: DataScheme<T>) => {
-    return new MongoCollectionDriver(dataScheme, connection)
+    return new MongoCollectionDriver(dataScheme, options)
   }
 }

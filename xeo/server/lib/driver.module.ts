@@ -6,29 +6,35 @@ import { CollectionScheme, DataScheme, DataSource } from '@companix/xeo-scheme'
 import { MongooseCoreModule } from './mongoose.module'
 import { MongooseModuleOptions } from './mongoose-options.interface'
 import { DataSourceStorage } from './storages/data-source'
+import { MongoDriverOptions } from './drivers/collection.driver'
+
+interface RootOptions {
+  uri: string
+  dataScheme: DataScheme<CollectionScheme>
+  driverOptions?: Omit<MongoDriverOptions, 'connection'>
+  mongoOptions?: MongooseModuleOptions
+}
 
 /**
  * @publicApi
  */
 @Module({})
 export class MongooseDriverModule {
-  static forRoot(
-    uri: string,
-    dataSource: DataScheme<CollectionScheme>,
-    options: MongooseModuleOptions = {}
-  ): DynamicModule {
+  static forRoot(options: RootOptions): DynamicModule {
+    const { uri, dataScheme, mongoOptions = {}, driverOptions = {} } = options
+
     const provider: Provider = {
-      provide: getDataSourceToken(dataSource),
+      provide: getDataSourceToken(dataScheme),
       useFactory: (connection: Connection): DataSource<CollectionScheme> => {
-        return DataSourceStorage.getSource(dataSource, connection)
+        return DataSourceStorage.getSource(dataScheme, { connection, ...driverOptions })
       },
-      inject: [getConnectionToken(options.connectionName)]
+      inject: [getConnectionToken(mongoOptions.connectionName)]
     }
 
     return {
       global: true,
       module: MongooseDriverModule,
-      imports: [MongooseCoreModule.forRoot(uri, options)],
+      imports: [MongooseCoreModule.forRoot(uri, mongoOptions)],
       providers: [provider],
       exports: [provider]
     }
