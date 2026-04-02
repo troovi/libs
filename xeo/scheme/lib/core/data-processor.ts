@@ -297,19 +297,23 @@ export class DataProcessor<T extends CollectionScheme> {
         throw new CoreError(model, { reason: 'RELATION_RESTRICT', address, info: 'has-many' })
       }
 
+      // нет кейса на удаление
       if (ref.refType === 'reference-to') {
-        const isExists = await this.driver.exists({ model: ref.model, id: nextValue as IType })
+        // switching to another refId
+        if (nextValue !== null) {
+          const isExists = await this.driver.exists({ model: ref.model, id: nextValue as IType })
 
-        if (!isExists) {
-          throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+          if (!isExists) {
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+          }
+
+          queryBuilder.put('table.createRecord', {
+            tableName: ref.tableName,
+            modelSide: model,
+            modelId: id,
+            oppositeId: nextValue as IType
+          })
         }
-
-        queryBuilder.put('table.createRecord', {
-          tableName: ref.tableName,
-          modelSide: model,
-          modelId: id,
-          oppositeId: nextValue as IType
-        })
 
         queryBuilder.put('table.removeRecord', {
           tableName: ref.tableName,

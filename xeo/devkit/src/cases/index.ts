@@ -41,7 +41,8 @@ import {
   caseSIB,
   caseSIC,
   caseSID,
-  caseSIE
+  caseSIE,
+  caseUIA
 } from './relations/reference-to/set-null-on-remove'
 
 // export const cases = [caseRIO]
@@ -86,6 +87,7 @@ export const cases = [
   caseSIA,
   caseSIB,
   caseSIC,
+  caseUIA,
   caseSID,
   caseSIE,
   // relations/belongs-to-has-many

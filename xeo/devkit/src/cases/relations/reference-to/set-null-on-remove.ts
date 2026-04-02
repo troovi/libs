@@ -69,6 +69,35 @@ export const caseSIB = createCase('#SIB - ReferenceTo set-null switch sub manage
   }
 })
 
+export const caseUIA = createCase('#UIA - Remove set null sub-manager', {
+  execute: async (kit, dataSource) => {
+    await kit.addOfficeWorker({ workerId: 1 })
+    await kit.addOfficeWorker({ workerId: 2 })
+
+    await kit.addClient({
+      clientId: 101,
+      managerId: 1,
+      subManagerId: 2
+    })
+
+    await dataSource.collections.client.update(101, (draft) => {
+      draft.subManagerId = null
+    })
+  },
+  expectations: {
+    tables: {
+      ...createTableTest('client', {
+        column: (source) => source.commonRefs.managerId,
+        rows: [{ client: 101, worker: 1 }]
+      })
+    },
+    scheme: {
+      worker: [mock.Office({ workerId: 1 }), mock.Office({ workerId: 2 })],
+      client: [mock.Client({ clientId: 101, managerId: 1, subManagerId: null })]
+    }
+  }
+})
+
 export const caseSIC = createCase('#SIC - Remove sub manager and set client field to null', {
   execute: async (kit, dataSource) => {
     await kit.addOfficeWorker({ workerId: 1 })
