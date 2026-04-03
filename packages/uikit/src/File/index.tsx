@@ -1,4 +1,3 @@
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useMemo, useRef } from 'react'
 
 export interface FileOverlayProps {
@@ -46,16 +45,28 @@ const FileOverlay = ({
   return (
     <label className={className}>
       {children}
-      <VisuallyHidden asChild>
-        <input
-          ref={ref}
-          type="file"
-          multiple={multiple}
-          accept={accept}
-          onChange={handleChange}
-          disabled={disabled}
-        />
-      </VisuallyHidden>
+      {/* при position:absolute (VisuallyHidden) по непонятной причине происходит смещение прокручиваемого родителя на 2/3 экрана вверх */}
+      {/* возможно баг браузера */}
+      <input
+        ref={ref}
+        type="file"
+        multiple={multiple}
+        accept={accept}
+        onChange={handleChange}
+        disabled={disabled}
+        style={{
+          position: 'fixed',
+          border: '0px',
+          width: '1px',
+          height: '1px',
+          padding: '0px',
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0px, 0px, 0px, 0px)',
+          whiteSpace: 'nowrap',
+          overflowWrap: 'normal'
+        }}
+      />
     </label>
   )
 }
