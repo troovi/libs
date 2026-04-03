@@ -46,6 +46,16 @@ export const SchemeBuilder = ({ scheme, path }: SchemeBuilderProps) => {
           return <ExtraScheme key={`partial-item--${k}-${path.length}`} path={path} item={Item} />
         }
 
+        if (Item.type === 'visability') {
+          if (Item.hidden) {
+            return null
+          }
+
+          return (
+            <SchemeBuilder key={`visability--${k}-${path.length}`} path={path} scheme={Item.childs} />
+          )
+        }
+
         return (
           <Form
             key={`form-item--${k}-${Item.name}-${path.length}`}

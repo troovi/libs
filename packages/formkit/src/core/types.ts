@@ -7,7 +7,7 @@ export interface FieldError {
 }
 
 export namespace SchemeItems {
-  export type All = Form | Layout | Context | Condition | Extra
+  export type All = Form | Layout | Context | Condition | Extra | Visablility
 
   export interface Form<N extends string = string, V extends any = any, P extends any = any> {
     type: 'form'
@@ -45,6 +45,12 @@ export namespace SchemeItems {
     type: 'condition'
     depended: string
     canActivate: (value: any) => boolean
+    childs: T
+  }
+
+  export interface Visablility<T extends All[] = All[]> {
+    type: 'visability'
+    hidden: boolean
     childs: T
   }
 }
