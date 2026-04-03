@@ -167,8 +167,8 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       }
 
       if (!isErrorsExist) {
-        if (state.dirtyCount === 0) {
-          onEqual?.()
+        if (state.dirtyCount === 0 && onEqual) {
+          onEqual()
           return
         }
 
