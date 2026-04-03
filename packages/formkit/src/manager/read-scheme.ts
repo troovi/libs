@@ -14,7 +14,7 @@ const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValu
       return
     }
 
-    if (item.type === 'layout' || item.type === 'condition') {
+    if (item.type === 'layout' || item.type === 'condition' || item.type === 'visability') {
       readScheme(item.childs, path, values, callback)
       return
     }
