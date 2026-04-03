@@ -37,6 +37,11 @@ const iterate = ({ scheme, values, path, forms }: Props) => {
       return
     }
 
+    if (item.type === 'visability') {
+      iterate({ scheme: item.childs, path, values, forms })
+      return
+    }
+
     if (item.type === 'condition') {
       const value = forms[item.depended]?.value
 
