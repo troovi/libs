@@ -23,10 +23,17 @@ export function ReferenceSet<T>(ref: () => Type<T>, options?: ReferenceSetOption
   }
 }
 
-export interface ReferenceToOptions {
+interface Restrict {
   // 'restrict' by default
-  onRefDeleting?: 'restrict' | 'set-null'
+  onRefDeleting?: 'restrict'
+  nullable?: boolean // поле может иметь 'restrict', но при этом быть nullable (todo: add test case)
 }
+
+interface SetNull {
+  onRefDeleting?: 'set-null' // means auto-nullable
+}
+
+export type ReferenceToOptions = SetNull | Restrict
 
 // @ReferenceTo
 // Управляет связью поля с идентификатором записи модели T, определенной аргументом ref: () => T

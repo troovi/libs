@@ -158,8 +158,8 @@ export class DataScheme<T extends CollectionScheme> {
         return {
           refType: 'reference-set',
           model: this.metadata.getModelSchemaByTarget(relation.referenceModel).name,
-          cascadeCleanup: relation.options?.cascadeCleanup ?? false,
-          tableName: this.getRelationsTableInfo(params).tableName
+          tableName: this.getRelationsTableInfo(params).tableName,
+          cascadeCleanup: relation.options?.cascadeCleanup ?? false
         }
       }
       case 'reference-to': {
@@ -167,7 +167,8 @@ export class DataScheme<T extends CollectionScheme> {
           refType: 'reference-to',
           model: this.metadata.getModelSchemaByTarget(relation.referenceModel).name,
           tableName: this.getRelationsTableInfo(params).tableName,
-          nullable: relation.options?.onRefDeleting === 'set-null'
+          // prettier-ignore
+          nullable: relation.options?.onRefDeleting === 'set-null' || (relation.options?.onRefDeleting === 'restrict' && (relation.options.nullable ?? false))
         }
       }
       case 'belongs-to': {
