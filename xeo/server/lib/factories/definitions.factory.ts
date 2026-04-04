@@ -90,9 +90,12 @@ export class DefinitionsFactory<T extends CollectionScheme> {
 
     switch (reference.refType) {
       case 'reference-to': {
+        // prettier-ignore
+        const nullable = reference.options?.onRefDeleting === 'set-null' || (reference.options?.onRefDeleting === 'restrict' && (reference.options.nullable ?? false))
+
         return {
           type: TypesTranslator[refModel.identifier.options.type],
-          required: (reference.options?.onRefDeleting ?? 'restrict') === 'restrict'
+          required: !nullable
         }
       }
       case 'reference-set': {
