@@ -2,34 +2,43 @@ import { CollectionScheme, DataScheme, DataSource } from '@companix/xeo-scheme'
 import { MongoDriverOptions, createMongoDriver } from '../drivers/collection.driver'
 import { DATA_SOURCE_TOKEN } from '../constants'
 
+interface Store {
+  token: string
+  dataSource: DataSource<CollectionScheme> | null
+}
+
 class DataSourceStorageService {
-  private dataSource: DataSource<CollectionScheme> | null = null
-  private dataScheme: DataScheme<CollectionScheme> | null = null
+  private store = new Map<DataScheme<CollectionScheme>, Store>()
 
   getProviderToken(dataScheme: DataScheme<CollectionScheme>) {
-    if (this.dataScheme === null) {
-      this.dataScheme = dataScheme
+    if (this.store.has(dataScheme)) {
+      return this.store.get(dataScheme)!.token
     }
 
-    if (this.dataScheme !== dataScheme) {
-      throw new Error(`[MongoDriver] driver cannot work with several dataSchemes`)
-    }
+    const token = `${DATA_SOURCE_TOKEN}-${this.store.size + 1}`
 
-    return DATA_SOURCE_TOKEN
+    this.store.set(dataScheme, {
+      token,
+      dataSource: null
+    })
+
+    return token
   }
 
   getSource(dataScheme: DataScheme<CollectionScheme>, options: MongoDriverOptions) {
-    if (this.dataScheme !== dataScheme) {
-      throw new Error(`[MongoDriver] driver cannot work with several dataSchemes`)
+    const data = this.store.get(dataScheme)
+
+    if (!data) {
+      throw new Error(`[MongoDriver] provided dataScheme not defined`)
     }
 
-    if (!this.dataSource) {
-      this.dataSource = new DataSource(dataScheme, {
+    if (!data.dataSource) {
+      data.dataSource = new DataSource(dataScheme, {
         createDriver: createMongoDriver(options)
       })
     }
 
-    return this.dataSource
+    return data.dataSource
   }
 }
 

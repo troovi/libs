@@ -13,12 +13,14 @@ import {
   UpdateOptionDto
 } from './app.dto'
 import { MongoCollectionDriver } from '../../../lib/drivers/collection.driver'
+import { SystemService } from '../system/system.service'
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectDataSource(dataScheme)
-    private readonly dataSource: DataSource<AppScheme, MongoCollectionDriver<AppScheme>>
+    private readonly dataSource: DataSource<AppScheme, MongoCollectionDriver<AppScheme>>,
+    private readonly systemService: SystemService
   ) {}
 
   async addWorker({ worker }: CreateWorkerDto) {
@@ -57,7 +59,10 @@ export class AppService {
   }
 
   async getState() {
+    const settings = await this.systemService.getSettings()
+
     return {
+      settings,
       worker: await this.dataSource.collections.worker.getAll(),
       scan: await this.dataSource.collections.scan.getAll(),
       bankCard: await this.dataSource.collections.bankCard.getAll(),

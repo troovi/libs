@@ -10,9 +10,11 @@ import { MongoDriverOptions } from './drivers/collection.driver'
 
 interface RootOptions {
   uri: string
-  dataScheme: DataScheme<CollectionScheme>
-  driverOptions?: Omit<MongoDriverOptions, 'connection'>
   mongoOptions?: MongooseModuleOptions
+  schemas: {
+    dataScheme: DataScheme<CollectionScheme>
+    driverOptions?: Omit<MongoDriverOptions, 'connection'>
+  }[]
 }
 
 /**
@@ -21,22 +23,24 @@ interface RootOptions {
 @Module({})
 export class MongooseDriverModule {
   static forRoot(options: RootOptions): DynamicModule {
-    const { uri, dataScheme, mongoOptions = {}, driverOptions = {} } = options
+    const { uri, schemas, mongoOptions = {} } = options
 
-    const provider: Provider = {
-      provide: getDataSourceToken(dataScheme),
-      useFactory: (connection: Connection): DataSource<CollectionScheme> => {
-        return DataSourceStorage.getSource(dataScheme, { connection, ...driverOptions })
-      },
-      inject: [getConnectionToken(mongoOptions.connectionName)]
-    }
+    const providers: Provider[] = schemas.map(({ dataScheme, driverOptions = {} }) => {
+      return {
+        provide: getDataSourceToken(dataScheme),
+        useFactory: (connection: Connection): DataSource<CollectionScheme> => {
+          return DataSourceStorage.getSource(dataScheme, { connection, ...driverOptions })
+        },
+        inject: [getConnectionToken(mongoOptions.connectionName)]
+      }
+    })
 
     return {
       global: true,
       module: MongooseDriverModule,
       imports: [MongooseCoreModule.forRoot(uri, mongoOptions)],
-      providers: [provider],
-      exports: [provider]
+      providers: providers,
+      exports: providers
     }
   }
 
