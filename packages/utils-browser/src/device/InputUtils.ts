@@ -1,4 +1,4 @@
-import { canUseDOM } from '../dom'
+import { canUseDOM } from '../html/dom'
 import { isIOS, isIPadOS } from './IOSDetections'
 
 const detect = /*#__PURE__*/ (() => {

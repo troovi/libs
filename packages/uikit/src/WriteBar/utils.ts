@@ -1,10 +1,4 @@
-export const isTextNode = (node: Node): node is Text => {
-  return node.nodeType === Node.TEXT_NODE
-}
-
-export const isElementNode = (node: Node): node is Element => {
-  return node.nodeType === Node.ELEMENT_NODE
-}
+import { isElementNode, isTextNode } from '@companix/utils-browser'
 
 export const getNodeTextContent = (node: Node): string => {
   // Обычный текстовый узел

@@ -1,9 +1,9 @@
+import { escape, isElementNode, unescape } from '@companix/utils-browser'
 import { onElementKeyDownFactory } from './keyboard'
 import {
   getEditorSelection,
   getNodeTextContent,
   getTextSelectionOffsets,
-  isElementNode,
   normalizeEditorText,
   scrollSelectionIntoView
 } from './utils'
@@ -127,29 +127,30 @@ export class Editor {
     selectionResult.selection.addRange(range)
   }
 
+  // вставить переданный текст в текущую выделенную область/позицию курсора внутри contenteditable
   insertAtSelection(text: string, selection?: TextSelection): void {
     if (selection) {
       this.setSelection(selection)
     }
 
-    // const chunks = toTextAndEmojiChunks(escapeHtml(text))
+    const chunks = toTextChunksLite(escape(text))
 
-    // for (const chunk of chunks) {
-    //   switch (chunk.kind) {
-    //     case 'Text':
-    //       document.execCommand('insertText', false, unescapeHtml(chunk.text))
-    //       break
-    //     case 'Emoji': {
-    //       const emojiNode = createEmojiElement(chunk.text)
-    //       if (isTextNode(emojiNode)) {
-    //         document.execCommand('insertText', false, emojiNode.nodeValue || '')
-    //       } else if (emojiNode instanceof HTMLElement) {
-    //         document.execCommand('insertHtml', false, emojiNode.outerHTML)
-    //       }
-    //       break
-    //     }
-    //   }
-    // }
+    for (const chunk of chunks) {
+      switch (chunk.kind) {
+        case 'Text':
+          document.execCommand('insertText', false, unescape(chunk.text))
+          break
+        // case 'Emoji': {
+        //   const emojiNode = createEmojiElement(chunk.text)
+        //   if (isTextNode(emojiNode)) {
+        //     document.execCommand('insertText', false, emojiNode.nodeValue || '')
+        //   } else if (emojiNode instanceof HTMLElement) {
+        //     document.execCommand('insertHtml', false, emojiNode.outerHTML)
+        //   }
+        //   break
+        // }
+      }
+    }
 
     this.checkContentChanged()
   }
@@ -356,4 +357,17 @@ export class Editor {
       offset: this.element.childNodes.length
     }
   }
+}
+
+interface TextChunk {
+  kind: 'Text'
+  text: string
+}
+
+export const toTextChunksLite = (input: string): TextChunk[] => {
+  if (!input) {
+    return []
+  }
+
+  return [{ kind: 'Text', text: input }]
 }

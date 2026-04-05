@@ -40,5 +40,13 @@ export const isHTMLElement = (value: any): value is HTMLElement => {
   return value.nodeType === Node.ELEMENT_NODE
 }
 
+export const isTextNode = (node: Node): node is Text => {
+  return node.nodeType === Node.TEXT_NODE
+}
+
+export const isElementNode = (node: Node): node is Element => {
+  return node.nodeType === Node.ELEMENT_NODE
+}
+
 export const clamp = (value: number, min: number, max: number): number =>
   Math.max(min, Math.min(value, max))
