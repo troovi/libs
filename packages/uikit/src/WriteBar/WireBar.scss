@@ -27,52 +27,50 @@
     position: relative;
   }
 
-  &-form {
+  &-placeholder {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font: inherit;
+    font: inherit;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    padding: 12px 0;
+
+    @include mixins.use-styles(write-bar, placeholder);
+  }
+
+  &-input-wrapper {
     position: relative;
-    display: flex;
-    flex: 1;
-    min-inline-size: 0;
+    width: 100%;
+    overflow: auto;
 
-    textarea {
-      box-sizing: border-box;
-      flex: 1;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      resize: none;
-      background: transparent;
-      border: 0;
-      height: 56px;
-      max-height: 280px;
-      padding: 16px 12px;
-      width: 100%;
-      min-width: 0;
+    margin: 0 6px;
+    -ms-flex-item-align: center;
+    align-self: center;
+  }
 
-      &::-webkit-scrollbar {
-        width: 8px;
-      }
+  &-input {
+    display: block;
+    position: relative;
+    font: inherit;
+    width: 100%;
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    overflow: auto;
+    background-color: transparent;
+    cursor: text;
+    white-space: pre-wrap;
+    white-space: break-spaces;
+    outline: none;
 
-      &::-webkit-scrollbar-corner {
-        visibility: hidden;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        visibility: hidden;
-      }
-
-      &::placeholder {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        opacity: 1;
-
-        @include mixins.use-styles(write-bar, placeholder);
-      }
-
-      &:focus {
-        outline: none;
-      }
-    }
+    margin: 12px 0;
+    min-height: var(--messageLineHeight);
+    max-height: calc(12 * var(--messageLineHeight));
   }
 
   &-icon {
@@ -90,7 +88,7 @@
     background: none;
     cursor: pointer;
     opacity: 0.72;
-    height: 56px;
+    height: 48px;
     min-width: 44px;
     width: 44px;
     transition: all 150ms;

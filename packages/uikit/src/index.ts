@@ -112,6 +112,7 @@ export { ProgressRing } from './ProgressRing'
 export type { ProgressRingProps } from './ProgressRing'
 
 export { WriteBar } from './WriteBar'
+export { Editor } from './WriteBar/Editor'
 export type { WriteBarProps } from './WriteBar'
 
 export { DropArea, DropAreaProvider, useDragEnter } from './DropArea'

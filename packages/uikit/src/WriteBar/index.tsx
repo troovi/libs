@@ -1,137 +1,60 @@
 import cn from 'classnames'
-import { Spinner } from '..'
+import { Spinner } from '../Spinner'
 import { Icon, IconDefinition } from '../Icon'
-import { useResizeTextarea } from '../__hooks/use-resize'
-import { attr, callMultiple } from '@companix/utils-browser'
-import { mergeRefs } from 'react-merge-refs'
-import { useEffect } from 'react'
+import { attr } from '@companix/utils-browser'
+import { WriteBarInput } from './Input'
+import { Editor } from './Editor'
 
 export interface WriteBarProps
-  extends Pick<
-      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-      | 'onKeyDown'
-      | 'autoComplete'
-      | 'cols'
-      | 'dirName'
-      | 'disabled'
-      | 'maxLength'
-      | 'minLength'
-      | 'name'
-      | 'placeholder'
-      | 'readOnly'
-      | 'required'
-      | 'rows'
-      | 'value'
-      | 'wrap'
-      | 'onChange'
-      | 'onFocus'
-      | 'onBlur'
-    >,
-    Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onFocus' | 'onBlur' | 'onKeyDown'> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onFocus' | 'onBlur' | 'onKeyDown'> {
   containerRef?: React.Ref<HTMLDivElement>
-  textareaRef?: React.Ref<HTMLTextAreaElement>
   /**
    * Содержимое, отображаемое слева от поля ввода.
    */
   before?: React.ReactNode
   /**
-   * Содержимое, отображаемое поверх поля ввода (актуально для iOS).
-   */
-  inlineAfter?: React.ReactNode
-  /**
    * Содержимое, отображаемое справа от поля ввода.
    */
   after?: React.ReactNode
-  /**
-   * Вызывается при смене высоты поля ввода.
-   */
-  onHeightChange?: VoidFunction
   /**
    * Добавляет тень вокруг поля ввода.
    */
   contentClassName?: string
   shadow?: boolean
-  attachbar?: React.ReactNode
+  header?: React.ReactNode
   children?: never
+  placeholder?: string
+  onCreate: (editor: Editor) => void
 }
 
-export const WriteBar = ({
-  // WriteBarProps
-  before,
-  inlineAfter,
-  after,
-  onHeightChange,
-  shadow = false,
-  containerRef,
-  attachbar,
-  contentClassName,
-
-  // textarea props
-  textareaRef,
-  autoComplete,
-  cols,
-  dirName,
-  disabled,
-  maxLength,
-  minLength,
-  name,
-  placeholder,
-  readOnly,
-  required,
-  value,
-  wrap,
-  rows,
-  onChange,
-  onFocus,
-  onBlur,
-  id,
-  inputMode,
-  defaultValue,
-  autoFocus,
-  tabIndex,
-  spellCheck,
-  className,
-  onKeyDown,
-  ...restProps
-}: WriteBarProps) => {
-  const [refResizeTextarea, resize] = useResizeTextarea(onHeightChange, true)
-
-  useEffect(resize, [resize, value])
+export const WriteBar = (props: WriteBarProps) => {
+  const {
+    before,
+    after,
+    containerRef,
+    header,
+    contentClassName,
+    placeholder,
+    id,
+    onCreate,
+    className,
+    ...restProps
+  } = props
 
   return (
     <div ref={containerRef} {...restProps} className={cn('write-bar', className)}>
-      {attachbar}
+      {header}
       <div className={cn('write-bar-content', contentClassName)}>
         {before && <div className="write-bar-before">{before}</div>}
-        <div className="write-bar-form">
-          <textarea
-            ref={mergeRefs([textareaRef, refResizeTextarea])}
-            {...{
-              id,
-              onChange: callMultiple(onChange, resize),
-              autoComplete,
-              cols,
-              disabled,
-              maxLength,
-              minLength,
-              name,
-              placeholder,
-              readOnly,
-              required,
-              value,
-              wrap,
-              rows,
-              onFocus,
-              onBlur,
-              inputMode,
-              defaultValue,
-              autoFocus,
-              tabIndex,
-              spellCheck,
-              onKeyDown
-            }}
-          />
-        </div>
+        <WriteBarInput
+          className="write-bar-input-wrapper"
+          placeholder={placeholder}
+          placeholderClassName="write-bar-placeholder"
+          inputClassName="write-bar-input"
+          inputMode="text"
+          id={id}
+          onCreate={onCreate}
+        />
         {after && <div className="write-bar-after">{after}</div>}
       </div>
     </div>

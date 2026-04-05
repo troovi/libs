@@ -80,6 +80,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
           body
         })
       },
+      // will be removed in future
       blob<K extends keyof Routes>(url: K, body: Routes[K]['params']) {
         return this.post(url, body, { responseType: 'arraybuffer' }).then((blobpart) => {
           return new Blob([blobpart as BlobPart])
