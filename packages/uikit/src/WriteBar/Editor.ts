@@ -1,3 +1,4 @@
+import { onElementKeyDownFactory } from './keyboard'
 import {
   getEditorSelection,
   getNodeTextContent,
@@ -57,16 +58,17 @@ export class Editor {
     }
   }
 
-  // onKeyCombo(handler: (combo: string, event: KeyboardEvent) => void): () => void {
-  //   const listener = onElementKeyDownFactory(handler) as EventListener
-  //   this.element.addEventListener('keydown', listener)
-  //   this.handlers.keyCombo = handler
+  onKeyCombo(handler: (combo: string | null, event: KeyboardEvent) => void): () => void {
+    const listener = onElementKeyDownFactory(handler) as EventListener
 
-  //   return () => {
-  //     this.handlers.keyCombo = undefined
-  //     this.element.removeEventListener('keydown', listener)
-  //   }
-  // }
+    this.element.addEventListener('keydown', listener)
+    this.handlers.keyCombo = handler
+
+    return () => {
+      this.handlers.keyCombo = undefined
+      this.element.removeEventListener('keydown', listener)
+    }
+  }
 
   onFocusChange(handler: (focused: boolean) => void): () => void {
     if (!this.handlers.focusChange) {
