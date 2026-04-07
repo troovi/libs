@@ -5,7 +5,7 @@ import { WorkerEntities } from './workers'
 import { DictionaryEntities } from './dictionary'
 
 export namespace ClientEntities {
-  @Model({})
+  @Model({ name: 'Legal' })
   export class Legal {
     @Identifier({ type: 'string' })
     legalId: string
@@ -50,7 +50,7 @@ export namespace ClientEntities {
     email: string
   }
 
-  @Model({})
+  @Model({ name: 'Location' })
   export class Location {
     @Identifier({ type: 'string' })
     locationId: string
@@ -74,7 +74,7 @@ export namespace ClientEntities {
     value_type: DictionaryEntities.Option['value']
   }
 
-  @Model({})
+  @Model({ name: 'Contact' })
   export class Contact {
     @Identifier({ type: 'string' })
     contactId: string
@@ -101,7 +101,7 @@ export namespace ClientEntities {
     locations: Location['locationId'][]
   }
 
-  @Model({})
+  @Model({ name: 'Client' })
   export class Client {
     @Identifier({ type: 'number' })
     clientId: number

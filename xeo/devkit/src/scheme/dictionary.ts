@@ -2,7 +2,7 @@ import { Identifier, Model, Ownership, Prop } from '@companix/xeo-scheme'
 import { AppKey } from './keys'
 
 export namespace DictionaryEntities {
-  @Model({})
+  @Model({ name: 'Option' })
   export class Option {
     @Ownership.BelongsTo(() => Dictionary, (dictionary) => dictionary.options)
     dictionary: AppKey.Dictionaries
@@ -14,7 +14,7 @@ export namespace DictionaryEntities {
     title: string
   }
 
-  @Model({})
+  @Model({ name: 'Dictionary' })
   export class Dictionary {
     @Identifier({ type: 'string' })
     dictionary: AppKey.Dictionaries

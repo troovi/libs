@@ -124,7 +124,7 @@ export namespace WorkerEntities {
 
   // detail
 
-  @Model({})
+  @Model({ name: 'BankDetail' })
   export class BankDetail {
     @Identifier({ type: 'string' })
     detailId: string
@@ -156,7 +156,7 @@ export namespace WorkerEntities {
 
   // card
 
-  @Model({})
+  @Model({ name: 'BankCard' })
   export class BankCard {
     @Identifier({ type: 'string' })
     cardId: string
@@ -182,7 +182,7 @@ export namespace WorkerEntities {
 
   // scan
 
-  @Model({})
+  @Model({ name: 'Scan' })
   export class Scan {
     @Identifier({ type: 'string' })
     scanId: string
@@ -228,7 +228,7 @@ export namespace WorkerEntities {
     date_employ: DateFormat
   }
 
-  @DiscriminatedModel({ model: 'Worker', discriminatorKey: 'type' })
+  @DiscriminatedModel({ name: 'Worker', discriminatorKey: 'type' })
   export class BaseWorker extends Info {
     @Identifier({ type: 'number' })
     workerId: number

@@ -60,7 +60,7 @@ export interface EventLog {
 }
 
 export namespace ShiftEntities {
-  @Model({})
+  @Model({ name: 'Seat' })
   export class Seat {
     @Identifier({ type: 'string' })
     seatId: string
@@ -96,7 +96,7 @@ export namespace ShiftEntities {
     attendance: AppKey.Attendance | null
   }
 
-  @Model({})
+  @Model({ name: 'Shift' })
   export class Shift {
     @Identifier({ type: 'number' })
     shiftId: number

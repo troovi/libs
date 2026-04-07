@@ -3,6 +3,9 @@ import cn from 'classnames'
 import { useRef, useLayoutEffect, useMemo, useCallback, useEffect } from 'react'
 import { getContainers, pc, px } from '@companix/utils-browser'
 
+// TODO: ScrollbarProvider в web.vk.me
+// налегающая полоска скролла, с возможность взаимодействия
+
 export interface ImitateScrollProps {
   children: React.ReactNode
   thumbClassName: string

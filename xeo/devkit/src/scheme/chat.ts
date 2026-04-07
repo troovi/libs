@@ -12,7 +12,7 @@ export interface Message {
 }
 
 export namespace ChatEntities {
-  @DiscriminatedModel({ model: 'Chat', discriminatorKey: 'type' })
+  @DiscriminatedModel({ name: 'Chat', discriminatorKey: 'type' })
   export class BaseChat {
     @Identifier({ type: 'string' })
     chatId: string

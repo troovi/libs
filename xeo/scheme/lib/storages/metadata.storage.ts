@@ -23,14 +23,12 @@ export interface EmbeddedPropery extends ModelProperties {
 export interface ModelMetadata {
   target: Function
   name: string
-  options: ModelOptions
 }
 
 // @DiscriminatedModel metadata
 export interface DiscriminatedModelMetadata {
   target: Function
   name: string
-  model: string
   discriminatorKey: string
 }
 
@@ -192,11 +190,11 @@ export class TypeMetadataStorageHost {
   }
 
   // DiscriminatedModel will called before the Discriminator, because Discriminator extends from DiscriminatedModel
-  addDiscriminatedModelMetadata({ target, model, discriminatorKey }: DiscriminatedModelMetadata) {
+  addDiscriminatedModelMetadata({ target, name, discriminatorKey }: DiscriminatedModelMetadata) {
     const discriminatedModel: ModelSchemas.Discriminated = {
       type: 'discriminated',
       target,
-      name: model,
+      name,
       discriminatorKey,
       identifier: this.getIdentifier(target),
       properties: this.getTargetAndExtendedProperties(target),

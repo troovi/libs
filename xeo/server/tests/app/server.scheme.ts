@@ -7,7 +7,7 @@ import {
   defineCollection
 } from '@companix/xeo-scheme'
 
-@Model({})
+@Model({ name: 'Settings' })
 export class Settings {
   @Identifier({ type: 'string' })
   id: string

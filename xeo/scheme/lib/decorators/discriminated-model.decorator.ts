@@ -1,7 +1,7 @@
 import { TypeMetadataStorage } from '../storages/metadata.storage'
 
 export interface DiscriminatedModelOptions {
-  model: string
+  name: string
   discriminatorKey: string
 }
 
@@ -10,9 +10,8 @@ export function DiscriminatedModel(options: DiscriminatedModelOptions): ClassDec
   return function (target) {
     TypeMetadataStorage.addDiscriminatedModelMetadata({
       target,
-      name: target.name,
-      discriminatorKey: options.discriminatorKey,
-      model: options.model
+      name: options.name,
+      discriminatorKey: options.discriminatorKey
     })
   }
 }

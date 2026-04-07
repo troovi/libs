@@ -5,7 +5,7 @@ import { WorkerEntities } from './workers'
 import { DictionaryEntities } from './dictionary'
 
 export namespace ProjectEntities {
-  @Model({})
+  @Model({ name: 'Project' })
   export class Project {
     @Identifier({ type: 'number' })
     projectId: number
