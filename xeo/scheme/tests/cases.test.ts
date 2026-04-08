@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { cases, MockKit, createMockKit, AppScheme, dataScheme } from '@companix/xeo-devkit'
+import { DevtoolsDataIntegrity } from '@companix/xeo-devkit'
 import { DataSource, createBaseDriver } from '../lib'
 import { BaseParams, SearchCase } from '@companix/xeo-devkit'
 
@@ -11,6 +12,12 @@ const runCaseTest = async (params: BaseParams, commitChanges: CommitChanges) => 
   const dataSource = new DataSource(dataScheme, {
     createDriver: createBaseDriver
   })
+
+  const integrity = new DevtoolsDataIntegrity(dataSource, dataScheme)
+
+  const errors = await integrity.check()
+
+  expect(errors).toEqual([])
 
   await commitChanges(createMockKit(dataSource), dataSource).catch((error) => {
     expect(expectations.error).toEqual(error)

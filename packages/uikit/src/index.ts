@@ -124,7 +124,7 @@ export type { TableProps } from './Table'
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
-export { useLocalStorage } from './__hooks/use-local-storage'
+export { useLocalStorage, LocalStorageProvider } from './__hooks/use-local-storage'
 export { useBooleanState } from './__hooks/use-boolean-state'
 export { useResizeTextarea } from './__hooks/use-resize'
 export { useLoading } from './__hooks/use-loading'

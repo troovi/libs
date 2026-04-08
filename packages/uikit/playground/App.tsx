@@ -34,11 +34,15 @@ import { ProgressCircleExample } from './progress-ring'
 import { WriteBarExample } from './write-bar'
 import { DropAreaExample } from './drop-area'
 import { NowExample } from './now'
+import { LocalStorageProvider } from '@/index'
+import { LocalStorageExample } from './local-storage'
 
 export const App = () => {
   return (
     <ThemeProvider>
-      <AppLayout />
+      <LocalStorageProvider>
+        <AppLayout />
+      </LocalStorageProvider>
     </ThemeProvider>
   )
 }
@@ -153,6 +157,9 @@ const AppLayout = () => {
         </Example>
         <Example name="useNow">
           <NowExample />
+        </Example>
+        <Example name="useLocalStorage">
+          <LocalStorageExample />
         </Example>
         <div />
         <div />

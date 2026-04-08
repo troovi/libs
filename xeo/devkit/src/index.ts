@@ -12,4 +12,5 @@ export * from './scheme/keys'
 export * from './scheme/dictionary'
 
 export * from './cases'
+export * from './data-integrary'
 export type { BaseParams, DualCase, UnitCase, SearchCase } from './cases/tools'

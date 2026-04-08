@@ -9,6 +9,7 @@ import { MongoCollectionDriver } from '../../lib/drivers/collection.driver'
 import {
   AppScheme,
   BaseParams,
+  DevtoolsDataIntegrity,
   MockKit,
   SearchCase,
   cases,
@@ -71,6 +72,12 @@ const runCaseTest = async (app: INestApplication<any>, { params, commitChanges }
   const dataSource = app.get<DataSource<AppScheme, MongoCollectionDriver<AppScheme>>>(
     getDataSourceToken(dataScheme)
   )
+
+  const integrity = new DevtoolsDataIntegrity(dataSource, dataScheme)
+
+  const errors = await integrity.check()
+
+  expect(errors).toEqual([])
 
   await commitChanges(createMockKit(dataSource), dataSource).catch((error) => {
     expect(error).toEqual(expectations.error)

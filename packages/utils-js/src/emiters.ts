@@ -21,7 +21,7 @@ export class EventDispatcher<T> {
 }
 
 export class EventEmmiter<T> {
-  private store: Record<string, ((data: T) => void)[]> = {}
+  public store: Record<string, ((data: T) => void)[]> = {}
 
   emit(event: string, data: T) {
     if (this.store[event]) {
