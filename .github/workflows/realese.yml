@@ -20,6 +20,7 @@ jobs:
       icons-brands: ${{ steps.filter.outputs.icons-brands }}
       xeo-scheme: ${{ steps.filter.outputs.xeo-scheme }}
       xeo-server: ${{ steps.filter.outputs.xeo-server }}
+      xeo-react: ${{ steps.filter.outputs.xeo-react }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -50,6 +51,8 @@ jobs:
               - 'xeo/scheme/package.json'
             xeo-server:
               - 'xeo/server/package.json'
+            xeo-react:
+              - 'xeo/react/package.json'
 
       - run: echo '${{ toJson(github.event) }}'
 
@@ -302,5 +305,26 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: xeo/server
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  xeo-react:
+    needs: changes
+    if: ${{ needs.changes.outputs.xeo-react == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/xeo-react
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: xeo/react
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

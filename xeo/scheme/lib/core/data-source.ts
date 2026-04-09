@@ -46,6 +46,7 @@ export type Collections<Scheme extends CollectionScheme, DT extends DriverType =
 // prettier-ignore
 export class DataSource<Scheme extends CollectionScheme, Driver extends AppCollectionDriver = AppCollectionDriver> {
   public driver: Driver
+  public scheme: DataScheme<Scheme>
   public collections = {} as Collections<Scheme, Driver['type']>
 
   constructor(dataScheme: DataScheme<Scheme>, { createDriver }: DataSourceOptions<Scheme, Driver>) {
@@ -57,6 +58,7 @@ export class DataSource<Scheme extends CollectionScheme, Driver extends AppColle
     }
 
     this.driver = driver
+    this.scheme = dataScheme
 
     for (const name in dataScheme.collections) {
       const collection = dataScheme.collections[name]

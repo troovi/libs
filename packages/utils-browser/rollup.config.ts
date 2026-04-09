@@ -12,7 +12,6 @@ export default [
       file: 'dist/bundle.esm.js',
       format: 'esm'
     },
-    external: ['react', 'react-dom'],
     plugins: [
       typescript({ tsconfig: './tsconfig.json', noEmitOnError: true }),
       autoExternal(),
@@ -28,7 +27,6 @@ export default [
       file: 'dist/bundle.cjs.js',
       format: 'cjs'
     },
-    external: ['react', 'react-dom'],
     plugins: [
       typescript({ tsconfig: './tsconfig.json', noEmitOnError: true }),
       autoExternal(),

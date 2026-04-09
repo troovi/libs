@@ -105,7 +105,7 @@ export const caseJXA = createCase('#JXA - check not exists error (Owner) - creat
   expectations: {
     tables: baseTables,
     scheme: baseScheme,
-    error: new CoreError('Chat', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Chat', { reason: 'NOT_EXISTS', refId: 'chat-2' })
   }
 })
 

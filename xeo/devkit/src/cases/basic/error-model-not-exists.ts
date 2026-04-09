@@ -11,7 +11,7 @@ export const caseFIX = createCase('#FIX - check not exists error (Model) - updat
   expectations: {
     tables: {},
     scheme: {},
-    error: new CoreError('Worker', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Worker', { reason: 'NOT_EXISTS', refId: 1 })
   }
 })
 
@@ -22,7 +22,7 @@ export const caseJRO = createCase('#JRO - check not exists error (Model) - remov
   expectations: {
     tables: {},
     scheme: {},
-    error: new CoreError('Worker', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Worker', { reason: 'NOT_EXISTS', refId: 2 })
   }
 })
 
@@ -36,6 +36,6 @@ export const caseKRO = createCase('#KRO - check duplicate model create error', {
     scheme: {
       worker: [mock.Office({ workerId: 1 })]
     },
-    error: new CoreError('Worker', { reason: 'EXISTS' })
+    error: new CoreError('Worker', { reason: 'EXISTS', id: 1 })
   }
 })

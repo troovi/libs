@@ -31,7 +31,7 @@ export class DataProcessor<T extends CollectionScheme> {
     const id = this.getModelId(modeldata, data)
 
     if (await this.driver.exists({ id, model })) {
-      throw new CoreError(model, { reason: 'EXISTS' })
+      throw new CoreError(model, { reason: 'EXISTS', id })
     }
 
     if (__DEV__) {
@@ -64,7 +64,7 @@ export class DataProcessor<T extends CollectionScheme> {
         const isExists = await this.driver.exists({ model: ref.model, id: refId })
 
         if (!isExists) {
-          throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+          throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
         }
 
         if (__DEV__) {
@@ -88,7 +88,7 @@ export class DataProcessor<T extends CollectionScheme> {
           const isExists = await this.driver.exists({ model: ref.model, id: refId })
 
           if (!isExists) {
-            throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
           }
 
           queryBuilder.put('table.createRecord', {
@@ -113,7 +113,7 @@ export class DataProcessor<T extends CollectionScheme> {
           const isExists = await this.driver.exists({ model: ref.model, id: refId })
 
           if (!isExists) {
-            throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
           }
 
           queryBuilder.put('table.createRecord', {
@@ -152,7 +152,7 @@ export class DataProcessor<T extends CollectionScheme> {
         const refTarget = await this.driver.get({ model: ref.model, id: refId })
 
         if (!refTarget) {
-          throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+          throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
         }
 
         // ref.modelHasManyProperty может указывать на поле в дискриминированной модели
@@ -206,7 +206,7 @@ export class DataProcessor<T extends CollectionScheme> {
     const data = await this.driver.get({ model, id })
 
     if (!data) {
-      throw new CoreError(model, { reason: 'NOT_EXISTS' })
+      throw new CoreError(model, { reason: 'NOT_EXISTS', refId: id })
     }
 
     const refs = this.getModelReferences(modeldata, data)
@@ -304,7 +304,7 @@ export class DataProcessor<T extends CollectionScheme> {
           const isExists = await this.driver.exists({ model: ref.model, id: nextValue as IType })
 
           if (!isExists) {
-            throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId: nextValue as IType })
           }
 
           queryBuilder.put('table.createRecord', {
@@ -348,7 +348,7 @@ export class DataProcessor<T extends CollectionScheme> {
             const isExists = await this.driver.exists({ model: ref.model, id: refId })
 
             if (!isExists) {
-              throw new CoreError(ref.model, { reason: 'NOT_EXISTS' })
+              throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
             }
 
             queryBuilder.put('table.createRecord', {
@@ -390,7 +390,7 @@ export class DataProcessor<T extends CollectionScheme> {
     }
 
     if (!data) {
-      throw new CoreError(model, { reason: 'NOT_EXISTS' })
+      throw new CoreError(model, { reason: 'NOT_EXISTS', refId: id })
     }
 
     const queryBuilder = createQueryBuilder()

@@ -1,22 +1,23 @@
 {
-  "name": "@companix/xeo-scheme",
-  "version": "0.1.22",
-  "main": "dist/bundle.cjs.js",
+  "name": "@companix/xeo-react",
+  "version": "0.0.1",
   "module": "dist/bundle.esm.js",
   "types": "./lib/index.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "echo": "echo \"@companix/xeo-scheme\"",
+    "echo": "echo \"@companix/xeo-react\"",
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
-    "dev": "tsc --noEmit && tsx ./playground/run.ts",
-    "dev:browser": "vite --config vite.config.ts",
-    "test:observer": "vitest run ./tests/observer/observer.test.ts",
-    "test:cases": "disableDev=true vitest run ./tests/cases.test.ts"
+    "dev": "vite --config vite.config.ts"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "dependencies": {
+    "@companix/xeo-scheme": "file:../scheme"
   },
   "devDependencies": {
     "@companix/xeo-devkit": "file:../devkit",
+    "@companix/utils-js": "file:../../packages/utils-js",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^6.0.3",
@@ -34,11 +35,11 @@
     "tsx": "^4.19.2",
     "vite": "^7.0.0",
     "vite-plugin-checker": "^0.9.3",
-    "vitest": "^3.2.4",
-    "zod": "^4.3.6"
-  },
-  "dependencies": {
-    "@companix/utils-js": "file:../../packages/utils-js",
-    "fast-deep-equal": "^3.1.3"
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@types/react-input-mask": "^3.0.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

@@ -12,7 +12,7 @@ export const caseMWO = createCase('#MWO - check not exists error (ReferenceSet) 
   expectations: {
     tables: {},
     scheme: {},
-    error: new CoreError('Scan', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Scan', { reason: 'NOT_EXISTS', refId: 'scan-1' })
   }
 })
 
@@ -29,6 +29,6 @@ export const caseAOX = createCase('#AOX - check not exists error (ReferenceSet) 
     scheme: {
       worker: [mock.Revisor({ workerId: 1 })]
     },
-    error: new CoreError('Scan', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Scan', { reason: 'NOT_EXISTS', refId: 'scan-1' })
   }
 })

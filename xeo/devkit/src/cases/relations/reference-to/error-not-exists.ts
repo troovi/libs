@@ -12,7 +12,7 @@ export const caseONO = createCase('#ONO - check not exists error (ReferenceTo) -
   expectations: {
     tables: {},
     scheme: {},
-    error: new CoreError('Worker', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Worker', { reason: 'NOT_EXISTS', refId: 99 })
   }
 })
 
@@ -39,6 +39,6 @@ export const caseOPX = createCase('#OPX - check not exists error (ReferenceTo) -
       worker: [mock.Office({ workerId: 1 })],
       client: [mock.Client({ clientId: 102, managerId: 1 })]
     },
-    error: new CoreError('Worker', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Worker', { reason: 'NOT_EXISTS', refId: 99 })
   }
 })

@@ -1,196 +1,32 @@
-import { isObjectLike } from '@companix/utils-js'
-import {
-  UpdatePatch,
-  DataScheme,
-  IType,
-  CollectionScheme,
-  CollectionInfo,
-  CollectionDriverParams,
-  CollectionDriverSync
-} from '../core'
+import { DataScheme, CollectionScheme, CollectionDriverParams, CollectionDriverSync } from '../core'
 import { BaseTableDriver } from './table.driver'
-import { __DEV__, ExtractType, KeyOfType, styles, xRay } from '../utils'
+import { __DEV__, ExtractType } from '../utils'
+import { IndexedCollectionStore } from './indexed.collection'
 
-export class IndexedCollectionStore<T> {
-  private name: string
-  private store: { [id: IType]: T } = {}
-  private data: T[] = []
-
-  private identifierKey: KeyOfType<T, IType>
-
-  constructor(info: CollectionInfo<T>) {
-    this.name = info.name
-    this.identifierKey = info.identifierKey
+export namespace MutationEvents {
+  export interface Remove {
+    type: 'remove'
+    data: CollectionDriverParams.Record
   }
 
-  initialize(items: T[]) {
-    items.forEach((item) => {
-      this.create(item)
-    })
+  export interface Update {
+    type: 'update'
+    data: CollectionDriverParams.Update
   }
 
-  get(id: IType) {
-    return this.store[id] ?? null
-  }
-
-  getAll() {
-    return this.data
-  }
-
-  create(data: T) {
-    if (__DEV__) {
-      xRay.print('COLLECTIONS:CREATE', styles.pink)({ name: this.name }, 'data:', data)
-    }
-
-    this.data.push(data)
-    this.store[data[this.identifierKey] as IType] = data
-  }
-
-  remove(id: IType) {
-    if (__DEV__) {
-      xRay.print('COLLECTIONS:REMOVE', styles.pink)({ name: this.name, id })
-    }
-
-    const index = this.data.findIndex((item) => {
-      return item[this.identifierKey] === id
-    })
-
-    if (index !== -1) {
-      this.data.splice(index, 1)
-      delete this.store[id]
-    }
-  }
-
-  update(id: IType, patches: UpdatePatch[]) {
-    const target = this.get(id)
-
-    if (target) {
-      for (const { address, ...action } of patches) {
-        if (action.type === 'set') {
-          this.apply(target, address, (source, key) => {
-            source[key] = action.value as never
-          })
-        }
-
-        if (action.type === 'push') {
-          this.apply(target, address, (source, key) => {
-            ;(source[key] as Array<unknown>).push(...action.items)
-          })
-        }
-
-        if (action.type === 'pull') {
-          this.apply(target, address, (source, key) => {
-            const items = source[key] as Array<unknown>
-
-            action.items.forEach((item) => {
-              const index = items.findIndex((i) => i === item)
-
-              if (index !== -1) {
-                items.splice(index, 1)
-              }
-            })
-          })
-        }
-      }
-    }
-
-    if (__DEV__) {
-      xRay.print('COLLECTIONS:UPDATE', styles.pink)({ id }, 'patches:', patches, 'result:', target)
-    }
-  }
-
-  exists(id: IType) {
-    return this.store[id] !== undefined
-  }
-
-  existsBy(filter: object = {}) {
-    for (const item of this.data) {
-      if (this.matchesFilter(item, filter)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  findOneBy(filter: object = {}) {
-    for (const item of this.data) {
-      if (this.matchesFilter(item, filter)) {
-        return item
-      }
-    }
-
-    return null
-  }
-
-  findBy(filter: object = {}) {
-    return this.data.filter((item) => {
-      return this.matchesFilter(item, filter)
-    })
-  }
-
-  count() {
-    return this.data.length
-  }
-
-  /** Сопоставляет item с вложенным объектом фильтра (все листовые значения — через ===). */
-  private matchesFilter(item: unknown, filter: unknown): boolean {
-    if (filter === null || typeof filter !== 'object') {
-      return item === filter
-    }
-
-    if (Array.isArray(filter)) {
-      if (!Array.isArray(item) || item.length !== filter.length) {
-        return false
-      }
-
-      return filter.every((entry, index) => this.matchesFilter(item[index], entry))
-    }
-
-    if (!isObjectLike(item)) {
-      return false
-    }
-
-    for (const key of Object.keys(filter as object)) {
-      if (!this.matchesFilter(item[key as keyof object], filter[key as keyof object])) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  private apply(target: object, address: string, change: (source: object, key: keyof object) => void) {
-    const path = address.split('.')
-
-    let current = target
-
-    const getException = (segment: string, content: string) => {
-      return `[internal]: segment "${segment}" in address "${address}", does not belongs to "${content}"`
-    }
-
-    path.forEach((segment, i) => {
-      if (path.length - 1 === i) {
-        if (isObjectLike(current) && segment in current) {
-          change(current, segment as keyof object)
-        } else {
-          throw new Error(getException(segment, JSON.stringify(current)))
-        }
-      } else {
-        if (isObjectLike(current) && segment in current) {
-          current = current[segment as keyof object]
-        } else {
-          throw new Error(getException(segment, JSON.stringify(current)))
-        }
-      }
-    })
+  export interface Create {
+    type: 'create'
+    data: CollectionDriverParams.Create
   }
 }
+
+export type MutationEvent = MutationEvents.Create | MutationEvents.Remove | MutationEvents.Update
 
 export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverSync {
   readonly type = 'sync'
 
   private onCreateCallbacks: { [model: string]: ((data: any) => void)[] } = {}
+  private onMutationCallbacks: ((mutation: MutationEvent) => void)[] = []
 
   private collections: { [model: string]: IndexedCollectionStore<object> } = {}
   public tables: BaseTableDriver<Scheme>
@@ -222,6 +58,10 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
     this.onCreateCallbacks[model].push(callback)
   }
 
+  subscribeOnMutation(callback: (mutation: MutationEvent) => void) {
+    this.onMutationCallbacks.push(callback)
+  }
+
   getAll({ model }: CollectionDriverParams.Model) {
     return this.collections[model].getAll()
   }
@@ -238,22 +78,6 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
     return this.collections[model].findBy(filter)
   }
 
-  create({ model, data }: CollectionDriverParams.Create) {
-    if (this.onCreateCallbacks[model]) {
-      this.onCreateCallbacks[model].forEach((cb) => cb(data))
-    }
-
-    return this.collections[model].create(data)
-  }
-
-  remove({ model, id }: CollectionDriverParams.Record) {
-    return this.collections[model].remove(id)
-  }
-
-  update({ model, id, patches }: CollectionDriverParams.Update) {
-    return this.collections[model].update(id, patches)
-  }
-
   exists({ model, id }: CollectionDriverParams.Record) {
     return this.collections[model].exists(id)
   }
@@ -264,6 +88,36 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
 
   count({ model }: CollectionDriverParams.Model) {
     return this.collections[model].count()
+  }
+
+  // mutations
+
+  create({ model, data }: CollectionDriverParams.Create) {
+    if (this.onCreateCallbacks[model]) {
+      this.onCreateCallbacks[model].forEach((cb) => cb(data))
+    }
+
+    this.collections[model].create(data)
+
+    this.onMutationCallbacks.forEach((cb) => {
+      cb({ type: 'create', data: { model, data } })
+    })
+  }
+
+  remove({ model, id }: CollectionDriverParams.Record) {
+    this.collections[model].remove(id)
+
+    this.onMutationCallbacks.forEach((cb) => {
+      cb({ type: 'remove', data: { model, id } })
+    })
+  }
+
+  update({ model, id, patches }: CollectionDriverParams.Update) {
+    this.collections[model].update(id, patches)
+
+    this.onMutationCallbacks.forEach((cb) => {
+      cb({ type: 'update', data: { model, id, patches } })
+    })
   }
 }
 

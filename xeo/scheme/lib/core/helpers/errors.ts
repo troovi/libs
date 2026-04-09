@@ -1,9 +1,13 @@
+import { IType } from '../data-processor'
+
 interface NotExists {
   reason: 'NOT_EXISTS'
+  refId: IType
 }
 
 interface Exists {
   reason: 'EXISTS'
+  id: IType
 }
 
 interface RelationRestrict {

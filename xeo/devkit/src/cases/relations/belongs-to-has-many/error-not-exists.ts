@@ -9,7 +9,7 @@ export const caseJRI = createCase('#JRI - check not exists error (BelongsTo) - c
   expectations: {
     tables: {},
     scheme: {},
-    error: new CoreError('Dictionary', { reason: 'NOT_EXISTS' })
+    error: new CoreError('Dictionary', { reason: 'NOT_EXISTS', refId: 'regions' })
   }
 })
 
