@@ -62,6 +62,47 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
     return entity !== null ? createEntityProxy(entity, fieldsRef.current) : null
   }
 
+  // prettier-ignore
+  const useEntities = <K extends keyof Scheme>(collectionName: K, ids: IdType<Scheme, K>[]): ModelType<Scheme, K>[] => {
+    const stateVersionRef = useRef(Symbol())
+    const fieldsMapRef = useRef(new Map<IType, Set<string>>())
+
+    fieldsMapRef.current = new Map()
+
+    const subscribe = useCallback(
+      (onStoreChange: () => void) => {
+        return reactions.subscribe(getModelName(collectionName), (event) => {
+          if (event.type === 'update') {
+            const trackedFields = fieldsMapRef.current.get(event.id) ?? new Set<string>()
+
+            if (shouldUpdateEntity(event, trackedFields)) {
+              stateVersionRef.current = Symbol()
+              onStoreChange()
+            }
+          }
+        })
+      },
+      [collectionName]
+    )
+
+    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+
+    const collection = getCollection(collectionName)
+    const entities: ModelType<Scheme, K>[] = []
+
+    for (const id of ids) {
+      const entity = collection.get(id)
+
+      if (entity) {
+        const fields = new Set<string>()
+        fieldsMapRef.current.set(id, fields)
+        entities.push(createEntityProxy(entity, fields))
+      }
+    }
+
+    return entities
+  }
+
   // -------------------------------------------------------------------------
   // useAll — getAll(), collection-level reactivity
   // -------------------------------------------------------------------------
@@ -236,5 +277,15 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
     }
   }
 
-  return { useEntity, useAll, useFindBy, useFindOneBy, useCount, useExists, useExistsBy, useMutations }
+  return {
+    useEntity,
+    useEntities,
+    useAll,
+    useFindBy,
+    useFindOneBy,
+    useCount,
+    useExists,
+    useExistsBy,
+    useMutations
+  }
 }
