@@ -6,10 +6,11 @@ import { WorkersList } from './Tabs/Workers'
 import { ShiftsSection } from './Tabs/Shifts'
 import { Stats } from './Tabs/Stats'
 import { EntitiesDemo } from './Tabs/Entities'
+import { FieldAndCountDemo } from './Tabs/FieldAndCount'
 
 export const AppPlay = () => {
-  const [tab, setTab] = useState<'roles' | 'fields' | 'projects' | 'workers' | 'shifts' | 'stats' | 'entities'>(
-    'entities'
+  const [tab, setTab] = useState<'roles' | 'fields' | 'projects' | 'workers' | 'shifts' | 'stats' | 'entities' | 'field+count'>(
+    'field+count'
   )
 
   return (
@@ -17,7 +18,7 @@ export const AppPlay = () => {
       <h2>xeo-react playground</h2>
 
       <nav style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-        {(['roles', 'fields', 'projects', 'workers', 'shifts', 'stats', 'entities'] as const).map((t) => (
+        {(['roles', 'fields', 'projects', 'workers', 'shifts', 'stats', 'entities', 'field+count'] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} style={{ fontWeight: tab === t ? 700 : 400 }}>
             {t}
           </button>
@@ -31,6 +32,7 @@ export const AppPlay = () => {
       {tab === 'shifts' && <ShiftsSection />}
       {tab === 'stats' && <Stats />}
       {tab === 'entities' && <EntitiesDemo />}
+      {tab === 'field+count' && <FieldAndCountDemo />}
     </div>
   )
 }

@@ -8,4 +8,15 @@ export const dataSource = new DataSource(dataScheme, {
 
 const hooks = createDataSourceHooks(dataSource)
 
-export const { useEntity, useEntities, useAll, useFindBy, useFindOneBy, useExistsBy, useCount, useExists, useMutations } = hooks
+export const {
+  useEntity,
+  useEntities,
+  useField,
+  useAll,
+  useFindBy,
+  useFindOneBy,
+  useExistsBy,
+  useCount,
+  useExists,
+  useMutations
+} = hooks

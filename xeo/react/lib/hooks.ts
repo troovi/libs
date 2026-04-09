@@ -10,6 +10,7 @@ import {
 } from '@companix/xeo-scheme'
 import { createEntityProxy, shouldUpdateEntity } from './internals'
 import { ReactionService } from './reaction'
+import { MutationEvent } from './types'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -18,6 +19,10 @@ import { ReactionService } from './reaction'
 // prettier-ignore
 type ModelType<Scheme extends CollectionScheme, K extends keyof Scheme> = ExtractType<Scheme[K]['model']>
 type IdType<Scheme extends CollectionScheme, K extends keyof Scheme> = Scheme[K]['identifierType']
+
+export interface Filter<T> {
+  filter?: (item: T) => boolean
+}
 
 // ---------------------------------------------------------------------------
 // createStore
@@ -28,12 +33,35 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
 ) => {
   const reactions = new ReactionService(dataSource)
 
-  const getModelName = <K extends keyof Scheme>(collection: K) => {
-    return dataSource.scheme.collections[collection].name
-  }
-
   const getCollection = <K extends keyof Scheme>(collection: K): Collections<Scheme, 'sync'>[K] => {
     return dataSource.collections[collection]
+  }
+
+  // -------------------------------------------------------------------------
+  // useReactive — shared subscribe + version-tracking primitive
+  // -------------------------------------------------------------------------
+
+  const useReactive = (collectionName: keyof Scheme, canUpdate: (event: MutationEvent) => boolean) => {
+    const stateVersionRef = useRef(Symbol())
+    const canUpdateRef = useRef(canUpdate)
+
+    canUpdateRef.current = canUpdate
+
+    const modelName = dataSource.scheme.collections[collectionName].name
+
+    const subscribe = useCallback(
+      (onStoreChange: () => void) => {
+        return reactions.subscribe(modelName, (event) => {
+          if (canUpdateRef.current(event)) {
+            stateVersionRef.current = Symbol()
+            onStoreChange()
+          }
+        })
+      },
+      [modelName]
+    )
+
+    useSyncExternalStore(subscribe, () => stateVersionRef.current)
   }
 
   // -------------------------------------------------------------------------
@@ -43,49 +71,34 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // prettier-ignore
   const useEntity = <K extends keyof Scheme>(collection: K, id?: IdType<Scheme, K>): ModelType<Scheme, K> | null => {
     const fieldsRef = useRef(new Set<string>())
-    const stateVersionRef = useRef(Symbol())
-
     fieldsRef.current = new Set<string>()
 
-    const subscribe = useCallback((onStoreChange: () => void) => {
-      return reactions.subscribe(getModelName(collection), (event) => {
-        if (event.id === id && shouldUpdateEntity(event, fieldsRef.current)) {
-          stateVersionRef.current = Symbol()
-          onStoreChange()
-        }
-      })
-    }, [id, collection])
+    useReactive(collection, (event) => {
+      if (event.type === 'update') {
+        return event.id === id && shouldUpdateEntity(event, fieldsRef.current)
+      }
 
-    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+      return false
+    })
 
     const entity: ModelType<Scheme, K> | null = id === undefined ? null : getCollection(collection).get(id)
     return entity !== null ? createEntityProxy(entity, fieldsRef.current) : null
   }
 
   // prettier-ignore
-  const useEntities = <K extends keyof Scheme>(collectionName: K, ids: IdType<Scheme, K>[]): ModelType<Scheme, K>[] => {
-    const stateVersionRef = useRef(Symbol())
+  const useEntities = <K extends keyof Scheme>(collectionName: K, ids: IdType<Scheme, K>[], options: Filter<ModelType<Scheme, K>> = {}): ModelType<Scheme, K>[] => {
     const fieldsMapRef = useRef(new Map<IType, Set<string>>())
+    const { filter = () => true } = options
 
     fieldsMapRef.current = new Map()
 
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), (event) => {
-          if (event.type === 'update') {
-            const trackedFields = fieldsMapRef.current.get(event.id) ?? new Set<string>()
+    useReactive(collectionName, (event) => {
+      if (event.type === 'update') {
+        return shouldUpdateEntity(event, fieldsMapRef.current.get(event.id) ?? new Set())
+      }
 
-            if (shouldUpdateEntity(event, trackedFields)) {
-              stateVersionRef.current = Symbol()
-              onStoreChange()
-            }
-          }
-        })
-      },
-      [collectionName]
-    )
-
-    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+      return false
+    })
 
     const collection = getCollection(collectionName)
     const entities: ModelType<Scheme, K>[] = []
@@ -93,7 +106,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
     for (const id of ids) {
       const entity = collection.get(id)
 
-      if (entity) {
+      if (entity && filter(entity)) {
         const fields = new Set<string>()
         fieldsMapRef.current.set(id, fields)
         entities.push(createEntityProxy(entity, fields))
@@ -108,34 +121,16 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // -------------------------------------------------------------------------
 
   const useAll = <K extends keyof Scheme>(collectionName: K): ModelType<Scheme, K>[] => {
-    const stateVersionRef = useRef(Symbol())
     const fieldsMapRef = useRef(new Map<IType, Set<string>>())
-
     fieldsMapRef.current = new Map()
 
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), (event) => {
-          if (event.type === 'create' || event.type === 'remove') {
-            stateVersionRef.current = Symbol()
-            onStoreChange()
-            return
-          }
+    useReactive(collectionName, (event) => {
+      if (event.type === 'create' || event.type === 'remove') {
+        return true
+      }
 
-          if (event.type === 'update') {
-            const trackedFields = fieldsMapRef.current.get(event.id) ?? new Set<string>()
-
-            if (shouldUpdateEntity(event, trackedFields)) {
-              stateVersionRef.current = Symbol()
-              onStoreChange()
-            }
-          }
-        })
-      },
-      [collectionName]
-    )
-
-    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+      return shouldUpdateEntity(event, fieldsMapRef.current.get(event.id) ?? new Set())
+    })
 
     const idKey = dataSource.scheme.collections[collectionName].identifierKey
 
@@ -144,9 +139,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
       .map((entity) => {
         const id = entity[idKey]
         const fields = new Set<string>()
-
         fieldsMapRef.current.set(id, fields)
-
         return createEntityProxy(entity, fields)
       })
   }
@@ -155,23 +148,11 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // useFindBy — filter-based, collection-level reactivity
   // -------------------------------------------------------------------------
 
-  const useFindBy = <K extends keyof Scheme>(
-    collectionName: K,
-    filter: DeepPartial<ModelType<Scheme, K>>
-  ): ModelType<Scheme, K>[] => {
-    const stateVersionRef = useRef(Symbol())
-
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), () => {
-          stateVersionRef.current = Symbol()
-          onStoreChange()
-        })
-      },
-      [collectionName]
-    )
-
-    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+  // prettier-ignore
+  const useFindBy = <K extends keyof Scheme>(collectionName: K, filter: DeepPartial<ModelType<Scheme, K>>): ModelType<Scheme, K>[] => {
+    useReactive(collectionName, () => {
+      return true
+    })
 
     return getCollection(collectionName).findBy(filter)
   }
@@ -180,25 +161,32 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // useFindOneBy — single entity by filter, collection-level reactivity
   // -------------------------------------------------------------------------
 
-  const useFindOneBy = <K extends keyof Scheme>(
-    collectionName: K,
-    filter: DeepPartial<ModelType<Scheme, K>>
-  ): ModelType<Scheme, K> | null => {
-    const stateVersionRef = useRef(Symbol())
-
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), () => {
-          stateVersionRef.current = Symbol()
-          onStoreChange()
-        })
-      },
-      [collectionName]
-    )
-
-    useSyncExternalStore(subscribe, () => stateVersionRef.current)
+  // prettier-ignore
+  const useFindOneBy = <K extends keyof Scheme>(collectionName: K, filter: DeepPartial<ModelType<Scheme, K>>): ModelType<Scheme, K> | null => {
+    useReactive(collectionName, () => {
+      return true
+    })
 
     return getCollection(collectionName).findOneBy(filter)
+  }
+
+  // -------------------------------------------------------------------------
+  // useField — single field of a single entity, minimal reactivity
+  // -------------------------------------------------------------------------
+
+  // prettier-ignore
+  const useField = <K extends keyof Scheme, F extends keyof ModelType<Scheme, K>>(collectionName: K, id: IdType<Scheme, K>, field: F & string): ModelType<Scheme, K>[F] | null => {
+    useReactive(collectionName, (event) => {
+      if (event.type === 'update') {
+        return event.id === id && shouldUpdateEntity(event, new Set([field]))
+      }
+
+      return false
+    })
+
+    const entity = getCollection(collectionName).get(id)
+    
+    return entity === null ? null : entity[field]
   }
 
   // -------------------------------------------------------------------------
@@ -206,18 +194,11 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // -------------------------------------------------------------------------
 
   const useCount = <K extends keyof Scheme>(collectionName: K) => {
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), (event) => {
-          if (event.type === 'create' || event.type === 'remove') {
-            onStoreChange()
-          }
-        })
-      },
-      [collectionName]
-    )
+    useReactive(collectionName, (event) => {
+      return event.type === 'create' || event.type === 'remove'
+    })
 
-    return useSyncExternalStore(subscribe, () => getCollection(collectionName).count())
+    return getCollection(collectionName).count()
   }
 
   // -------------------------------------------------------------------------
@@ -225,36 +206,24 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   // -------------------------------------------------------------------------
 
   const useExists = <K extends keyof Scheme>(collectionName: K, id: IdType<Scheme, K>) => {
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), (event) => {
-          if (event.id === id && event.type !== 'update') {
-            onStoreChange()
-          }
-        })
-      },
-      [collectionName, id]
-    )
+    useReactive(collectionName, (event) => {
+      return event.type === 'create' || event.type === 'remove'
+    })
 
-    return useSyncExternalStore(subscribe, () => getCollection(collectionName).exists(id))
+    return getCollection(collectionName).exists(id)
   }
 
   // -------------------------------------------------------------------------
   // useExistsBy — scalar, collection-level reactivity
   // -------------------------------------------------------------------------
 
-  const useExistsBy = <K extends keyof Scheme>(
-    collectionName: K,
-    filter: DeepPartial<ModelType<Scheme, K>>
-  ) => {
-    const subscribe = useCallback(
-      (onStoreChange: () => void) => {
-        return reactions.subscribe(getModelName(collectionName), () => onStoreChange())
-      },
-      [collectionName]
-    )
+  // prettier-ignore
+  const useExistsBy = <K extends keyof Scheme>(collectionName: K, filter: DeepPartial<ModelType<Scheme, K>>) => {
+    useReactive(collectionName, () => {
+      return true
+    })
 
-    return useSyncExternalStore(subscribe, () => getCollection(collectionName).existsBy(filter))
+    return getCollection(collectionName).existsBy(filter)
   }
 
   // -------------------------------------------------------------------------
@@ -280,6 +249,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
   return {
     useEntity,
     useEntities,
+    useField,
     useAll,
     useFindBy,
     useFindOneBy,
