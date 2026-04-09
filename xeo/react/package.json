@@ -1,8 +1,11 @@
 {
   "name": "@companix/xeo-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "module": "dist/bundle.esm.js",
   "types": "./lib/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "echo": "echo \"@companix/xeo-react\"",
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
