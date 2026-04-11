@@ -50,7 +50,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
     this.handleException = handleException
   }
 
-  private async request<T>(props: RequestInterface): Promise<T> {
+  async request<T>(props: RequestInterface): Promise<T> {
     const { url, body = {}, method, config = {} } = props
     const dataAtt = method === HttpVerb.Get ? 'params' : 'data'
 
