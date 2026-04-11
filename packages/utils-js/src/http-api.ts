@@ -10,16 +10,11 @@ export type IOpattern<T extends IOpattern<T>> = {
 export type GetParams<IO> = IO extends { params: infer T } ? T : never
 export type GetAnswer<IO> = IO extends { answer: infer T } ? T : never
 
-enum HttpVerb {
-  Get = 'GET',
-  Post = 'POST'
-}
-
 interface RequestInterface {
   url: string
   body?: any
   config?: AxiosRequestConfig
-  method: HttpVerb
+  method: 'POST' | 'GET'
 }
 
 interface Options extends CreateAxiosDefaults {
@@ -52,7 +47,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
 
   async request<T>(props: RequestInterface): Promise<T> {
     const { url, body = {}, method, config = {} } = props
-    const dataAtt = method === HttpVerb.Get ? 'params' : 'data'
+    const dataAtt = method === 'GET' ? 'params' : 'data'
 
     return this.http({ url, method, [dataAtt]: body, ...config })
       .then(({ data }) => data)
@@ -66,7 +61,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
     return {
       post<K extends keyof Routes>(url: K, body: Routes[K]['params'], config?: AxiosRequestConfig) {
         return request<Routes[K]['answer']>({
-          method: HttpVerb.Post,
+          method: 'POST',
           url: context + '/' + url.toString(),
           config,
           body
@@ -74,7 +69,7 @@ export class HttpAPI<ServerScheme extends ServerSchemeStructure> {
       },
       get<K extends keyof Routes>(url: K, body: Routes[K]['params'], config?: AxiosRequestConfig) {
         return request<Routes[K]['answer']>({
-          method: HttpVerb.Get,
+          method: 'GET',
           url: context + '/' + url.toString(),
           config,
           body
