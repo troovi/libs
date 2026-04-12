@@ -1,12 +1,15 @@
 {
   "name": "@companix/xeo-toolkit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.js",
   "types": "./lib/index.ts",
   "exports": {
     ".": "./dist/index.js",
     "./*": "./dist/*.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "echo": "echo \"@companix/xeo-toolkit\"",
     "build": "rm -rf dist && tsc -p tsconfig.build.json"
