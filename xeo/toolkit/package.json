@@ -1,0 +1,29 @@
+{
+  "name": "@companix/xeo-toolkit",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "./lib/index.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
+  },
+  "scripts": {
+    "echo": "echo \"@companix/xeo-toolkit\"",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@companix/utils-js": "file:../../packages/utils-js",
+    "@companix/xeo-scheme": "file:../scheme"
+  },
+  "devDependencies": {
+    "@companix/xeo-devkit": "file:../devkit",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
+    "zod": "^4.3.6"
+  }
+}
