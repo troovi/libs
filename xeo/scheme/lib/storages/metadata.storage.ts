@@ -279,6 +279,8 @@ export class TypeMetadataStorageHost {
     return this.models
   }
 
+  // helpers
+
   private getIdentifier(target: Function) {
     const identifiers = this.identifiers.filter((value) => {
       return value.target === target
@@ -295,19 +297,25 @@ export class TypeMetadataStorageHost {
     return identifiers[0]
   }
 
-  private getTargetProperties(target: Function) {
+  getIdentifierTarget(target: Function) {
+    return this.identifiers.filter((value) => {
+      return value.target === target
+    })
+  }
+
+  getTargetProperties(target: Function) {
     return this.properties.filter((i) => target === i.target)
   }
 
-  private getTargetAndExtendedProperties(target: Function) {
+  getTargetAndExtendedProperties(target: Function) {
     return this.properties.filter((i) => isTargetEqual({ target }, { target: i.target }))
   }
 
-  private getTargetRelations(target: Function) {
+  getTargetRelations(target: Function) {
     return this.relations.filter((i) => target === i.target)
   }
 
-  private getTargetAndExtendedRelations(target: Function) {
+  getTargetAndExtendedRelations(target: Function) {
     return this.relations.filter((i) => isTargetEqual({ target }, { target: i.target }))
   }
 }
