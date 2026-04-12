@@ -182,13 +182,20 @@ export const schemaOf = <T extends Type>(EntityClass: T): z.ZodObject<SchemaShap
   }
 
   const identifiers = TypeMetadataStorage.getIdentifierTarget(EntityClass)
+  const modelIdentifier = (() => {
+    try {
+      return TypeMetadataStorage.getModelSchemaByTarget(() => EntityClass).identifier
+    } catch {
+      return undefined
+    }
+  })()
   const properties = TypeMetadataStorage.getTargetAndExtendedProperties(EntityClass)
   const references = TypeMetadataStorage.getTargetAndExtendedRelations(EntityClass)
 
   const schema = buildObjectSchema({
     properties,
     references,
-    identifier: identifiers[0]
+    identifier: identifiers[0] ?? modelIdentifier
   })
 
   cache.set(EntityClass, schema)

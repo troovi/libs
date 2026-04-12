@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "echo": "echo \"@companix/xeo-toolkit\"",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "jest --config jest.config.cjs --runInBand"
   },
   "dependencies": {
     "@companix/utils-js": "file:../../packages/utils-js",
