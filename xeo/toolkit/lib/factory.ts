@@ -78,7 +78,7 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
       const domainService = domains[domain as string]
 
       if (domainService && domainService[service as string]) {
-        domainService[service as string].call(domainService, payload)
+        domainService[service as string].call(domainService, { ...payload.params, ...payload.answer })
       }
     }
   }
