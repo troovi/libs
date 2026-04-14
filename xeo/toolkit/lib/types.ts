@@ -28,4 +28,4 @@ export type RoutesToEvents<T extends RoutesMap<unknown>> = ValueOf<{
 }>
 
 export type DomainToRoutes<Service extends Record<string, any>> = PropsMap<Pick<Service, keyof Service>>
-export type WithLoopback<Params, Answer> = Params & Partial<Answer>
+export type WithLoopback<Params, T> = Params & { fallback?: T }

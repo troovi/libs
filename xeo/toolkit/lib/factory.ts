@@ -1,6 +1,6 @@
-import type { HttpAPI, IOpattern } from '@companix/utils-js'
+import { isPlainObject, type HttpAPI, type IOpattern } from '@companix/utils-js'
 import { CollectionScheme, Collections } from '@companix/xeo-scheme'
-import { RoutesToEvents } from './types'
+import { RoutesToEvents, WithLoopback } from './types'
 
 export abstract class BaseDomain<T extends CollectionScheme> {
   constructor(protected collections: Collections<T>) {}
@@ -49,6 +49,14 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
     domains[domain] = scheme[domain].initialize(collections)
   }
 
+  const getParams = (params: object, answer: WithLoopback<unknown, object>) => {
+    if (answer && isPlainObject(answer) && answer.fallback && isPlainObject(answer.fallback)) {
+      return { ...params, ...answer.fallback }
+    }
+
+    return params
+  }
+
   return {
     services: domains as { [K in keyof T]: T[K] extends Domain<any, infer S> ? S : never },
     createApi: (http: HttpAPI<{}>): DomainsApi<T> => {
@@ -59,13 +67,15 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
           return new Proxy({} as object, {
             get(_, method: string) {
               return async (params: object) => {
-                const answer = await http.request({
+                const answer: WithLoopback<unknown, object> = await http.request({
                   method: 'POST',
                   url: domain + '/' + method,
                   body: params
                 })
 
-                await domainService[method](answer != null ? { ...params, ...answer } : params)
+                // answer.fallback
+
+                await domainService[method](getParams(params, answer))
 
                 return answer
               }
@@ -78,7 +88,7 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
       const domainService = domains[domain as string]
 
       if (domainService && domainService[service as string]) {
-        domainService[service as string].call(domainService, { ...payload.params, ...payload.answer })
+        domainService[service as string].call(domainService, getParams(payload.params, payload.answer))
       }
     }
   }
