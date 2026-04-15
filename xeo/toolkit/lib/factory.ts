@@ -73,8 +73,6 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
                   body: params
                 })
 
-                // answer.fallback
-
                 await domainService[method](getParams(params, answer))
 
                 return answer

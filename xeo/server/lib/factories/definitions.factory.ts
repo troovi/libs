@@ -95,6 +95,7 @@ export class DefinitionsFactory<T extends CollectionScheme> {
 
         return {
           type: TypesTranslator[refModel.identifier.options.type],
+          index: reference.options?.index,
           required: !nullable
         }
       }

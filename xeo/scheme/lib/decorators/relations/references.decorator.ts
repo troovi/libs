@@ -33,7 +33,7 @@ interface SetNull {
   onRefDeleting?: 'set-null' // means auto-nullable
 }
 
-export type ReferenceToOptions = SetNull | Restrict
+export type ReferenceToOptions = (SetNull | Restrict) & { index?: boolean }
 
 // @ReferenceTo
 // Управляет связью поля с идентификатором записи модели T, определенной аргументом ref: () => T
