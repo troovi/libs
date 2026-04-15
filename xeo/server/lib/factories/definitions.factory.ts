@@ -77,6 +77,14 @@ export class DefinitionsFactory<T extends CollectionScheme> {
           required: !primitive.nullable
         }
       }
+      case 'string':
+      case 'number': {
+        return {
+          type: TypesTranslator[primitive.type],
+          unique: primitive.unique,
+          index: primitive.index
+        }
+      }
       default: {
         return {
           type: TypesTranslator[primitive.type]
@@ -96,6 +104,7 @@ export class DefinitionsFactory<T extends CollectionScheme> {
         return {
           type: TypesTranslator[refModel.identifier.options.type],
           index: reference.options?.index,
+          unique: reference.options?.unique,
           required: !nullable
         }
       }

@@ -1,11 +1,16 @@
 import { TypeMetadataStorage } from '../storages/metadata.storage'
 
+interface BaseOptions {
+  index?: boolean
+  unique?: boolean
+}
+
 export interface NullableProperty {
   nullable?: boolean
 }
 
 export namespace PropertyType {
-  export interface String extends NullableProperty {
+  export interface String extends NullableProperty, BaseOptions {
     type: 'string'
     nonempty?: boolean
     email?: boolean
@@ -15,7 +20,7 @@ export namespace PropertyType {
     type: 'boolean'
   }
 
-  export interface Number extends NullableProperty {
+  export interface Number extends NullableProperty, BaseOptions {
     type: 'number'
   }
 
