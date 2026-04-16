@@ -5,7 +5,7 @@ import { DataProcessor, IType } from './data-processor'
 import { DataScheme, CollectionScheme } from './data-scheme'
 import { AppCollectionDriver } from './types/driver.types'
 
-interface DriverApiMethods<T = object, I extends IType = IType> {
+export interface DriverApiMethods<T = object, I extends IType = IType> {
   get: (id: I) => T | null
   getAll: () => T[]
   findOneBy: (filter: DeepPartial<T>) => T | null
@@ -21,10 +21,10 @@ type DriverApiAsync<T = object, I extends IType = IType> = Promisify<DriverApiMe
 type DriverType = 'sync' | 'async'
 
 // prettier-ignore
-type DriverApi<T = object,I extends IType = IType, DT extends DriverType = DriverType> = DT extends 'sync' ? DriverApiSync<T, I> : DriverApiAsync<T, I>
+export type DriverApi<T = object,I extends IType = IType, DT extends DriverType = DriverType> = DT extends 'sync' ? DriverApiSync<T, I> : DriverApiAsync<T, I>
 
 // prettier-ignore
-type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<T, I, DT> & {
+export type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<T, I, DT> & {
   // data changing
   update: (id: I, mutate: (model: T) => void) => void
   create: (model: T) => Promise<void>
