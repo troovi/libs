@@ -91,6 +91,11 @@ export interface TableRelationSlice {
   modelId: IType // воспринимать данный id
 }
 
+export interface OppositeSlice {
+  tableName: string
+  modelSide: string
+}
+
 export interface RelationRecord extends TableRelationSlice {
   oppositeId: IType
 }
@@ -102,4 +107,6 @@ export abstract class TableDriver {
   // при удалении связи (модели остаются)
   removeRecord: (_: RelationRecord) => Promise<void>
   createRecord: (_: RelationRecord) => Promise<void>
+  // утилиты
+  getOppositeModelName: (_: OppositeSlice) => Promise<string>
 }

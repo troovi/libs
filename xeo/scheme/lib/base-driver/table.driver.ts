@@ -3,6 +3,7 @@ import {
   CollectionScheme,
   DataScheme,
   IType,
+  OppositeSlice,
   RelationRecord,
   RelationsTableInfo,
   TableDriver,
@@ -18,6 +19,7 @@ export class IndexedTableStore {
   private tableName: string
   private modelKey: { [model: string]: 'm1' | 'm2' } = {}
   private keyMirror = { m1: 'm2' as 'm2', m2: 'm1' as 'm1' }
+  private oppositeModels: { m1: string; m2: string } = { m1: '', m2: '' }
 
   // { m1: modelId1, m2: modelId2 } (modelId1 может иметь такое же значение как и modelId2 - ведь они принадлежат к разным моделям)
   // { m1: modelId1, m2: modelId3 }
@@ -40,8 +42,12 @@ export class IndexedTableStore {
 
   constructor(table: RelationsTableInfo) {
     this.tableName = table.tableName
+
     this.modelKey[table.rules.m1] = 'm1'
     this.modelKey[table.rules.m2] = 'm2'
+
+    this.oppositeModels.m1 = table.rules.m2
+    this.oppositeModels.m2 = table.rules.m1
   }
 
   getStore() {
@@ -143,6 +149,10 @@ export class IndexedTableStore {
 
     return this.store[this.modelKey[model]][modelId] ?? []
   }
+
+  getOppositeModelName(model: string) {
+    return this.oppositeModels[this.modelKey[model]]
+  }
 }
 
 export class BaseTableDriver<T extends CollectionScheme> implements TableDriver {
@@ -190,6 +200,10 @@ export class BaseTableDriver<T extends CollectionScheme> implements TableDriver 
     }
 
     return this.tables[tableName].getRelations(modelSide, modelId)
+  }
+
+  async getOppositeModelName({ tableName, modelSide }: OppositeSlice) {
+    return this.tables[tableName].getOppositeModelName(modelSide)
   }
 
   // development

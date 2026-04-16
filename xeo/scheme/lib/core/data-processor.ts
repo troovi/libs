@@ -569,8 +569,9 @@ export class DataProcessor<T extends CollectionScheme> {
     return queryBuilder.build({ optimize: isBase })
   }
 
-  async hasExternalRelations(id: IType, model: string) {
+  async getExternalRelations(id: IType, model: string) {
     const modeldata = this.dataScheme.models[model]
+    const buffer = new Map<string, IType[]>()
 
     for await (const inverseRef of modeldata.refscheme.inverseRefs) {
       if (inverseRef.refType === 'reference-to') {
@@ -580,9 +581,12 @@ export class DataProcessor<T extends CollectionScheme> {
           modelId: id
         })
 
-        if (inverseModelIds.length > 0) {
-          return true
-        }
+        const inverseModelName = await this.driver.tables.getOppositeModelName({
+          tableName: inverseRef.tableName,
+          modelSide: model
+        })
+
+        buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
       }
 
       if (inverseRef.refType === 'reference-set') {
@@ -592,13 +596,26 @@ export class DataProcessor<T extends CollectionScheme> {
           modelId: id
         })
 
-        if (inverseModelIds.length > 0) {
-          return true
-        }
+        const inverseModelName = await this.driver.tables.getOppositeModelName({
+          tableName: inverseRef.tableName,
+          modelSide: model
+        })
+
+        buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
       }
     }
 
-    return false
+    const result: { model: string; ids: IType[] }[] = []
+
+    for (const model of buffer.keys()) {
+      const ids = buffer.get(model)
+
+      if (ids) {
+        result.push({ model, ids })
+      }
+    }
+
+    return result
   }
 
   private getModelReferences({ refscheme, scheme }: ModelData, data: object): TargetReferencesStore {

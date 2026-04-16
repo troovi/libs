@@ -29,7 +29,7 @@ export type CollectionApi<T = object, I extends IType = IType, DT extends Driver
   update: (id: I, mutate: (model: T) => void) => void
   create: (model: T) => Promise<void>
   remove: (id: I) => Promise<void>
-  hasExternalRelations: (id: I) => Promise<boolean>
+  getExternalRelations: (id: I) => Promise<{ model: string; ids: IType[] }[]>
 }
 
 type CollectionApiShape = {
@@ -97,8 +97,8 @@ export class DataSource<Scheme extends CollectionScheme, Driver extends AppColle
         update: (id, mutate) => {
           return processor.update(id, collection.name, mutate)
         },
-        hasExternalRelations: (id) => {
-          return processor.hasExternalRelations(id, collection.name)
+        getExternalRelations: (id) => {
+          return processor.getExternalRelations(id, collection.name)
         }
       }
 

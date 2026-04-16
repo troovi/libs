@@ -6,13 +6,15 @@ import {
   RelationsTableInfo,
   TableDriver,
   TableRow,
-  TableRelationSlice
+  TableRelationSlice,
+  OppositeSlice
 } from '@companix/xeo-scheme'
 import { Connection, Model, Schema, SchemaDefinition } from 'mongoose'
 
 class MongoTableStore {
   private modelKey: { [model: string]: 'm1' | 'm2' } = {}
   private keyMirror = { m1: 'm2' as 'm2', m2: 'm1' as 'm1' }
+  private oppositeModels: { m1: string; m2: string } = { m1: '', m2: '' }
 
   private model: Model<TableRow>
 
@@ -20,6 +22,9 @@ class MongoTableStore {
     this.modelKey[rules.m1] = 'm1'
     this.modelKey[rules.m2] = 'm2'
     this.model = this.useModel<TableRow>(tableName, new Schema(this.getSchemeDefinition()))
+
+    this.oppositeModels.m1 = rules.m2
+    this.oppositeModels.m2 = rules.m1
   }
 
   private getSchemeDefinition(): SchemaDefinition {
@@ -68,6 +73,10 @@ class MongoTableStore {
   getStore() {
     return this.model.find().lean().exec()
   }
+
+  getOppositeModelName(model: string) {
+    return this.oppositeModels[this.modelKey[model]]
+  }
 }
 
 export class MongoRelationsTable<T extends CollectionScheme> implements TableDriver {
@@ -103,5 +112,9 @@ export class MongoRelationsTable<T extends CollectionScheme> implements TableDri
     }
 
     return state
+  }
+
+  async getOppositeModelName({ tableName, modelSide }: OppositeSlice) {
+    return this.tables[tableName].getOppositeModelName(modelSide)
   }
 }
