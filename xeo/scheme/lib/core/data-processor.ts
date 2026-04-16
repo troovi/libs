@@ -569,6 +569,38 @@ export class DataProcessor<T extends CollectionScheme> {
     return queryBuilder.build({ optimize: isBase })
   }
 
+  async hasExternalRelations(id: IType, model: string) {
+    const modeldata = this.dataScheme.models[model]
+
+    for await (const inverseRef of modeldata.refscheme.inverseRefs) {
+      if (inverseRef.refType === 'reference-to') {
+        const inverseModelIds = await this.driver.tables.getRecords({
+          tableName: inverseRef.tableName,
+          modelSide: model,
+          modelId: id
+        })
+
+        if (inverseModelIds.length > 0) {
+          return true
+        }
+      }
+
+      if (inverseRef.refType === 'reference-set') {
+        const inverseModelIds = await this.driver.tables.getRecords({
+          tableName: inverseRef.tableName,
+          modelSide: model,
+          modelId: id
+        })
+
+        if (inverseModelIds.length > 0) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
   private getModelReferences({ refscheme, scheme }: ModelData, data: object): TargetReferencesStore {
     const { commonRefs, discriminatorRefs } = refscheme
 

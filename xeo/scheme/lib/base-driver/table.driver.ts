@@ -137,6 +137,10 @@ export class IndexedTableStore {
   }
 
   getRelations(model: string, modelId: IType) {
+    if (!this.modelKey[model] || !this.store[this.modelKey[model]]) {
+      return []
+    }
+
     return this.store[this.modelKey[model]][modelId] ?? []
   }
 }
@@ -181,6 +185,10 @@ export class BaseTableDriver<T extends CollectionScheme> implements TableDriver 
   }
 
   async getRecords({ tableName, modelSide, modelId }: TableRelationSlice) {
+    if (!this.tables[tableName]) {
+      return []
+    }
+
     return this.tables[tableName].getRelations(modelSide, modelId)
   }
 
