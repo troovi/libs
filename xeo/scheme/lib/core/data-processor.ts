@@ -586,7 +586,9 @@ export class DataProcessor<T extends CollectionScheme> {
           modelSide: model
         })
 
-        buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
+        if (inverseModelIds.length > 0) {
+          buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
+        }
       }
 
       if (inverseRef.refType === 'reference-set') {
@@ -601,7 +603,9 @@ export class DataProcessor<T extends CollectionScheme> {
           modelSide: model
         })
 
-        buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
+        if (inverseModelIds.length > 0) {
+          buffer.set(inverseModelName, [...(buffer.get(inverseModelName) ?? []), ...inverseModelIds])
+        }
       }
     }
 

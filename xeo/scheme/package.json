@@ -1,6 +1,6 @@
 {
   "name": "@companix/xeo-scheme",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./lib/index.ts",
