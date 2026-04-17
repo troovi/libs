@@ -26,9 +26,9 @@ export type DriverApi<T = object,I extends IType = IType, DT extends DriverType 
 // prettier-ignore
 export type CollectionApi<T = object, I extends IType = IType, DT extends DriverType = DriverType> = DriverApi<T, I, DT> & {
   // data changing
-  update: (id: I, mutate: (model: T) => void) => void
-  create: (model: T) => Promise<void>
-  remove: (id: I) => Promise<void>
+  update: (id: I, mutate: (model: T) => void) => Promise<boolean>
+  create: (model: T) => Promise<boolean>
+  remove: (id: I) => Promise<boolean>
   getExternalRelations: (id: I) => Promise<{ model: string; ids: IType[] }[]>
 }
 

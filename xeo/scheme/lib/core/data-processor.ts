@@ -188,7 +188,7 @@ export class DataProcessor<T extends CollectionScheme> {
       xRay.print('QUERIES')(queryBuilder.build())
     }
 
-    await this.save(queryBuilder.build())
+    return this.save(queryBuilder.build())
   }
 
   async remove(id: IType, model: string) {
@@ -198,7 +198,7 @@ export class DataProcessor<T extends CollectionScheme> {
       xRay.print('QUERIES')(queries)
     }
 
-    await this.save(queries)
+    return this.save(queries)
   }
 
   async update(id: IType, model: string, mutate: (draft: object) => void) {
@@ -375,7 +375,7 @@ export class DataProcessor<T extends CollectionScheme> {
       xRay.print('QUERIES')(queryBuilder.build())
     }
 
-    await this.save(queryBuilder.build())
+    return this.save(queryBuilder.build())
   }
 
   // helpers
@@ -684,5 +684,7 @@ export class DataProcessor<T extends CollectionScheme> {
         return () => {}
       })
     )
+
+    return queries.length > 0
   }
 }
