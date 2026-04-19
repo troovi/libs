@@ -33,6 +33,9 @@ export type IOFLpattern<T extends IOFLpattern<T>> = {
   }
 }
 
+export type GetParams<IO> = IO extends { params: infer T } ? T : never
+export type GetAnswer<IO> = IO extends { answer: infer T } ? T : never
+
 // server transformers
 
 export type MapToDownloadScheme<T extends IOpattern<T>> = {
