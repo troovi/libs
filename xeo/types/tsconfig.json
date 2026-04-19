@@ -1,20 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
     "strictPropertyInitialization": false,
-    "module": "esnext",
+    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "target": "es2017",
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "baseUrl": "./"
+    "resolveJsonModule": true,
+    "types": ["node", "multer"],
+    "outDir": "./dist"
   },
-  "include": ["./src"],
+  "include": ["./**/*.ts", "./*.ts"],
   "exclude": ["node_modules", "dist"]
 }

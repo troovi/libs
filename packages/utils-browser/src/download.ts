@@ -10,15 +10,6 @@ export const Download = async (blob: Blob, filename: string) => {
   URL.revokeObjectURL(href)
 }
 
-export const transport = (file: Blob) => {
-  const data = new FormData()
-
-  data.append('file', file)
-  data.append('type', 'file')
-
-  return data
-}
-
 export const generatePreview = (file: File) => {
   const url = URL.createObjectURL(file)
 

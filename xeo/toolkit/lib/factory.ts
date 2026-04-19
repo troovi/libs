@@ -1,6 +1,8 @@
-import { isPlainObject, type HttpAPI, type IOpattern } from '@companix/utils-js'
+import type { HttpAPI } from '@companix/utils-browser'
+import { isPlainObject } from '@companix/utils-js'
 import { CollectionScheme, Collections } from '@companix/xeo-scheme'
 import { RoutesToEvents, WithLoopback } from './types'
+import { IOpattern } from '@companix/xeo-types'
 
 export abstract class BaseDomain<T extends CollectionScheme> {
   constructor(protected collections: Collections<T>) {}
@@ -59,7 +61,7 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
 
   return {
     services: domains as { [K in keyof T]: T[K] extends Domain<any, infer S> ? S : never },
-    createApi: (http: HttpAPI<{}>): DomainsApi<T> => {
+    createApi: (http: HttpAPI): DomainsApi<T> => {
       return new Proxy({} as DomainsApi<T>, {
         get(_, domain: string) {
           const domainService = domains[domain]

@@ -1,6 +1,6 @@
 {
   "name": "@companix/utils-js",
-  "version": "0.0.60",
+  "version": "0.0.61",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "./src/index.ts",
@@ -10,9 +10,6 @@
   ],
   "scripts": {
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs"
-  },
-  "dependencies": {
-    "axios": "^1.11.0"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^6.1.0",

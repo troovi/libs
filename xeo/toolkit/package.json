@@ -1,6 +1,6 @@
 {
   "name": "@companix/xeo-toolkit",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "types": "./lib/index.ts",
   "exports": {
@@ -17,9 +17,11 @@
   },
   "dependencies": {
     "@companix/utils-js": "file:../../packages/utils-js",
-    "@companix/xeo-scheme": "file:../scheme"
+    "@companix/xeo-scheme": "file:../scheme",
+    "@companix/xeo-types": "file:../types"
   },
   "devDependencies": {
+    "@companix/utils-browser": "file:../../packages/utils-browser",
     "@companix/xeo-devkit": "file:../devkit",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.29.1",

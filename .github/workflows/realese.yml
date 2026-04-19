@@ -22,6 +22,7 @@ jobs:
       xeo-server: ${{ steps.filter.outputs.xeo-server }}
       xeo-react: ${{ steps.filter.outputs.xeo-react }}
       xeo-toolkit: ${{ steps.filter.outputs.xeo-toolkit }}
+      xeo-types: ${{ steps.filter.outputs.xeo-types }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -56,6 +57,8 @@ jobs:
               - 'xeo/react/package.json'
             xeo-toolkit:
               - 'xeo/toolkit/package.json'
+            xeo-types:
+              - 'xeo/types/package.json'
 
       - run: echo '${{ toJson(github.event) }}'
 
@@ -350,5 +353,26 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: xeo/toolkit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  xeo-types:
+    needs: changes
+    if: ${{ needs.changes.outputs.xeo-types == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/xeo-types
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: xeo/types
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
