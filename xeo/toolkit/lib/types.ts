@@ -1,4 +1,4 @@
-import { IOpattern } from '@companix/utils-js'
+import { IOpattern } from '@companix/xeo-types'
 
 type ValueOf<T> = T[keyof T]
 

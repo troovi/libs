@@ -1,6 +1,6 @@
 {
   "name": "@companix/xeo-toolkit",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "dist/index.js",
   "types": "./lib/index.ts",
   "exports": {
