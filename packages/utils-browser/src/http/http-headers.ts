@@ -1,16 +1,15 @@
 import type { RawAxiosRequestHeaders } from 'axios'
 
 interface Options {
-  multipart?: boolean
   token?: string
   tokenSource?: string
 }
 
-export const getHeaders = ({ token, tokenSource, multipart }: Options = {}): RawAxiosRequestHeaders => {
+export const getHeaders = ({ token, tokenSource }: Options = {}): RawAxiosRequestHeaders => {
   const Authorization = getAuthToken(token, tokenSource)
 
   const headers: RawAxiosRequestHeaders = {
-    'Content-Type': multipart ? 'multipart/form-data; charset=utf-8' : 'application/json'
+    'Content-Type': 'application/json'
   }
 
   if (Authorization) {

@@ -48,15 +48,24 @@ export class HttpAPI {
 
   // prettier-ignore
   useIOFRoutes<Routes extends IOFpattern<Routes>>(context: string) {
-    return <K extends keyof Routes>(url: K, files: FileParam<Routes[K]['files']>, body: Routes[K]['params'], config?: AxiosRequestConfig) => {
-      return this.request<Routes[K]['answer']>({ method: 'POST', url: context + '/' + url.toString(), config, body: transport(files, body as object) })
+    return <K extends keyof Routes>(url: K, files: FileParam<Routes[K]['files']>, body: Routes[K]['params']) => {
+      return this.request<Routes[K]['answer']>({
+        method: 'POST',
+        url: context + '/' + url.toString(),
+        config: { headers: { 'Content-Type': 'multipart/form-data; charset=utf-8' } },
+        body: transport(files, body as object)
+      })
     }
   }
 
-  // prettier-ignore
   useIOFLRoutes<Routes extends IOFLpattern<Routes>>(context: string) {
-    return <K extends keyof Routes>(url: K, files: FileParam<Routes[K]['files']>,config?: AxiosRequestConfig) => {
-      return this.request<Routes[K]['answer']>({ method: 'POST', url: context + '/' + url.toString(), config, body: transport(files) })
+    return <K extends keyof Routes>(url: K, files: FileParam<Routes[K]['files']>) => {
+      return this.request<Routes[K]['answer']>({
+        method: 'POST',
+        url: context + '/' + url.toString(),
+        config: { headers: { 'Content-Type': 'multipart/form-data; charset=utf-8' } },
+        body: transport(files)
+      })
     }
   }
 
@@ -72,11 +81,10 @@ export class HttpAPI {
           body
         })
       },
-      get<K extends keyof Routes>(url: K, body: Routes[K]['params'], config?: AxiosRequestConfig) {
+      get<K extends keyof Routes>(url: K, body: Routes[K]['params']) {
         return request<Routes[K]['answer']>({
           method: 'GET',
           url: context + '/' + url.toString(),
-          config,
           body
         })
       },
