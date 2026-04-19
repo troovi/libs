@@ -17,7 +17,7 @@ const defaultExceptionHandler = ({ response }: AxiosError) => {
 }
 
 type ServerSchemeStructure = {
-  [context: string]: IOpattern<any>
+  [context: string]: any // IOpattern
 }
 
 export class HttpAPI {
