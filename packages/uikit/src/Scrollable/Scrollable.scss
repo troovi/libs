@@ -45,11 +45,6 @@
   border-top-width: calc(var(--thumb-padding) * 2);
 }
 
-.hidden-scroll {
-  overflow-y: scroll;
-  height: 100%;
-}
-
 .hidden-scroll::-webkit-scrollbar {
   display: none;
 }
