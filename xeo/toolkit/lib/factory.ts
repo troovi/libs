@@ -53,7 +53,7 @@ const initializeDomains = <C extends Collections<any>, T extends DomainsScheme>(
 
   const getParams = (params: object, answer: WithLoopback<unknown, object>) => {
     if (answer && isPlainObject(answer) && answer.fallback && isPlainObject(answer.fallback)) {
-      return { ...params, ...answer.fallback }
+      return { ...params, ...answer }
     }
 
     return params
