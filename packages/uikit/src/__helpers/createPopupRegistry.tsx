@@ -3,6 +3,7 @@ import { hash } from '@companix/utils-js'
 
 import { Dialog, DialogProps } from '../Dialog'
 import { Drawer, DrawerProps } from '../Drawer'
+import { MobileDrawer, MobileDrawerProps } from '..'
 
 export interface PopupProps<T> {
   data: T
@@ -162,5 +163,22 @@ export const DrawerShell = ({ children, ...props }: DrawerShellProps) => {
     <Drawer {...control} {...props}>
       {children}
     </Drawer>
+  )
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * DrawerMobile
+ * -----------------------------------------------------------------------------------------------*/
+
+interface MobileDrawerShellProps
+  extends Omit<MobileDrawerProps, 'open' | 'onOpenChange' | 'onClosed'> {}
+
+export const MobileDrawerShell = ({ children, ...props }: MobileDrawerShellProps) => {
+  const control = usePopup()
+
+  return (
+    <MobileDrawer {...control} {...props}>
+      {children}
+    </MobileDrawer>
   )
 }

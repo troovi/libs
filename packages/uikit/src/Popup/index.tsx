@@ -10,14 +10,16 @@ export interface PopupLayotProps {
   defaultOpen?: boolean
   disableEsc?: boolean
   onClosed?: () => void
-  overlay?: React.HTMLAttributes<HTMLDivElement>
-  content?: React.HTMLAttributes<HTMLDivElement> & {
+  overlay?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+  overlayRef?: React.Ref<HTMLDivElement>
+  content?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     [data: `data-${string}`]: string | undefined
   }
+  contentRef?: React.Ref<HTMLDivElement>
 }
 
 export const PopupLayout = (props: PopupLayotProps) => {
-  const { open, onOpenChange, children, onClosed, disableEsc, overlay = {}, content = {} } = props
+  const { open, onOpenChange, children, onClosed, disableEsc, overlay = {}, overlayRef, content = {}, contentRef } = props
 
   const handleEscape = (e: KeyboardEvent) => {
     if (disableEsc) {
@@ -28,8 +30,8 @@ export const PopupLayout = (props: PopupLayotProps) => {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay {...overlay} className={cn('popup-overlay', overlay.className)} />
-        <DialogPrimitive.Content {...content} onEscapeKeyDown={handleEscape}>
+        <DialogPrimitive.Overlay {...overlay} ref={overlayRef} className={cn('popup-overlay', overlay.className)} />
+        <DialogPrimitive.Content {...content} ref={contentRef} onEscapeKeyDown={handleEscape}>
           <RemoveListener callback={onClosed} />
           <VisuallyHidden>
             <DialogPrimitive.Title />

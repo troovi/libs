@@ -58,7 +58,11 @@ export { Radio, RadioGroup } from './Radio'
 export type { RadioOption, RadioGroupProps } from './Radio'
 
 export { Drawer } from './Drawer'
+
 export type { DrawerProps } from './Drawer'
+
+export { MobileDrawer } from './DrawerMobile'
+export type { MobileDrawerProps } from './DrawerMobile'
 
 export { Dialog } from './Dialog'
 export type { DialogProps, DialogSize } from './Dialog'
@@ -143,6 +147,7 @@ export {
   createPopupRegistry,
   DialogShell,
   DrawerShell,
+  MobileDrawerShell,
   usePopup
 } from './__helpers/createPopupRegistry'
 export { createPopoversRegistry } from './__helpers/createPopoversRegistry'

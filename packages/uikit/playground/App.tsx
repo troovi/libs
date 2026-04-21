@@ -36,6 +36,7 @@ import { DropAreaExample } from './drop-area'
 import { NowExample } from './now'
 import { LocalStorageProvider } from '@/index'
 import { LocalStorageExample } from './local-storage'
+import { DrawerMobileExample } from './drawer/mobile'
 
 export const App = () => {
   return (
@@ -72,6 +73,9 @@ const AppLayout = () => {
         </Example>
         <Example name="Drawer">
           <DrawerExample />
+        </Example>
+        <Example name="DrawerMobile">
+          <DrawerMobileExample />
         </Example>
         <Example name="Input">
           <InputsExample />

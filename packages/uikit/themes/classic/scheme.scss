@@ -350,7 +350,7 @@ $scheme: (
     radius: 10px,
 
     overlay_in_animation: fadeIn 500ms cubic-bezier(0.32, 0.72, 0, 1),
-    overlay_out_animation: fadeOut 500ms cubic-bezier(0.32, 0.72, 0, 1),
+    overlay_out_animation: drawerOverlayOut 500ms cubic-bezier(0.32, 0.72, 0, 1),
     //
     in_left_animation: slideFromLeft 500ms cubic-bezier(0.32, 0.72, 0, 1),
     out_left_animation: slideToLeft 500ms cubic-bezier(0.32, 0.72, 0, 1),

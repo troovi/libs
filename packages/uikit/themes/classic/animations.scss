@@ -36,6 +36,14 @@
   }
 }
 
+// Fade-out that starts from the element's current computed opacity (no explicit `from`),
+// so it picks up seamlessly from wherever a drag interaction left the overlay.
+@keyframes drawerOverlayOut {
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes checkboxIn {
   from {
     transform: translateY(-5px);
