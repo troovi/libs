@@ -156,6 +156,8 @@
     cursor: progress;
     position: relative;
 
+    @include mixins.use-styles(button, loading);
+
     .button-text {
       visibility: hidden;
       @include mixins.use-styles(button, loading, text);
