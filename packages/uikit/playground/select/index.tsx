@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Select, SelectParams } from '@/Select'
 import { Icon } from '@/Icon'
 import { faGift } from '@companix/icons-solid'
 import { useServerOptions } from '../helpers'
+import { Option } from '@/types'
 
 export const SelectExample = () => {
   return (
@@ -30,6 +31,13 @@ export const SelectExample = () => {
           />
         </div>
       </div>
+      <div className="col-group">
+        <div className="row-group">
+          <div style={{ minWidth: '240px', width: '240px' }}>
+            <SelectItemWithLabelss />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -39,7 +47,7 @@ interface ItemProps extends SelectParams {
   leftElement?: React.ReactNode
 }
 
-const options = [
+const options: Option<number>[] = [
   { value: 1, title: 'Vladimir Putin' },
   { value: 2, title: 'Donald Trump' },
   { value: 3, title: 'Sergey Lavrov' },
@@ -48,6 +56,52 @@ const options = [
     value: i + 4
   }))
 ]
+
+const SubLabel = ({ value }: { value: string }) => {
+  return <span className="custom-sub-label">{value}</span>
+}
+
+export const SelectItemWithLabelss = (props: ItemProps) => {
+  const [value, onChange] = useState<null | number>(null)
+
+  const options = useMemo((): Option<number>[] => {
+    return [
+      {
+        value: 1,
+        title: 'Vladimir Putin',
+        label: 'Russian president',
+        indicator: <SubLabel value="8🍌" />
+      },
+      {
+        value: 2,
+        title: 'Donald Trump',
+        label: 'American president',
+        indicator: <SubLabel value="24🍌" />
+      },
+      {
+        value: 3,
+        title: 'Sergey Lavrov',
+        label: 'Russian politition',
+        indicator: <SubLabel value="32🍌" />
+      },
+      ...new Array(10).fill(0).map((_, i) => ({
+        title: `Value ${i + 4}`,
+        value: i + 4
+      }))
+    ]
+  }, [])
+
+  return (
+    <Select<number>
+      value={value}
+      onChange={(value) => onChange(value)}
+      {...props}
+      placeholder="Не выбрано"
+      minimalOptions
+      options={options}
+    />
+  )
+}
 
 export const SelectItem = (props: ItemProps) => {
   const [value, onChange] = useState<null | number>(null)

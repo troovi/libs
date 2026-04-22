@@ -17,6 +17,7 @@ export interface SelectFormProps {
   fill?: boolean
   clearButton?: boolean
   clearButtonIcon?: boolean
+  customElement?: React.ReactNode
   inputRef?: React.Ref<HTMLInputElement>
   onClear?: (event: React.MouseEvent<HTMLButtonElement>) => void
   onClick?: () => void
@@ -34,6 +35,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
       clearButton,
       placeholder,
       clearButtonIcon,
+      customElement,
       disabled,
       onClear,
       inputRef,
@@ -110,6 +112,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
           </div>
           <div className="select-element">
             <SelectRightElements
+              customElement={customElement}
               clearButton={clearButton}
               value={Boolean(value)}
               clearButtonIcon={clearButtonIcon}

@@ -5,14 +5,16 @@ interface SelectRightElementsProps {
   onClear?: (event: React.MouseEvent<HTMLButtonElement>) => void
   clearButton?: boolean
   clearButtonIcon?: React.ReactNode
+  customElement?: React.ReactNode
   value: boolean
 }
 
 export const SelectRightElements = (props: SelectRightElementsProps) => {
-  const { clearButton, clearButtonIcon, value, onClear } = props
+  const { customElement, clearButton, clearButtonIcon, value, onClear } = props
 
   return (
     <>
+      {customElement}
       {clearButton && value && (
         <button className="select-close-button" onClick={onClear}>
           {clearButtonIcon ?? <Icon className="select-close-icon" icon={faXmark} size="xxxs" />}

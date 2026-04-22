@@ -135,6 +135,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
           onClick={onClick}
           disabled={disabled}
           clearButton={clearButton}
+          customElement={activeOption?.indicator}
           clearButtonIcon={clearButtonIcon}
           value={activeOption?.title ?? ''}
         />

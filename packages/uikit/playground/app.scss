@@ -317,3 +317,16 @@ body {
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.3), 0px 4px 16px 0px rgba(0, 0, 0, 0.3);
   }
 }
+
+.custom-sub-label {
+  color: #a855f7;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.option-header {
+  .custom-sub-label {
+    margin-right: 0;
+  }
+}

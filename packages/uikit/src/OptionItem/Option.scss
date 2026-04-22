@@ -31,12 +31,24 @@
     max-width: 100%;
     gap: 8px;
 
+    &-layout {
+      width: 100%;
+    }
+
     &-inner {
       @include mixins.use-styles(option, content, layout);
     }
   }
 
+  &-header {
+    align-items: center;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+  }
+
   &-title {
+    flex: 1;
     word-break: break-word;
   }
 

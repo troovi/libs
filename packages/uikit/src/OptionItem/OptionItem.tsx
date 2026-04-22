@@ -14,7 +14,7 @@ export interface OptionProps
 }
 
 export const OptionItem = forwardRef<HTMLDivElement, OptionProps>(
-  ({ title, icon, active, label, disabled, minimal, onClick, className, ...rest }, ref) => {
+  ({ title, icon, active, label, indicator, disabled, minimal, onClick, className, ...rest }, ref) => {
     const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
       if (!disabled) {
         onClick?.(event)
@@ -34,7 +34,10 @@ export const OptionItem = forwardRef<HTMLDivElement, OptionProps>(
         <div className="option-content">
           {icon && <div className="option-icon">{icon}</div>}
           <div className="option-content-layout">
-            <div className="option-title">{title}</div>
+            <div className="option-header">
+              <div className="option-title">{title}</div>
+              {indicator}
+            </div>
             {label && <div className="option-label">{label}</div>}
           </div>
         </div>

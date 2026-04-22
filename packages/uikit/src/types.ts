@@ -3,6 +3,7 @@ export interface Option<T> {
   value: T
   icon?: React.ReactNode
   label?: string
+  indicator?: React.ReactNode
   disabled?: boolean
   className?: string
 }
