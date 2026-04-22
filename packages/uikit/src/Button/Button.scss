@@ -157,14 +157,19 @@
     cursor: progress;
     position: relative;
 
+    @include mixins.use-styles(button, loading);
+
     .button-text {
       visibility: hidden;
+      @include mixins.use-styles(button, loading, text);
     }
 
     .button-spinner {
       position: absolute;
       margin: 0;
       color: inherit;
+
+      @include mixins.use-styles(button, loading, spinner);
     }
   }
 }
