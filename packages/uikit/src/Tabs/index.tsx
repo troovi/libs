@@ -2,20 +2,20 @@ import { makeTabId, useTabSlider } from '../__hooks/use-tab-slider'
 import * as RadixTabs from '@radix-ui/react-tabs'
 import { createContext, useContext, useId, useRef } from 'react'
 
-export interface TabsProps {
+export interface TabsProps<T extends string> {
   children: React.ReactNode
-  onChange: (value: string) => void
-  value: string
+  onChange: (value: T) => void
+  value: T
 }
 
 const TabsContext = createContext({ baseId: '', containerRef: {} as React.RefObject<HTMLDivElement> })
 
-export const Tabs = ({ children, value, onChange }: TabsProps) => {
+export const Tabs = <T extends string>({ children, value, onChange }: TabsProps<T>) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const baseId = useId().replaceAll(':', '')
 
   return (
-    <RadixTabs.Root value={value} onValueChange={onChange}>
+    <RadixTabs.Root value={value} onValueChange={(value) => onChange(value as T)}>
       <TabsContext.Provider value={{ baseId, containerRef }}>
         <RadixTabs.List className="tabs" ref={containerRef}>
           <TabIndicator value={value} />
