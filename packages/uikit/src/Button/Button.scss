@@ -79,7 +79,7 @@
   &:active {
     @include mixins.use-styles(button, active);
 
-    &:not([disabled]) {
+    &:not([disabled]):not([data-loading]) {
       @include mixins.use-styles(button, pressed);
     }
   }
