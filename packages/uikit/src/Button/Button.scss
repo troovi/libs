@@ -47,6 +47,10 @@
     &[data-mode='minimal'] {
       @include use-mode($appearance, minimal);
     }
+
+    &[data-loading] {
+      @include mixins.use-styles(button, $appearance, loading);
+    }
   }
 }
 
@@ -148,16 +152,9 @@
 
   // appearance
 
-  @include use-appearance(primary);
-  @include use-appearance(neutral);
-  @include use-appearance(negative);
-  @include use-appearance(positive);
-
   &[data-loading] {
     cursor: progress;
     position: relative;
-
-    @include mixins.use-styles(button, loading);
 
     .button-text {
       visibility: hidden;
@@ -172,4 +169,9 @@
       @include mixins.use-styles(button, loading, spinner);
     }
   }
+
+  @include use-appearance(primary);
+  @include use-appearance(neutral);
+  @include use-appearance(negative);
+  @include use-appearance(positive);
 }
