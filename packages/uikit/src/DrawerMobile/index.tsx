@@ -28,6 +28,7 @@ import type { MobileDrawerContentProps, MobileDrawerOverlayProps } from './types
 
 export interface MobileDrawerProps {
   open: boolean
+  className?: string
   onOpenChange: (value: boolean) => void
   children: React.ReactNode
   defaultOpen?: boolean
@@ -549,12 +550,14 @@ export const Handle = React.forwardRef<HTMLDivElement, React.ComponentPropsWitho
   }
 )
 
-export const MobileDrawer = ({ children, size, ...props }: MobileDrawerProps) => {
+export const MobileDrawer = ({ children, className, size, ...props }: MobileDrawerProps) => {
   return (
     <Root {...props}>
       <DialogPrimitive.Portal>
         <Overlay />
-        <Content size={size}>{children}</Content>
+        <Content className={className} size={size}>
+          {children}
+        </Content>
       </DialogPrimitive.Portal>
     </Root>
   )
