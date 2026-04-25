@@ -1,4 +1,4 @@
-import { EventBroadcaster } from '@companix/utils-js'
+import { EventBroadcaster } from './emiters'
 
 export const commonQuery = <T>(request: () => Promise<T>) => {
   const state = { isLoading: false }

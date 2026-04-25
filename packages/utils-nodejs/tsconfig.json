@@ -16,6 +16,6 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "include": ["./src"],
+  "include": ["./src", "../utils-js/src/common-request.ts"],
   "exclude": ["node_modules", "dist"]
 }

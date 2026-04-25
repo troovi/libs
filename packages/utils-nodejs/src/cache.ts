@@ -1,6 +1,6 @@
+import { commonQuery } from '@companix/utils-js'
 import { existsSync, writeFileSync } from 'fs'
 import { getFileData } from './fs'
-import { commonQuery } from './common-request'
 
 interface CacheOptions<T> {
   cacheDir?: string
