@@ -99,7 +99,7 @@ export class HttpAPI {
   }
 }
 
-const transport = (files: Record<string, Blob | Blob[]>, params: object = {}) => {
+const transport = (files: Record<string, Blob | Blob[] | undefined>, params: object = {}) => {
   const data = new FormData()
 
   for (const name in files) {
@@ -110,7 +110,9 @@ const transport = (files: Record<string, Blob | Blob[]>, params: object = {}) =>
         data.append(name, file)
       })
     } else {
-      data.append(name, value)
+      if (value) {
+        data.append(name, value)
+      }
     }
   }
 
@@ -123,6 +125,8 @@ const transport = (files: Record<string, Blob | Blob[]>, params: object = {}) =>
 
 type FileParam<T extends AnyFileInput> = T extends FileInput.Single<infer N>
   ? { [K in N & string]: Blob }
+  : T extends FileInput.SingleOptional<infer N>
+  ? { [K in N & string]?: Blob }
   : T extends FileInput.Set<infer N>
   ? { [K in N & string]: Blob[] }
   : T extends FileInput.Map<infer N>

@@ -2,11 +2,13 @@ type Distinct<T, DistinctName> = T & { __TYPE__?: DistinctName; __SOURCE__?: T }
 
 export namespace FileInput {
   export type Single<Name> = Distinct<Name, 'Single'> // name -> Express.Multer.File
+  export type SingleOptional<Name> = Distinct<Name, 'SingleOptional'> // name -> Express.Multer.File | undefined
   export type Set<Name> = Distinct<Name, 'Set'> // name -> { name: Express.Multer.File[] }
   export type Map<Names> = Distinct<Names, 'Map'> // foo, bar  -> { foo: [Express.Multer.File], bar: [Express.Multer.File] }
 }
 
-export type AnyFileInput = FileInput.Single<unknown> | FileInput.Set<unknown> | FileInput.Map<unknown>
+// prettier-ignore
+export type AnyFileInput = FileInput.Single<unknown> | FileInput.SingleOptional<unknown> | FileInput.Set<unknown> | FileInput.Map<unknown>
 
 // basic route scheme
 export type IOpattern<T extends IOpattern<T>> = {
@@ -65,6 +67,8 @@ export type Stringify<T> = {
 
 export type FileArgument<T extends AnyFileInput> = T extends FileInput.Single<unknown>
   ? Express.Multer.File
+  : T extends FileInput.SingleOptional<unknown>
+  ? Express.Multer.File | undefined
   : T extends FileInput.Set<infer N>
   ? { [k in N & string]: Express.Multer.File[] }
   : T extends FileInput.Map<infer N>
