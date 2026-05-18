@@ -18,6 +18,7 @@ import { PersonalDataService } from './modules/personal-data/personal-data.servi
 import { DealService } from './modules/deal/deal.service'
 import { WebhookService } from './modules/webhook/webhook.service'
 import { MeService } from './modules/me/me.service'
+import { WebhookBootstrapService } from './modules/webhook'
 
 const YOOKASSA_FEATURE_SERVICES = [
   PaymentService,
@@ -30,6 +31,7 @@ const YOOKASSA_FEATURE_SERVICES = [
   PersonalDataService,
   DealService,
   WebhookService,
+  WebhookBootstrapService,
   MeService
 ]
 
