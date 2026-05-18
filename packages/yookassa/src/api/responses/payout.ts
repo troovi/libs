@@ -1,5 +1,5 @@
-import type { CommonAmount, CommonDeal2 } from '../common';
-import { BankCardTypeEnum, BasicStatusEnum } from '../enums';
+import type { CommonAmount, CommonDeal2 } from '../common'
+import { BankCardTypeEnum, BasicStatusEnum } from '../enums'
 
 /**
  * Объект выплаты
@@ -16,11 +16,11 @@ export interface Payout {
   /**
    * Идентификатор выплаты.
    */
-  id: string;
+  id: string
   /**
    * Сумма выплаты.
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Статус выплаты. Возможные значения:
    *
@@ -30,53 +30,53 @@ export interface Payout {
    *
    * canceled — выплата отменена, инициатор и причина отмены указаны в объекте cancellation_details (финальный и неизменяемый статус).
    */
-  status: BasicStatusEnum;
+  status: BasicStatusEnum
   /**
    * Платежное средство, на которое ЮKassa зачисляет выплату.
    */
-  payout_destination: PayoutPayoutDestination;
+  payout_destination: PayoutPayoutDestination
   /**
    * Описание транзакции (не более 128 символов). Например: «Выплата по договору 37».
    */
-  description?: string;
+  description?: string
   /**
    * Время создания выплаты. Указывается по UTC и передается в формате ISO 8601. Пример: 2017-11-03T11:52:31.827Z
    */
-  created_at: string;
+  created_at: string
   /**
    * Время успешного проведения выплаты. Указывается по UTC и передается в формате ISO 8601. Пример: 2017-11-03T11:52:42.312Z
    *
    * Обязательный параметр для выплат в статусе succeeded.
    */
-  succeeded_at?: string;
+  succeeded_at?: string
   /**
    * Сделка, в рамках которой нужно провести выплату. Присутствует, если вы проводите Безопасную сделку.
    */
-  deal?: CommonDeal2;
+  deal?: CommonDeal2
   /**
    * Данные самозанятого, который получит выплату.
    *
    * Устаревший параметр. Раньше возвращался при проведении выплат самозанятым. Сейчас функциональность недоступна. Параметр сохранен для поддержки обратной совместимости, в новых версиях API может быть удален.
    */
-  self_employed?: PayoutSelfEmployed;
+  self_employed?: PayoutSelfEmployed
   /**
    * Данные чека, зарегистрированного в ФНС.
    *
    * Устаревший параметр. Раньше возвращался при проведении выплат самозанятым. Сейчас функциональность недоступна. Параметр сохранен для поддержки обратной совместимости, в новых версиях API может быть удален.
    */
-  receipt?: PayoutReceipt;
+  receipt?: PayoutReceipt
   /**
    * Комментарий к статусу canceled: кто отменил выплату и по какой причине.
    */
-  cancellation_details?: PayoutCancellationDetails;
+  cancellation_details?: PayoutCancellationDetails
   /**
    * Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    */
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown>
   /**
    * Признак тестовой операции.
    */
-  test: boolean;
+  test: boolean
 }
 
 /**
@@ -86,11 +86,11 @@ export interface PayoutPayoutDestinationBankCard {
   /**
    * Код способа получения выплаты.
    */
-  "type": "bank_card";
+  type: 'bank_card'
   /**
    * Данные банковской карты.
    */
-  card?: PayoutPayoutDestinationBankCardCard;
+  card?: PayoutPayoutDestinationBankCardCard
 }
 
 /**
@@ -100,11 +100,11 @@ export interface PayoutPayoutDestinationYooMoney {
   /**
    * Код способа получения выплаты.
    */
-  "type": "yoo_money";
+  type: 'yoo_money'
   /**
    * Номер кошелька ЮMoney, например 41001614575714. Длина — от 11 до 33 цифр.
    */
-  account_number: string;
+  account_number: string
 }
 
 /**
@@ -114,25 +114,25 @@ export interface PayoutPayoutDestinationSbp {
   /**
    * Код способа получения выплаты.
    */
-  "type": "sbp";
+  type: 'sbp'
   /**
    * Телефон, к которому привязан счет получателя выплаты в системе участника СБП. Указывается в формате ITU-T E.164, например 79000000000.
    */
-  phone: string;
+  phone: string
   /**
    * Идентификатор участника СБП — банка или платежного сервиса, подключенного к сервису.
    */
-  bank_id: string;
+  bank_id: string
   /**
    * Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777.
    *
    * Обязательный параметр для выплат в статусе succeeded. В остальных случаях может отсутствовать.
    */
-  sbp_operation_id?: string;
+  sbp_operation_id?: string
   /**
    * Проверка получателя выплаты: true — выплата проходила с проверкой получателя, false — выплата проходила без проверки получателя.
    */
-  recipient_checked: boolean;
+  recipient_checked: boolean
 }
 
 /**
@@ -140,7 +140,10 @@ export interface PayoutPayoutDestinationSbp {
  *
  * Способы получения выплаты
  */
-export type PayoutPayoutDestination = PayoutPayoutDestinationBankCard | PayoutPayoutDestinationYooMoney | PayoutPayoutDestinationSbp;
+export type PayoutPayoutDestination =
+  | PayoutPayoutDestinationBankCard
+  | PayoutPayoutDestinationYooMoney
+  | PayoutPayoutDestinationSbp
 
 /**
  * Данные самозанятого, который получит выплату.
@@ -151,7 +154,7 @@ export interface PayoutSelfEmployed {
   /**
    * Идентификатор самозанятого в ЮKassa.
    */
-  id: string;
+  id: string
 }
 
 /**
@@ -163,19 +166,19 @@ export interface PayoutReceipt {
   /**
    * Описание услуги, оказанной получателем выплаты. Не более 50 символов.
    */
-  service_name: string;
+  service_name: string
   /**
    * Идентификатор чека в сервисе. Пример: 208jd98zqe
    */
-  npd_receipt_id?: string;
+  npd_receipt_id?: string
   /**
    * Ссылка на зарегистрированный чек. Пример: https://www.nalog.gov.ru/api/v1/receipt/<Идентификатор чека>/print
    */
-  url?: string;
+  url?: string
   /**
    * Сумма, указанная в чеке. Присутствует, если в запросе передавалась сумма для печати в чеке.
    */
-  amount?: CommonAmount;
+  amount?: CommonAmount
 }
 
 /**
@@ -185,11 +188,11 @@ export interface PayoutCancellationDetails {
   /**
    * Участник процесса выплаты, который принял решение об отмене транзакции. Перечень инициаторов отмены выплаты: для обычных выплат, для выплат в рамках Безопасной сделки.
    */
-  party: string;
+  party: string
   /**
    * Причина отмены выплаты. Перечень и описание возможных значений: для обычных выплат, для выплат в рамках Безопасной сделки.
    */
-  reason: string;
+  reason: string
 }
 
 /**
@@ -199,23 +202,23 @@ export interface PayoutPayoutDestinationBankCardCard {
   /**
    * Первые 6 цифр номера карты (BIN).
    */
-  first6: string;
+  first6: string
   /**
    * Последние 4 цифры номера карты.
    */
-  last4: string;
+  last4: string
   /**
    * Тип банковской карты. Возможные значения: MasterCard (для карт Mastercard и Maestro), Visa (для карт Visa и Visa Electron), Mir, UnionPay, JCB, AmericanExpress, DinersClub, DiscoverCard, InstaPayment, InstaPaymentTM, Laser, Dankort, Solo, Switch и Unknown.
    */
-  card_type: BankCardTypeEnum;
+  card_type: BankCardTypeEnum
   /**
    * Код страны, в которой выпущена карта. Передается в формате ISO-3166 alpha-2. Пример: RU.
    */
-  issuer_country?: string;
+  issuer_country?: string
   /**
    * Наименование банка, выпустившего карту.
    */
-  issuer_name?: string;
+  issuer_name?: string
 }
 
 /* Operation responses */
@@ -224,7 +227,7 @@ export interface PayoutPayoutDestinationBankCardCard {
  *
  * В ответ на запрос придет объект выплаты в актуальном статусе.
  */
-export type CreatePayoutResponse = Payout;
+export type CreatePayoutResponse = Payout
 
 /**
  * Список выплат
@@ -236,9 +239,9 @@ export type CreatePayoutResponse = Payout;
  * Подробнее о работе со списками
  */
 export interface GetPayoutsListResponse {
-  type: "list";
-  items: Payout[];
-  next_cursor?: string;
+  type: 'list'
+  items: Payout[]
+  next_cursor?: string
 }
 
 /**
@@ -251,9 +254,9 @@ export interface GetPayoutsListResponse {
  * Подробнее о работе со списками
  */
 export interface GetPayoutsSearchResponse {
-  type: "list";
-  items: Payout[];
-  next_cursor?: string;
+  type: 'list'
+  items: Payout[]
+  next_cursor?: string
 }
 
 /**
@@ -261,4 +264,4 @@ export interface GetPayoutsSearchResponse {
  *
  * В ответ на запрос придет объект выплаты в актуальном статусе.
  */
-export type GetPayoutResponse = Payout;
+export type GetPayoutResponse = Payout

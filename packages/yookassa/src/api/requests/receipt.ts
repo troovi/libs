@@ -1,5 +1,14 @@
-import type { CommonAmount, CommonCustomer, CommonMarkCodeInfo, CommonMarkQuantity, CommonPaymentSubjectIndustryDetails, CommonReceiptOperationalDetails, CommonSettlements2 } from '../common';
-import { BasicStatusEnum, CreateReceiptTypeEnum } from '../enums';
+import type {
+  CommonAmount,
+  CommonCustomer,
+  CommonMarkCodeInfo,
+  CommonMarkQuantity,
+  CommonPaymentSubjectIndustryDetails,
+  CommonReceiptOperationalDetails,
+  CommonSettlements2
+} from '../common'
+import { BasicStatusEnum, CreateReceiptTypeEnum } from '../enums'
+import { VatCodesEnum } from '../enums/vat-codes.enum'
 
 /**
  * Создание чека
@@ -12,27 +21,27 @@ export interface CreateReceiptRequest {
   /**
    * Тип чека в онлайн-кассе. Возможные значения: payment (приход), refund (возврат прихода).
    */
-  "type": CreateReceiptTypeEnum;
+  type: CreateReceiptTypeEnum
   /**
    * Идентификатор платежа в ЮKassa для отображения информации о чеке в личном кабинете, на платеж не влияет. Обязательный параметр при создании чека прихода (тип чека — payment, статус платежа — waiting_for_capture или succeeded) и при создании чека возврата прихода для отмененного или частично подтвержденного платежа (тип чека — refund, статус платежа — canceled или succeeded).
    *
    * Для одного платежа можно создать не более 50 чеков.
    */
-  payment_id?: string;
+  payment_id?: string
   /**
    * Идентификатор возврата в ЮKassa для отображения информации о чеке в личном кабинете. Обязательный параметр при создании чека возврата прихода (если тип чека — refund, статус возврата — succeeded).
    *
    * Для одного возврата можно создать не более 50 чеков.
    */
-  refund_id?: string;
+  refund_id?: string
   /**
    * Информация о пользователе. Необходимо указать как минимум контактные данные: для Чеков от ЮKassa — электронную почту (customer.email), в остальных случаях — электронную почту (customer.email) или номер телефона (customer.phone).
    */
-  customer: CommonCustomer;
+  customer: CommonCustomer
   /**
    * Список товаров в чеке: для Чеков от ЮKassa — не более 80 товаров, для сторонних онлайн-касс — не более 100 товаров.
    */
-  items: CreateReceiptRequestItemsItem[];
+  items: CreateReceiptRequestItemsItem[]
   /**
    * Признак проведения платежа в интернете (тег в 54 ФЗ — 1125) — указывает на оплату через интернет. Возможные значения:
    *
@@ -42,11 +51,11 @@ export interface CreateReceiptRequest {
    *
    * По умолчанию true. Если вы принимаете платежи офлайн, передайте в запросе значение false.
    */
-  internet?: boolean;
+  internet?: boolean
   /**
    * Формирование чека в онлайн-кассе сразу после создания объекта чека. Сейчас можно передать только значение true.
    */
-  send: boolean;
+  send: boolean
   /**
    * Система налогообложения магазина (тег в 54 ФЗ — 1055).
    *
@@ -54,7 +63,7 @@ export interface CreateReceiptRequest {
    *
    * Для Чеков от ЮKassa: параметр передавать не нужно, ЮKassa его проигнорирует.
    */
-  tax_system_code?: number;
+  tax_system_code?: number
   /**
    * Номер часовой зоны для адреса, по которому вы принимаете платежи (тег в 54 ФЗ — 1011). Указывается, только если в чеке есть товары, которые подлежат обязательной маркировке (в items.mark_code_info передается параметр gs_1m, short или fur).
    *
@@ -64,29 +73,29 @@ export interface CreateReceiptRequest {
    *
    * для сторонних онлайн-касс
    */
-  timezone?: number;
+  timezone?: number
   /**
    * Дополнительный реквизит пользователя (тег в 54 ФЗ — 1084).
    *
    * Можно передавать, если вы отправляете данные для формирования чека по сценарию Сначала платеж, потом чек
    */
-  additional_user_props?: CreateReceiptRequestAdditionalUserProps;
+  additional_user_props?: CreateReceiptRequestAdditionalUserProps
   /**
    * Отраслевой реквизит чека (тег в 54 ФЗ — 1261). Нужно передавать, если используете ФФД 1.2.
    */
-  receipt_industry_details?: CommonPaymentSubjectIndustryDetails[];
+  receipt_industry_details?: CommonPaymentSubjectIndustryDetails[]
   /**
    * Операционный реквизит чека (тег в 54 ФЗ — 1270). Нужно передавать, если используете ФФД 1.2.
    */
-  receipt_operational_details?: CommonReceiptOperationalDetails;
+  receipt_operational_details?: CommonReceiptOperationalDetails
   /**
    * Перечень совершенных расчетов.
    */
-  settlements: CommonSettlements2[];
+  settlements: CommonSettlements2[]
   /**
    * Идентификатор магазина, от имени которого нужно отправить чек. Выдается ЮKassa, отображается в разделе Продавцы личного кабинета (столбец shopId). Необходимо передавать, если вы используете Сплитование платежей.
    */
-  on_behalf_of?: string;
+  on_behalf_of?: string
 }
 
 /**
@@ -98,43 +107,43 @@ export interface GetReceiptsListRequest {
   /**
    * Фильтр по времени создания: время должно быть больше указанного значения или равно ему («с такого-то момента включительно»). Указывается в формате ISO 8601. Пример: created_at.gte=2018-07-18T10:51:18.139Z
    */
-  "created_at.gte"?: string;
+  'created_at.gte'?: string
   /**
    * Фильтр по времени создания: время должно быть больше указанного значения («с такого-то момента, не включая его»). Указывается в формате ISO 8601. Пример: created_at.gt=2018-07-18T10:51:18.139Z
    */
-  "created_at.gt"?: string;
+  'created_at.gt'?: string
   /**
    * Фильтр по времени создания: время должно быть меньше указанного значения или равно ему («по такой-то момент включительно»). Указывается в формате ISO 8601. Пример: created_at.lte=2018-07-18T10:51:18.139Z
    */
-  "created_at.lte"?: string;
+  'created_at.lte'?: string
   /**
    * Фильтр по времени создания: время должно быть меньше указанного значения («по такой-то момент, не включая его»). Указывается в формате ISO 8601. Пример: created_at.lt=2018-07-18T10:51:18.139Z
    */
-  "created_at.lt"?: string;
+  'created_at.lt'?: string
   /**
    * Фильтр по статусу чека. Возможные значения: pending — в обработке, succeeded — успешно зарегистрирован, canceled — отменен. Пример: status=succeeded
    */
-  status?: BasicStatusEnum;
+  status?: BasicStatusEnum
   /**
    * Фильтр по идентификатору платежа (получить все чеки для указанного платежа). Пример: payment_id=1da5c87d-0984-50e8-a7f3-8de646dd9ec9 В запросе можно передать только что-то одно: или идентификатор платежа, или идентификатор возврата.
    */
-  payment_id?: string;
+  payment_id?: string
   /**
    * Фильтр по идентификатору возврата (получить все чеки для указанного возврата). Пример: refund_id=1da5c87d-0984-50e8-a7f3-8de646dd9ec9 В запросе можно передать только что-то одно: или идентификатор платежа, или идентификатор возврата.
    */
-  refund_id?: string;
+  refund_id?: string
   /**
    * Размер выдачи результатов запроса — количество объектов, передаваемых в ответе. Возможные значения: от 1 до 100. Пример: limit=50
    *
    * Значение по умолчанию: 10
    */
-  limit?: number;
+  limit?: number
   /**
    * Указатель на следующий фрагмент списка. Пример: cursor=37a5c87d-3984-51e8-a7f3-8de646d39ec15
    *
    * В качестве указателя необходимо использовать значение параметра next_cursor, полученное в ответе на предыдущий запрос. Используется, если в списке больше объектов, чем может поместиться в выдаче (limit), и конец выдачи не достигнут. Пример использования
    */
-  cursor?: string;
+  cursor?: string
 }
 
 /**
@@ -144,11 +153,11 @@ export interface CreateReceiptRequestItemsItem {
   /**
    * Название товара (от 1 до 128 символов). Тег в 54 ФЗ — 1030.
    */
-  description: string;
+  description: string
   /**
    * Цена товара (тег в 54 ФЗ — 1079).
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Ставка НДС (тег в 54 ФЗ — 1199). Перечень возможных значений:
    *
@@ -156,13 +165,13 @@ export interface CreateReceiptRequestItemsItem {
    *
    * для сторонних онлайн-касс
    */
-  vat_code: number;
+  vat_code: VatCodesEnum
   /**
    * Количество товара (тег в 54 ФЗ — 1023). Можно передать целое или дробное число. Разделитель дробной части — точка, разделитель тысяч отсутствует. Пример: 5.000
    *
    * Максимально возможное значение и максимальное количество знаков после точки (для дробных значений) зависят от модели вашей онлайн-кассы. Для чеков от ЮKassa максимально возможное значение — 99999.999, не более 3 знаков после точки.
    */
-  quantity: number;
+  quantity: number
   /**
    * Мера количества предмета расчета (тег в 54 ФЗ — 2108) — единица измерения товара, например штуки, граммы.
    *
@@ -174,7 +183,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * для сторонних онлайн-касс
    */
-  measure?: string;
+  measure?: string
   /**
    * Дробное количество маркированного товара (тег в 54 ФЗ — 1291).
    *
@@ -188,7 +197,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * Пример: вы продаете поштучно карандаши. Они поставляются пачками по 100 штук с одним кодом маркировки. При продаже одного карандаша нужно в numerator передать 1, а в denominator — 100.
    */
-  mark_quantity?: CommonMarkQuantity;
+  mark_quantity?: CommonMarkQuantity
   /**
    * Признак предмета расчета (тег в 54 ФЗ — 1212) — это то, за что принимается оплата, например товар, услуга.
    *
@@ -198,7 +207,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * для сторонних онлайн-касс
    */
-  payment_subject?: string;
+  payment_subject?: string
   /**
    * Признак способа расчета (тег в 54 ФЗ — 1214) — отражает тип оплаты и факт передачи товара. Пример: покупатель полностью оплачивает товар и сразу получает его. В этом случае нужно передать значение full_payment (полный расчет).
    *
@@ -208,25 +217,25 @@ export interface CreateReceiptRequestItemsItem {
    *
    * для сторонних онлайн-касс
    */
-  payment_mode?: string;
+  payment_mode?: string
   /**
    * Код страны происхождения товара по общероссийскому классификатору стран мира (OК (MК (ИСО 3166) 004-97) 025-2001). Тег в 54 ФЗ — 1230. Пример: RU.
    *
    * Можно передавать, если используете онлайн-кассу Orange Data, Кит Инвест.
    */
-  country_of_origin_code?: string;
+  country_of_origin_code?: string
   /**
    * Номер таможенной декларации (от 1 до 32 символов). Тег в 54 ФЗ — 1231.
    *
    * Можно передавать, если используете онлайн-кассу Orange Data, Кит Инвест.
    */
-  customs_declaration_number?: string;
+  customs_declaration_number?: string
   /**
    * Сумма акциза товара с учетом копеек (тег в 54 ФЗ — 1229). Десятичное число с точностью до 2 знаков после точки.
    *
    * Можно передавать, если используете онлайн-кассу Orange Data, Кит Инвест.
    */
-  excise?: string;
+  excise?: string
   /**
    * Код товара (тег в 54 ФЗ — 1162) — уникальный номер, который присваивается экземпляру товара при маркировке.
    *
@@ -240,7 +249,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * Параметр должен отсутствовать в запросе, если вы используете Чеки от ЮKassa или онлайн-кассу, обновленную до ФФД 1.2.
    */
-  product_code?: string;
+  product_code?: string
   /**
    * Планируемый статус товара. Тег в 54 ФЗ — 2003. Указывается только для товаров, которые подлежат обязательной маркировке (в items.mark_code_info передается параметр gs_1m, short или fur).
    *
@@ -250,7 +259,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * для сторонних онлайн-касс
    */
-  planned_status?: number;
+  planned_status?: number
   /**
    * Код товара (тег в 54 ФЗ — 1163).
    *
@@ -262,7 +271,7 @@ export interface CreateReceiptRequestItemsItem {
    *
    * Должно быть заполнено хотя бы одно поле.
    */
-  mark_code_info?: CommonMarkCodeInfo;
+  mark_code_info?: CommonMarkCodeInfo
   /**
    * Режим обработки кода маркировки (тег в 54 ФЗ — 2102).
    *
@@ -274,25 +283,25 @@ export interface CreateReceiptRequestItemsItem {
    *
    * Должен принимать значение равное «0».
    */
-  mark_mode?: string;
+  mark_mode?: string
   /**
    * Отраслевой реквизит предмета расчета (тег в 54 ФЗ — 1260). Можно передавать, если используете Чеки от ЮKassa или онлайн-кассу, обновленную до ФФД 1.2.
    */
-  payment_subject_industry_details?: CommonPaymentSubjectIndustryDetails[];
+  payment_subject_industry_details?: CommonPaymentSubjectIndustryDetails[]
   /**
    * Дополнительный реквизит предмета расчета (тег в 54 ФЗ — 1191). Не более 64 символов.
    *
    * Можно передавать, если вы отправляете данные для формирования чека по сценарию Сначала платеж, потом чек
    */
-  additional_payment_subject_props?: string;
+  additional_payment_subject_props?: string
   /**
    * Информация о поставщике товара или услуги (тег в 54 ФЗ — 1224). Можно передавать, если вы отправляете данные для формирования чека по сценарию Сначала платеж, потом чек.
    */
-  supplier?: CreateReceiptRequestItemsItemSupplier;
+  supplier?: CreateReceiptRequestItemsItemSupplier
   /**
    * Тип посредника, реализующего товар или услугу. Параметр предусмотрен форматом фискальных документов (ФФД) и является обязательным, начиная с версии 1.1. Перечень возможных значений. Можно передавать, если ваша онлайн-касса обновлена до ФФД 1.1 и вы отправляете данные для формирования чека по сценарию Сначала платеж, потом чек
    */
-  agent_type?: string;
+  agent_type?: string
 }
 
 /**
@@ -304,11 +313,11 @@ export interface CreateReceiptRequestAdditionalUserProps {
   /**
    * Наименование дополнительного реквизита пользователя (тег в 54 ФЗ — 1085). Не более 64 символов.
    */
-  name: string;
+  name: string
   /**
    * Значение дополнительного реквизита пользователя (тег в 54 ФЗ — 1086). Не более 234 символов.
    */
-  value: string;
+  value: string
 }
 
 /**
@@ -318,13 +327,13 @@ export interface CreateReceiptRequestItemsItemSupplier {
   /**
    * Наименование поставщика (тег в 54 ФЗ — 1225). Параметр предусмотрен форматом фискальных документов (ФФД) и является обязательным, начиная с версии 1.1.
    */
-  name?: string;
+  name?: string
   /**
    * Телефон поставщика (тег в 54 ФЗ — 1171). Указывается в формате ITU-T E.164, например 79000000000. Параметр предусмотрен форматом фискальных документов (ФФД) и является обязательным, начиная с версии 1.1.
    */
-  phone?: string;
+  phone?: string
   /**
    * ИНН поставщика (10 или 12 цифр). Тег в 54 ФЗ — 1226. Параметр предусмотрен форматом фискальных документов (ФФД) и является обязательным, начиная с версии 1.05.
    */
-  inn?: string;
+  inn?: string
 }
