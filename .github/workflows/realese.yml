@@ -23,6 +23,7 @@ jobs:
       xeo-react: ${{ steps.filter.outputs.xeo-react }}
       xeo-toolkit: ${{ steps.filter.outputs.xeo-toolkit }}
       xeo-types: ${{ steps.filter.outputs.xeo-types }}
+      yookassa: ${{ steps.filter.outputs.yookassa }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -43,6 +44,8 @@ jobs:
               - 'packages/formkit/package.json'
             uikit:
               - 'packages/uikit/package.json'
+            yookassa:
+              - 'packages/yookassa/package.json'
             icons-solid:
               - 'icons/solid/package.json'
             icons-regular:
@@ -122,6 +125,27 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: packages/utils-nodejs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  yookassa:
+    needs: changes
+    if: ${{ needs.changes.outputs.yookassa == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/yookassa
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/yookassa
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

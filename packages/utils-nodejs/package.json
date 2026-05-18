@@ -3,7 +3,6 @@
   "version": "0.0.05",
   "main": "dist/index.js",
   "types": "./src/index.ts",
-  "author": "Pavel Victorov",
   "files": [
     "dist"
   ],
