@@ -15,10 +15,8 @@ export class YookassaHttpClient {
   ) {
     if (this.config.proxyUrl) {
       this.dispatcher = new ProxyAgent(this.config.proxyUrl)
-      console.log('[YooKassa] ProxyAgent enabled:', this.config.proxyUrl)
     } else {
       this.dispatcher = undefined
-      console.log('[YooKassa] Proxy not configured, direct connection')
     }
   }
 
