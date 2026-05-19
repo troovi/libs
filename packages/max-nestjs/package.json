@@ -1,6 +1,6 @@
 {
   "name": "max-nestjs",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "NestJS helpers for validating MAX Mini App init data.",
   "files": [
     "dist",
@@ -16,7 +16,7 @@
   ],
   "repository": "https://github.com/troovi/libs",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json"

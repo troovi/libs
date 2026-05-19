@@ -26,7 +26,7 @@ export class MaxModule {
   }
 }
 
-function normalizeOptions(options: MaxModuleOptions): MaxResolvedModuleOptions {
+const normalizeOptions = (options: MaxModuleOptions): MaxResolvedModuleOptions => {
   const botToken = options.botToken.trim()
 
   if (!botToken) {
