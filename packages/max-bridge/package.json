@@ -1,0 +1,29 @@
+{
+  "name": "max-bridge",
+  "version": "0.0.1",
+  "description": "TypeScript types for the MAX Bridge WebApp SDK",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "max",
+    "max-messenger",
+    "messenger",
+    "bridge",
+    "webapp",
+    "miniapp",
+    "typescript",
+    "types"
+  ],
+  "repository": "https://github.com/troovi/libs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

@@ -24,6 +24,8 @@ jobs:
       xeo-toolkit: ${{ steps.filter.outputs.xeo-toolkit }}
       xeo-types: ${{ steps.filter.outputs.xeo-types }}
       yookassa: ${{ steps.filter.outputs.yookassa }}
+      max-bridge: ${{ steps.filter.outputs.max-bridge }}
+      max-nestjs: ${{ steps.filter.outputs.max-nestjs }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
@@ -46,6 +48,10 @@ jobs:
               - 'packages/uikit/package.json'
             yookassa:
               - 'packages/yookassa/package.json'
+            max-bridge:
+              - 'packages/max-bridge/package.json'
+            max-nestjs:
+              - 'packages/max-nestjs/package.json'
             icons-solid:
               - 'icons/solid/package.json'
             icons-regular:
@@ -146,6 +152,48 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: packages/yookassa
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  max-bridge:
+    needs: changes
+    if: ${{ needs.changes.outputs.max-bridge == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=max-bridge
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/max-bridge
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  max-nestjs:
+    needs: changes
+    if: ${{ needs.changes.outputs.max-nestjs == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=max-nestjs
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/max-nestjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

@@ -2,11 +2,7 @@ import { type DynamicModule, Global, Module } from '@nestjs/common'
 
 import { YookassaService } from './yookassa.service'
 import { YookassaHttpClient } from './http/yookassa.http-client'
-import {
-  type YookassaModuleAsyncOptions,
-  type YookassaModuleOptions,
-  YookassaOptionsSymbol
-} from './yookassa.interface'
+import { type YookassaModuleOptions, YookassaOptionsSymbol } from './yookassa.interface'
 import { PaymentService } from './modules/payment/payment.service'
 import { RefundService } from './modules/refund/refund.service'
 import { InvoiceService } from './modules/invoice/invoice.service'
@@ -57,49 +53,6 @@ export class YookassaModule {
       module: YookassaModule,
       providers: [
         { provide: YookassaOptionsSymbol, useValue: options },
-        {
-          provide: YookassaHttpClient,
-          useFactory: (cfg: YookassaModuleOptions) => new YookassaHttpClient(cfg),
-          inject: [YookassaOptionsSymbol]
-        },
-
-        ...YOOKASSA_FEATURE_SERVICES,
-        YookassaService
-      ],
-      exports: [YookassaService, YookassaHttpClient, ...YOOKASSA_FEATURE_SERVICES],
-      global: true
-    }
-  }
-
-  /**
-   * Метод для регистрации модуля с асинхронной конфигурацией.
-   * Этот метод используется для конфигурации модуля с параметрами, которые будут переданы через фабричную функцию.
-   * @param {YookassaModuleAsyncOptions} options - Асинхронные параметры для конфигурации YooKassa.
-   * @returns {DynamicModule} Возвращает динамический модуль с необходимыми провайдерами и импортами.
-   *
-   * @example
-   * ```ts
-   * YookassaModule.forRootAsync({
-   *   imports: [ConfigModule],
-   *	  useFactory: async (configService: ConfigService) => ({
-   *		 shopId: configService.getOrThrow('YOOKASSA_SHOP_ID'),
-   *		 apiKey: configService.getOrThrow('YOOKASSA_API_KEY')
-   *	  }),
-   *	  inject: [ConfigService]
-   * });
-   * ```
-   */
-  public static forRootAsync(options: YookassaModuleAsyncOptions): DynamicModule {
-    return {
-      module: YookassaModule,
-      imports: options.imports || [],
-      providers: [
-        {
-          provide: YookassaOptionsSymbol,
-          useFactory: options.useFactory,
-          inject: options.inject || []
-        },
-
         {
           provide: YookassaHttpClient,
           useFactory: (cfg: YookassaModuleOptions) => new YookassaHttpClient(cfg),
