@@ -1,7 +1,7 @@
 {
   "name": "max-nestjs",
   "version": "0.0.2",
-  "description": "NestJS helpers for validating MAX Mini App init data",
+  "description": "NestJS helpers for validating MAX Mini App init data.",
   "files": [
     "dist",
     "README.md"

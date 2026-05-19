@@ -30,30 +30,6 @@ import { MaxModule } from 'max-nestjs'
 export class AppModule {}
 ```
 
-Для конфигурации через `ConfigService` используйте `forRootAsync`:
-
-```ts
-import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { MaxModule } from 'max-nestjs'
-
-@Module({
-  imports: [
-    ConfigModule.forRoot(),
-    MaxModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        botToken: config.getOrThrow('MAX_BOT_TOKEN'),
-        headerName: config.get('MAX_INIT_DATA_HEADER'),
-        maxAgeSeconds: 3600
-      }),
-      inject: [ConfigService]
-    })
-  ]
-})
-export class AppModule {}
-```
-
 Параметры модуля:
 
 - `botToken` - токен бота MAX для валидации подписи.
@@ -76,13 +52,13 @@ await fetch('/api/max/profile', {
 
 ```ts
 import { Controller, Get, UseGuards } from '@nestjs/common'
-import { MaxAuthGuard, MaxUser, type MaxInitData } from 'max-nestjs'
+import { MaxAuthGuard, MaxUser, type MaxUserData } from 'max-nestjs'
 
 @Controller('max')
 export class MaxController {
   @Get('profile')
   @UseGuards(MaxAuthGuard)
-  public getProfile(@MaxUser() user: MaxInitData['user']) {
+  public getProfile(@MaxUser() user: MaxUserData) {
     return {
       id: user.id,
       username: user.username
@@ -110,23 +86,3 @@ public getProfile(@MaxUser('id') userId: number) {
 - сравнивает `hash`
 - проверяет срок жизни `auth_date`
 - записывает данные в `request.maxInitData` и `request.maxUser`
-
-## Типы
-
-Пакет экспортирует Nest-специфичные типы:
-
-```ts
-import type { MaxInitData, MaxRequest, MaxUserData } from 'max-nestjs'
-```
-
-И переэкспортирует базовые MAX-типы из `max-bridge`:
-
-```ts
-import type { MaxBridgeInitDataUser } from 'max-nestjs'
-```
-
-## Сборка
-
-```sh
-npm run build -w max-nestjs
-```
