@@ -1,5 +1,14 @@
-import type { CommonAirline, CommonAmount, CommonCard, CommonDeal, CommonReceipt, CommonRecipient, CommonSettlements, CommonVatData } from '../common';
-import { LocaleEnum } from '../enums';
+import type {
+  CommonAirline,
+  CommonAmount,
+  CommonCard,
+  CommonDeal,
+  CommonReceipt,
+  CommonRecipient,
+  CommonSettlements,
+  CommonVatData
+} from '../common'
+import { LocaleEnum, PaymentStatusEnum } from '../enums'
 
 /**
  * Создание платежа
@@ -12,11 +21,11 @@ export interface CreatePaymentRequest {
    *
    * Сумма указывается с кодом валюты. Если вы разделяете потоки платежей, валюта платежа должна соответствовать валюте субаккаунта (recipient.gateway_id), если не разделяете — валюте аккаунта shopId в личном кабинете).
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Описание транзакции (не более 128 символов), которое вы увидите в личном кабинете ЮKassa, а пользователь — при оплате. Например: «Оплата заказа № 72 для user@yoomoney.ru».
    */
-  description?: string;
+  description?: string
   /**
    * Данные для формирования чека.
    *
@@ -26,27 +35,27 @@ export interface CreatePaymentRequest {
    *
    * вы компания или ИП, для оплаты с соблюдением требований 54-ФЗ используете стороннюю онлайн-кассу и отправляете данные для чеков по одному из сценариев: Платеж и чек одновременно или Сначала чек, потом платеж.
    */
-  receipt?: CommonReceipt;
+  receipt?: CommonReceipt
   /**
    * Получатель платежа. Нужен, если вы разделяете потоки платежей в рамках одного аккаунта или создаете платеж в адрес другого аккаунта.
    */
-  recipient?: CommonRecipient;
+  recipient?: CommonRecipient
   /**
    * Одноразовый токен для проведения оплаты, сформированный с помощью Checkout.js или мобильного SDK.
    */
-  payment_token?: string;
+  payment_token?: string
   /**
    * Идентификатор сохраненного способа оплаты.
    */
-  payment_method_id?: string;
+  payment_method_id?: string
   /**
    * Данные для оплаты конкретным способом (payment_method). Вы можете не передавать этот объект в запросе. В этом случае пользователь будет выбирать способ оплаты на стороне ЮKassa.
    */
-  payment_method_data?: CreatePaymentRequestPaymentMethodData;
+  payment_method_data?: CreatePaymentRequestPaymentMethodData
   /**
    * Данные, необходимые для инициирования выбранного сценария подтверждения платежа пользователем. Подробнее о сценариях подтверждения
    */
-  confirmation?: CreatePaymentRequestConfirmation;
+  confirmation?: CreatePaymentRequestConfirmation
   /**
    * Сохранение платежных данных для проведения автоплатежей. Возможные значения:
    *
@@ -56,7 +65,7 @@ export interface CreatePaymentRequest {
    *
    * Доступно только после согласования с менеджером ЮKassa.
    */
-  save_payment_method?: boolean;
+  save_payment_method?: boolean
   /**
    * Автоматический прием поступившего платежа. Возможные значения:
    *
@@ -66,41 +75,41 @@ export interface CreatePaymentRequest {
    *
    * По умолчанию false.
    */
-  capture?: boolean;
+  capture?: boolean
   /**
    * IPv4 или IPv6-адрес пользователя. Если не указан, используется IP-адрес TCP-подключения.
    */
-  client_ip?: string;
+  client_ip?: string
   /**
    * Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    */
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown>
   /**
    * Объект с данными для продажи авиабилетов. Используется только для платежей банковской картой.
    */
-  airline?: CommonAirline;
+  airline?: CommonAirline
   /**
    * Данные о распределении денег — сколько и в какой магазин нужно перевести. Необходимо передавать, если вы используете Сплитование платежей.
    */
-  transfers?: CreatePaymentRequestTransfersItem[];
+  transfers?: CreatePaymentRequestTransfersItem[]
   /**
    * Данные о сделке, в составе которой проходит платеж. Необходимо передавать, если вы проводите Безопасную сделку.
    */
-  deal?: CommonDeal;
+  deal?: CommonDeal
   /**
    * Идентификатор покупателя в вашей системе, например электронная почта или номер телефона. Не более 200 символов. Присутствует, если вы хотите запомнить банковскую карту и отобразить ее при повторном платеже в виджете ЮKassa.
    */
-  merchant_customer_id?: string;
+  merchant_customer_id?: string
   /**
    * Платежное поручение — распоряжение на перевод банку для оплаты жилищно-коммунальных услуг (ЖКУ), сведения о платеже для регистрации в ГИС ЖКХ.
    *
    * Необходимо передавать при оплате ЖКУ.
    */
-  payment_order?: CreatePaymentRequestPaymentOrder;
+  payment_order?: CreatePaymentRequestPaymentOrder
   /**
    * Реквизиты получателя оплаты при пополнении электронного кошелька, банковского счета или баланса телефона.
    */
-  receiver?: CreatePaymentRequestReceiver;
+  receiver?: CreatePaymentRequestReceiver
   /**
    * Данные для отправки справки. Необходимо передавать, если вы хотите, чтобы после оплаты пользователь получил справку.
    *
@@ -108,7 +117,7 @@ export interface CreatePaymentRequest {
    *
    * Квитанцию можно отправить, если оплата прошла с банковской карты, через SberPay или СБП. Отправка квитанции доступна во всех сценариях интеграции.
    */
-  statements?: CreatePaymentRequestStatementsItem[];
+  statements?: CreatePaymentRequestStatementsItem[]
 }
 
 /**
@@ -122,55 +131,55 @@ export interface GetPaymentsListRequest {
   /**
    * Фильтр по времени создания: время должно быть больше указанного значения или равно ему («с такого-то момента включительно»). Указывается в формате ISO 8601. Пример: created_at.gte=2018-07-18T10:51:18.139Z
    */
-  "created_at.gte"?: string;
+  'created_at.gte'?: string
   /**
    * Фильтр по времени создания: время должно быть больше указанного значения («с такого-то момента, не включая его»). Указывается в формате ISO 8601. Пример: created_at.gt=2018-07-18T10:51:18.139Z
    */
-  "created_at.gt"?: string;
+  'created_at.gt'?: string
   /**
    * Фильтр по времени создания: время должно быть меньше указанного значения или равно ему («по такой-то момент включительно»). Указывается в формате ISO 8601. Пример: created_at.lte=2018-07-18T10:51:18.139Z
    */
-  "created_at.lte"?: string;
+  'created_at.lte'?: string
   /**
    * Фильтр по времени создания: время должно быть меньше указанного значения («по такой-то момент, не включая его»). Указывается в формате ISO 8601. Пример: created_at.lt=2018-07-18T10:51:18.139Z
    */
-  "created_at.lt"?: string;
+  'created_at.lt'?: string
   /**
    * Фильтр по времени подтверждения платежей: время должно быть больше указанного значения или равно ему («с такого-то момента включительно»). Указывается в формате ISO 8601. Пример: captured_at.gte=2018-07-18T10:51:18.139Z
    */
-  "captured_at.gte"?: string;
+  'captured_at.gte'?: string
   /**
    * Фильтр по времени подтверждения платежей: время должно быть больше указанного значения («с такого-то момента, не включая его»). Указывается в формате ISO 8601. Пример: captured_at.gt=2018-07-18T10:51:18.139Z
    */
-  "captured_at.gt"?: string;
+  'captured_at.gt'?: string
   /**
    * Фильтр по времени подтверждения платежей: время должно быть меньше указанного значения или равно ему («по такой-то момент включительно»). Указывается в формате ISO 8601. Пример: captured_at.lte=2018-07-18T10:51:18.139Z
    */
-  "captured_at.lte"?: string;
+  'captured_at.lte'?: string
   /**
    * Фильтр по времени подтверждения платежей: время должно быть меньше указанного значения («по такой-то момент, не включая его») Указывается в формате ISO 8601. Пример: captured_at.lt=2018-07-18T10:51:18.139Z
    */
-  "captured_at.lt"?: string;
+  'captured_at.lt'?: string
   /**
    * Фильтр по коду способа оплаты. Пример: payment_method=bank_card
    */
-  payment_method?: string;
+  payment_method?: string
   /**
    * Фильтр по статусу платежа. Пример: status=succeeded
    */
-  status?: string;
+  status?: PaymentStatusEnum
   /**
    * Размер выдачи результатов запроса — количество объектов, передаваемых в ответе. Возможные значения: от 1 до 100. Пример: limit=50
    *
    * Значение по умолчанию: 10
    */
-  limit?: number;
+  limit?: number
   /**
    * Указатель на следующий фрагмент списка. Пример: cursor=37a5c87d-3984-51e8-a7f3-8de646d39ec15
    *
    * В качестве указателя необходимо использовать значение параметра next_cursor, полученное в ответе на предыдущий запрос. Используется, если в списке больше объектов, чем может поместиться в выдаче (limit), и конец выдачи не достигнут. Пример использования
    */
-  cursor?: string;
+  cursor?: string
 }
 
 /**
@@ -188,7 +197,7 @@ export interface CapturePaymentRequest {
    *
    * Сумма указывается с кодом валюты. Если вы разделяете потоки платежей, валюта платежа должна соответствовать валюте субаккаунта (recipient.gateway_id), если не разделяете — валюте аккаунта shopId в личном кабинете).
    */
-  amount?: CommonAmount;
+  amount?: CommonAmount
   /**
    * Данные для формирования чека.
    *
@@ -198,19 +207,19 @@ export interface CapturePaymentRequest {
    *
    * вы компания или ИП, для оплаты с соблюдением требований 54-ФЗ используете стороннюю онлайн-кассу и отправляете данные для чеков по одному из сценариев: Платеж и чек одновременно или Сначала чек, потом платеж.
    */
-  receipt?: CommonReceipt;
+  receipt?: CommonReceipt
   /**
    * Объект с данными для продажи авиабилетов. Используется только для платежей банковской картой.
    */
-  airline?: CommonAirline;
+  airline?: CommonAirline
   /**
    * Данные об актуальном распределении денег — сколько и в какой магазин нужно перевести. Необходимо передавать, если вы используете Сплитование платежей и подтверждаете часть платежа.
    */
-  transfers?: CapturePaymentRequestTransfersItem[];
+  transfers?: CapturePaymentRequestTransfersItem[]
   /**
    * Данные о сделке, в составе которой проходит платеж. Необходимо передавать, если вы проводите Безопасную сделку и подтверждаете часть платежа.
    */
-  deal?: CapturePaymentRequestDeal;
+  deal?: CapturePaymentRequestDeal
 }
 
 /**
@@ -220,11 +229,11 @@ export interface CreatePaymentRequestPaymentMethodDataBankCard {
   /**
    * Код способа оплаты.
    */
-  "type": "bank_card";
+  type: 'bank_card'
   /**
    * Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
    */
-  card?: CommonCard;
+  card?: CommonCard
 }
 
 /**
@@ -234,11 +243,11 @@ export interface CreatePaymentRequestPaymentMethodDataCash {
   /**
    * Код способа оплаты.
    */
-  "type": "cash";
+  type: 'cash'
   /**
    * Телефон пользователя, на который придет смс с кодом платежа (для внесения наличных). Указывается в формате ITU-T E.164, например 79000000000. Поле можно оставить пустым: пользователь сможет заполнить его при оплате на стороне ЮKassa.
    */
-  phone?: string;
+  phone?: string
 }
 
 /**
@@ -248,11 +257,11 @@ export interface CreatePaymentRequestPaymentMethodDataSberbank {
   /**
    * Код способа оплаты.
    */
-  "type": "sberbank";
+  type: 'sberbank'
   /**
    * Телефон пользователя, на который зарегистрирован аккаунт в SberPay. Необходим для подтверждения оплаты по смс (сценарий подтверждения external). Указывается в формате ITU-T E.164, например 79000000000.
    */
-  phone?: string;
+  phone?: string
 }
 
 /**
@@ -262,7 +271,7 @@ export interface CreatePaymentRequestPaymentMethodDataTinkoffBank {
   /**
    * Код способа оплаты.
    */
-  "type": "tinkoff_bank";
+  type: 'tinkoff_bank'
 }
 
 /**
@@ -272,7 +281,7 @@ export interface CreatePaymentRequestPaymentMethodDataYooMoney {
   /**
    * Код способа оплаты.
    */
-  "type": "yoo_money";
+  type: 'yoo_money'
 }
 
 /**
@@ -282,11 +291,11 @@ export interface CreatePaymentRequestPaymentMethodDataMobileBalance {
   /**
    * Код способа оплаты.
    */
-  "type": "mobile_balance";
+  type: 'mobile_balance'
   /**
    * Телефон, с баланса которого осуществляется платеж. Указывается в формате ITU-T E.164, например 79000000000.
    */
-  phone: string;
+  phone: string
 }
 
 /**
@@ -296,15 +305,15 @@ export interface CreatePaymentRequestPaymentMethodDataB2bSberbank {
   /**
    * Код способа оплаты.
    */
-  "type": "b2b_sberbank";
+  type: 'b2b_sberbank'
   /**
    * Назначение платежа (не больше 210 символов).
    */
-  payment_purpose: string;
+  payment_purpose: string
   /**
    * Данные о налоге на добавленную стоимость (НДС). Платеж может облагаться или не облагаться НДС. Товары могут облагаться по одной ставке НДС или по разным.
    */
-  vat_data: CommonVatData;
+  vat_data: CommonVatData
 }
 
 /**
@@ -314,7 +323,7 @@ export interface CreatePaymentRequestPaymentMethodDataSbp {
   /**
    * Код способа оплаты.
    */
-  "type": "sbp";
+  type: 'sbp'
 }
 
 /**
@@ -324,7 +333,7 @@ export interface CreatePaymentRequestPaymentMethodDataSberLoan {
   /**
    * Код способа оплаты.
    */
-  "type": "sber_loan";
+  type: 'sber_loan'
 }
 
 /**
@@ -334,23 +343,23 @@ export interface CreatePaymentRequestPaymentMethodDataElectronicCertificate {
   /**
    * Код способа оплаты.
    */
-  "type": "electronic_certificate";
+  type: 'electronic_certificate'
   /**
    * Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
    */
-  card?: CommonCard;
+  card?: CommonCard
   /**
    * Данные от ФЭС НСПК для оплаты по электронному сертификату.
    *
    * Неоходимо передавать только при оплате со сбором данных на вашей стороне.
    */
-  electronic_certificate?: CreatePaymentRequestPaymentMethodDataElectronicCertificateElectronicCertificate;
+  electronic_certificate?: CreatePaymentRequestPaymentMethodDataElectronicCertificateElectronicCertificate
   /**
    * Корзина покупки (в терминах НСПК) — список товаров, которые можно оплатить по сертификату.
    *
    * Необходимо передавать только при оплате на готовой странице ЮKassa.
    */
-  articles?: CreatePaymentRequestPaymentMethodDataElectronicCertificateArticlesItem[];
+  articles?: CreatePaymentRequestPaymentMethodDataElectronicCertificateArticlesItem[]
 }
 
 /**
@@ -360,11 +369,11 @@ export interface CreatePaymentRequestPaymentMethodDataSberBnpl {
   /**
    * Код способа оплаты.
    */
-  "type": "sber_bnpl";
+  type: 'sber_bnpl'
   /**
    * Номер телефона пользователя. Передается партнеру и используется для авторизации в сервисе «Плати частями». Максимум 15 символов. Указывается в формате ITU-T E.164. Пример: 79000000000.
    */
-  phone?: string;
+  phone?: string
 }
 
 /**
@@ -374,7 +383,7 @@ export interface CreatePaymentRequestPaymentMethodDataAlfaPay {
   /**
    * Код способа оплаты.
    */
-  "type": "alfa_pay";
+  type: 'alfa_pay'
 }
 
 /**
@@ -382,7 +391,19 @@ export interface CreatePaymentRequestPaymentMethodDataAlfaPay {
  *
  * Способы оплаты
  */
-export type CreatePaymentRequestPaymentMethodData = CreatePaymentRequestPaymentMethodDataBankCard | CreatePaymentRequestPaymentMethodDataCash | CreatePaymentRequestPaymentMethodDataSberbank | CreatePaymentRequestPaymentMethodDataTinkoffBank | CreatePaymentRequestPaymentMethodDataYooMoney | CreatePaymentRequestPaymentMethodDataMobileBalance | CreatePaymentRequestPaymentMethodDataB2bSberbank | CreatePaymentRequestPaymentMethodDataSbp | CreatePaymentRequestPaymentMethodDataSberLoan | CreatePaymentRequestPaymentMethodDataElectronicCertificate | CreatePaymentRequestPaymentMethodDataSberBnpl | CreatePaymentRequestPaymentMethodDataAlfaPay;
+export type CreatePaymentRequestPaymentMethodData =
+  | CreatePaymentRequestPaymentMethodDataBankCard
+  | CreatePaymentRequestPaymentMethodDataCash
+  | CreatePaymentRequestPaymentMethodDataSberbank
+  | CreatePaymentRequestPaymentMethodDataTinkoffBank
+  | CreatePaymentRequestPaymentMethodDataYooMoney
+  | CreatePaymentRequestPaymentMethodDataMobileBalance
+  | CreatePaymentRequestPaymentMethodDataB2bSberbank
+  | CreatePaymentRequestPaymentMethodDataSbp
+  | CreatePaymentRequestPaymentMethodDataSberLoan
+  | CreatePaymentRequestPaymentMethodDataElectronicCertificate
+  | CreatePaymentRequestPaymentMethodDataSberBnpl
+  | CreatePaymentRequestPaymentMethodDataAlfaPay
 
 /**
  * Код сценария подтверждения.
@@ -391,19 +412,19 @@ export interface CreatePaymentRequestConfirmationRedirect {
   /**
    * Код сценария подтверждения.
    */
-  "type": "redirect";
+  type: 'redirect'
   /**
    * Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897. Возможные значения: ru_RU, en_US. Регистр важен.
    */
-  locale?: LocaleEnum;
+  locale?: LocaleEnum
   /**
    * Запрос на проведение платежа с аутентификацией по 3-D Secure. Будет работать, если оплату банковской картой вы по умолчанию принимаете без подтверждения платежа пользователем. В остальных случаях аутентификацией по 3-D Secure будет управлять ЮKassa. Если хотите принимать платежи без дополнительного подтверждения пользователем, напишите вашему менеджеру ЮKassa.
    */
-  enforce?: boolean;
+  enforce?: boolean
   /**
    * URL, на который вернется пользователь после подтверждения или отмены платежа на веб-странице. Не более 2048 символов.
    */
-  return_url: string;
+  return_url: string
 }
 
 /**
@@ -413,11 +434,11 @@ export interface CreatePaymentRequestConfirmationExternal {
   /**
    * Код сценария подтверждения.
    */
-  "type": "external";
+  type: 'external'
   /**
    * Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897. Возможные значения: ru_RU, en_US. Регистр важен.
    */
-  locale?: LocaleEnum;
+  locale?: LocaleEnum
 }
 
 /**
@@ -427,17 +448,17 @@ export interface CreatePaymentRequestConfirmationQr {
   /**
    * Код сценария подтверждения.
    */
-  "type": "qr";
+  type: 'qr'
   /**
    * Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897. Возможные значения: ru_RU, en_US. Регистр важен.
    */
-  locale?: LocaleEnum;
+  locale?: LocaleEnum
   /**
    * Адрес страницы, на которую пользователь вернется после подтверждения или отмены платежа в приложении банка. Например, если хотите вернуть пользователя на сайт, вы можете передать URL, если в мобильное приложение — диплинк. URI должен соответствовать стандарту RFC-3986. Не более 2048 символов.
    *
    * Доступно только для платежей через СБП.
    */
-  return_url?: string;
+  return_url?: string
 }
 
 /**
@@ -447,11 +468,11 @@ export interface CreatePaymentRequestConfirmationEmbedded {
   /**
    * Код сценария подтверждения.
    */
-  "type": "embedded";
+  type: 'embedded'
   /**
    * Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897. Возможные значения: ru_RU, en_US. Регистр важен.
    */
-  locale?: LocaleEnum;
+  locale?: LocaleEnum
 }
 
 /**
@@ -461,17 +482,17 @@ export interface CreatePaymentRequestConfirmationMobileApplication {
   /**
    * Код сценария подтверждения.
    */
-  "type": "mobile_application";
+  type: 'mobile_application'
   /**
    * Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897. Возможные значения: ru_RU, en_US. Регистр важен.
    */
-  locale?: LocaleEnum;
+  locale?: LocaleEnum
   /**
    * URL или диплинк, на который вернется пользователь после подтверждения или отмены платежа в приложении. Если платеж делали из мобильной версии сайта, передайте URL, если из мобильного приложения — диплинк.
    *
    * Не более 255 символов для платежей через SberPay. Для других способов оплаты не более 2048 символов.
    */
-  return_url: string;
+  return_url: string
 }
 
 /**
@@ -479,7 +500,12 @@ export interface CreatePaymentRequestConfirmationMobileApplication {
  *
  * Сценарии подтверждения
  */
-export type CreatePaymentRequestConfirmation = CreatePaymentRequestConfirmationRedirect | CreatePaymentRequestConfirmationExternal | CreatePaymentRequestConfirmationQr | CreatePaymentRequestConfirmationEmbedded | CreatePaymentRequestConfirmationMobileApplication;
+export type CreatePaymentRequestConfirmation =
+  | CreatePaymentRequestConfirmationRedirect
+  | CreatePaymentRequestConfirmationExternal
+  | CreatePaymentRequestConfirmationQr
+  | CreatePaymentRequestConfirmationEmbedded
+  | CreatePaymentRequestConfirmationMobileApplication
 
 /**
  * Данные о распределении денег — сколько и в какой магазин нужно перевести. Необходимо передавать, если вы используете Сплитование платежей.
@@ -488,23 +514,23 @@ export interface CreatePaymentRequestTransfersItem {
   /**
    * Идентификатор магазина, в пользу которого вы принимаете оплату. Выдается ЮKassa, отображается в разделе Продавцы личного кабинета (столбец shopId).
    */
-  account_id: string;
+  account_id: string
   /**
    * Сумма, которую необходимо перевести магазину.
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Комиссия за проданные товары и услуги, которая удерживается с магазина в вашу пользу.
    */
-  platform_fee_amount?: CommonAmount;
+  platform_fee_amount?: CommonAmount
   /**
    * Описание транзакции (не более 128 символов), которое продавец увидит в личном кабинете ЮKassa. Например: «Заказ маркетплейса №72».
    */
-  description?: string;
+  description?: string
   /**
    * Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    */
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -515,61 +541,61 @@ export interface CreatePaymentRequestTransfersItem {
  * Кроме параметров, отмеченных как обязательные, должен быть передан как минимум один параметр из этого списка: payment_document_id, payment_document_number, account_number, unified_account_number или service_id.
  */
 export interface CreatePaymentRequestPaymentOrderUtilities {
-  "type": "utilities";
+  type: 'utilities'
   /**
    * Сумма платежного поручения — сумма, которую пользователь переводит получателю платежа. Равна общей сумме платежа.
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Назначение платежа (не больше 210 символов). Рекомендуется формировать с учетом рекомендаций из Письма Банка России № ИН-04-45|12 от 22.02.2018. Пример: Оплата ЖКХ;ЕЛС 80KX478547;ПРД 12.2024;Иванов Иван;г.Москва, ул.Флотская, д.1, кв.1
    */
-  payment_purpose: string;
+  payment_purpose: string
   /**
    * Получатель платежа — государственная или коммерческая организация, которая предоставляет услуги или является информационным посредником, который собирает и обрабатывает начисления от других поставщиков услуг.
    */
-  recipient: CreatePaymentRequestPaymentOrderUtilitiesRecipient;
+  recipient: CreatePaymentRequestPaymentOrderUtilitiesRecipient
   /**
    * Код бюджетной классификации (КБК).
    */
-  kbk?: string;
+  kbk?: string
   /**
    * Код ОКТМО (Общероссийский классификатор территорий муниципальных образований).
    */
-  oktmo?: string;
+  oktmo?: string
   /**
    * Период оплаты, за который выставлены начисления и за который вносится оплата.
    */
-  payment_period?: CreatePaymentRequestPaymentOrderUtilitiesPaymentPeriod;
+  payment_period?: CreatePaymentRequestPaymentOrderUtilitiesPaymentPeriod
   /**
    * Идентификатор платежного документа.
    *
    * Обязательный параметр, если не передан payment_document_number, account_number, unified_account_number или service_id.
    */
-  payment_document_id?: string;
+  payment_document_id?: string
   /**
    * Номер платежного документа на стороне поставщика ЖКУ.
    *
    * Обязательный параметр, если не передан payment_document_id, account_number, unified_account_number или service_id.
    */
-  payment_document_number?: string;
+  payment_document_number?: string
   /**
    * Номер лицевого счета на стороне поставщика ЖКУ.
    *
    * Обязательный параметр, если не передан payment_document_id, payment_document_number, unified_account_number или service_id.
    */
-  account_number?: string;
+  account_number?: string
   /**
    * Единый лицевой счет. Уникальный идентификатор в ГИС ЖКХ, который характеризует связку «собственник-помещение».
    *
    * Обязательный параметр, если не передан payment_document_id, payment_document_number, account_number или service_id.
    */
-  unified_account_number?: string;
+  unified_account_number?: string
   /**
    * Идентификатор жилищно-коммунальной услуги (ЖКУ).
    *
    * Обязательный параметр, если не передан payment_document_id, payment_document_number, account_number или unified_account_number.
    */
-  service_id?: string;
+  service_id?: string
 }
 
 /**
@@ -579,7 +605,7 @@ export interface CreatePaymentRequestPaymentOrderUtilities {
  *
  * Виды платежных поручений
  */
-export type CreatePaymentRequestPaymentOrder = CreatePaymentRequestPaymentOrderUtilities;
+export type CreatePaymentRequestPaymentOrder = CreatePaymentRequestPaymentOrderUtilities
 
 /**
  * Реквизиты для пополнения баланса телефона.
@@ -588,11 +614,11 @@ export interface CreatePaymentRequestReceiverMobileBalance {
   /**
    * Код получателя оплаты.
    */
-  "type": "mobile_balance";
+  type: 'mobile_balance'
   /**
    * Номер телефона для пополнения. Максимум 15 символов. Указывается в формате ITU-T E.164. Пример: 79000000000.
    */
-  phone: string;
+  phone: string
 }
 
 /**
@@ -602,11 +628,11 @@ export interface CreatePaymentRequestReceiverDigitalWallet {
   /**
    * Код получателя оплаты.
    */
-  "type": "digital_wallet";
+  type: 'digital_wallet'
   /**
    * Идентификатор электронного кошелька для пополнения. Максимум 20 символов.
    */
-  account_number: string;
+  account_number: string
 }
 
 /**
@@ -616,15 +642,15 @@ export interface CreatePaymentRequestReceiverBankAccount {
   /**
    * Код получателя оплаты.
    */
-  "type": "bank_account";
+  type: 'bank_account'
   /**
    * Номер банковского счета. Формат — 20 символов.
    */
-  account_number: string;
+  account_number: string
   /**
    * Банковский идентификационный код (БИК) банка, в котором открыт счет. Формат — 9 символов.
    */
-  bic: string;
+  bic: string
 }
 
 /**
@@ -632,7 +658,10 @@ export interface CreatePaymentRequestReceiverBankAccount {
  *
  * Получатели оплаты
  */
-export type CreatePaymentRequestReceiver = CreatePaymentRequestReceiverMobileBalance | CreatePaymentRequestReceiverDigitalWallet | CreatePaymentRequestReceiverBankAccount;
+export type CreatePaymentRequestReceiver =
+  | CreatePaymentRequestReceiverMobileBalance
+  | CreatePaymentRequestReceiverDigitalWallet
+  | CreatePaymentRequestReceiverBankAccount
 
 /**
  * Квитанция по платежу.
@@ -641,11 +670,11 @@ export interface CreatePaymentRequestStatementsItemPaymentOverview {
   /**
    * Тип справки.
    */
-  "type": "payment_overview";
+  type: 'payment_overview'
   /**
    * Данные о выбранном способе доставки справки.
    */
-  delivery_method: CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod;
+  delivery_method: CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod
 }
 
 /**
@@ -657,7 +686,7 @@ export interface CreatePaymentRequestStatementsItemPaymentOverview {
  *
  * Тип справки
  */
-export type CreatePaymentRequestStatementsItem = CreatePaymentRequestStatementsItemPaymentOverview;
+export type CreatePaymentRequestStatementsItem = CreatePaymentRequestStatementsItemPaymentOverview
 
 /**
  * Данные об актуальном распределении денег — сколько и в какой магазин нужно перевести. Необходимо передавать, если вы используете Сплитование платежей и подтверждаете часть платежа.
@@ -666,15 +695,15 @@ export interface CapturePaymentRequestTransfersItem {
   /**
    * Идентификатор магазина, в пользу которого вы принимаете оплату. Выдается ЮKassa, отображается в разделе Продавцы личного кабинета (столбец shopId).
    */
-  account_id: string;
+  account_id: string
   /**
    * Сумма, которую необходимо перевести магазину.
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Комиссия за проданные товары и услуги, которая удерживается с магазина в вашу пользу.
    */
-  platform_fee_amount?: CommonAmount;
+  platform_fee_amount?: CommonAmount
 }
 
 /**
@@ -684,7 +713,7 @@ export interface CapturePaymentRequestDeal {
   /**
    * Данные о распределении денег.
    */
-  settlements: CommonSettlements[];
+  settlements: CommonSettlements[]
 }
 
 /**
@@ -698,11 +727,11 @@ export interface CreatePaymentRequestPaymentMethodDataElectronicCertificateElect
    *
    * Сумма должна быть не больше общей суммы платежа (amount).
    */
-  amount: CommonAmount;
+  amount: CommonAmount
   /**
    * Идентификатор корзины покупки, сформированной в НСПК, — значение purchaseBasketId, которое вы получили в ФЭС НСПК в запросе на предварительное одобрение использования сертификата (Pre-Auth).
    */
-  basket_id: string;
+  basket_id: string
 }
 
 /**
@@ -714,33 +743,33 @@ export interface CreatePaymentRequestPaymentMethodDataElectronicCertificateArtic
   /**
    * Порядковый номер товара в корзине. От 1 до 999 включительно.
    */
-  article_number: number;
+  article_number: number
   /**
    * Код ТРУ. 30 символов, две группы цифр, разделенные точкой. Формат: NNNNNNNNN.NNNNNNNNNYYYYMMMMZZZ, где NNNNNNNNN.NNNNNNNNN — код вида ТРУ по Перечню ТРУ, YYYY — код производителя, MMMM — код модели, ZZZ — код страны производителя. Пример: 329921120.06001010200080001643
    *
    * Как сформировать код ТРУ
    */
-  tru_code: string;
+  tru_code: string
   /**
    * Код товара в вашей системе. Максимум 128 символов.
    */
-  article_code?: string;
+  article_code?: string
   /**
    * Название товара в вашей системе. Отображается на готовой платежной форме ЮKassa. Максимум 128 символов.
    */
-  article_name: string;
+  article_name: string
   /**
    * Количество единиц товара. Формат: целое положительное число.
    */
-  quantity: number;
+  quantity: number
   /**
    * Цена за единицу товара.
    */
-  price: CommonAmount;
+  price: CommonAmount
   /**
    * Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    */
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -750,19 +779,19 @@ export interface CreatePaymentRequestPaymentOrderUtilitiesRecipient {
   /**
    * Название получателя.
    */
-  name: string;
+  name: string
   /**
    * ИНН получателя.
    */
-  inn: string;
+  inn: string
   /**
    * КПП получателя.
    */
-  kpp: string;
+  kpp: string
   /**
    * Банк получателя.
    */
-  bank: CreatePaymentRequestPaymentOrderUtilitiesRecipientBank;
+  bank: CreatePaymentRequestPaymentOrderUtilitiesRecipientBank
 }
 
 /**
@@ -772,11 +801,11 @@ export interface CreatePaymentRequestPaymentOrderUtilitiesPaymentPeriod {
   /**
    * Месяц периода. Например, 1 — январь.
    */
-  month: number;
+  month: number
   /**
    * Год периода. Значение должно быть в диапазоне 1920–2050. Например, 2025.
    */
-  year: number;
+  year: number
 }
 
 /**
@@ -786,11 +815,11 @@ export interface CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod
   /**
    * Тип способа доставки справки.
    */
-  "type": "email";
+  type: 'email'
   /**
    * Электронная почта пользователя для отправки справки. Адрес электронной почты должен соответствовать стандарту RFC 5322. Пример: user@example.com.
    */
-  email: string;
+  email: string
 }
 
 /**
@@ -798,7 +827,8 @@ export interface CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod
  *
  * Способ доставки
  */
-export type CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod = CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethodEmail;
+export type CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethod =
+  CreatePaymentRequestStatementsItemPaymentOverviewDeliveryMethodEmail
 
 /**
  * Банк получателя.
@@ -807,17 +837,17 @@ export interface CreatePaymentRequestPaymentOrderUtilitiesRecipientBank {
   /**
    * Название банка получателя. Максимум 45 символов.
    */
-  name: string;
+  name: string
   /**
    * БИК банка получателя.
    */
-  bic: string;
+  bic: string
   /**
    * Счет получателя в банке.
    */
-  account: string;
+  account: string
   /**
    * Корреспондентский счет банка получателя.
    */
-  correspondent_account: string;
+  correspondent_account: string
 }
