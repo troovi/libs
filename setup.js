@@ -25,7 +25,11 @@ console.log('Github node script')
               continue
             }
 
-            if (package.startsWith('@companix')) {
+            if (
+              package.startsWith('@companix') ||
+              package === 'max-bridge' ||
+              package === 'max-nestjs'
+            ) {
               dependencies[package] = '*'
             }
           }
