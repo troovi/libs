@@ -1,2 +1,2 @@
 export * from './http-api'
-export * from './http-headers'
+export * from './http-auth'
