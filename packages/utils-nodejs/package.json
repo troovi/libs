@@ -1,6 +1,6 @@
 {
   "name": "@companix/utils-nodejs",
-  "version": "0.0.05",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "types": "./src/index.ts",
   "files": [
