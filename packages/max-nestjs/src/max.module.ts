@@ -2,6 +2,7 @@ import { Global, Module, type DynamicModule } from '@nestjs/common'
 import { DEFAULT_MAX_INIT_DATA_HEADER, MAX_OPTIONS_SYMBOL } from './max.constants'
 import type { MaxModuleOptions, MaxResolvedModuleOptions } from './max.interface'
 import { MaxAuthGuard } from './max-auth.guard'
+import { MaxValidationService } from './max.validation'
 
 @Global()
 @Module({})
@@ -14,9 +15,10 @@ export class MaxModule {
           provide: MAX_OPTIONS_SYMBOL,
           useValue: normalizeOptions(options)
         },
+        MaxValidationService,
         MaxAuthGuard
       ],
-      exports: [MAX_OPTIONS_SYMBOL, MaxAuthGuard],
+      exports: [MAX_OPTIONS_SYMBOL, MaxAuthGuard, MaxValidationService],
       global: true
     }
   }

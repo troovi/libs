@@ -13,5 +13,4 @@ export interface MaxInitData
 
 export interface MaxRequest extends Request {
   maxInitData: MaxInitData
-  maxUser: MaxUserData
 }
