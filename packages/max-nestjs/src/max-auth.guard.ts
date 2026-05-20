@@ -4,7 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
-  type ExecutionContext
+  type ExecutionContext,
+  HttpException
 } from '@nestjs/common'
 import { MAX_OPTIONS_SYMBOL } from './max.constants'
 import type { MaxResolvedModuleOptions } from './max.interface'
@@ -41,18 +42,23 @@ export class MaxAuthGuard implements CanActivate {
 
       return true
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error
+      }
+
       throw new UnauthorizedException('Failed to validate Max init data')
     }
   }
 
   private validateInitData(entities: [string, string][], hash: string) {
-    const launchParamsString = entities
-      .sort((left, right) => left[0].localeCompare(right[0]))
-      .map((param) => `${param[0]}=${param[1]}`)
+    const dataCheckString = entities
+      .filter(([key]) => key !== 'hash')
+      .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+      .map(([key, value]) => `${key}=${value}`)
       .join('\n')
 
     const secretKey = createHmac('sha256', MAX_WEB_APP_DATA_KEY).update(this.options.botToken).digest()
-    const calculatedHash = createHmac('sha256', secretKey).update(launchParamsString).digest('hex')
+    const calculatedHash = createHmac('sha256', secretKey).update(dataCheckString).digest('hex')
 
     return safeEqual(calculatedHash, hash)
   }
