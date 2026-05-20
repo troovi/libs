@@ -10,7 +10,7 @@ import type { MaxResolvedModuleOptions } from './max.interface'
 import type { MaxRequest } from './types'
 import { BadRequestException } from '@nestjs/common'
 import { createHmac, timingSafeEqual } from 'crypto'
-import { DEFAULT_MAX_AGE_SECONDS, MAX_WEB_APP_DATA_KEY } from './max.constants'
+import { MAX_WEB_APP_DATA_KEY } from './max.constants'
 import type { MaxInitData } from './types'
 
 interface RawParam {
@@ -64,17 +64,8 @@ export class MaxAuthGuard implements CanActivate {
       throw new BadRequestException('Invalid MAX init data auth_date')
     }
 
-    const authDate = Number.parseInt(authDateParam.value, 10)
-
-    const maxAgeSeconds = this.options.maxAgeSeconds ?? DEFAULT_MAX_AGE_SECONDS
-    const nowSeconds = Math.floor(Date.now() / 1000)
-
-    if (nowSeconds - authDate > maxAgeSeconds) {
-      throw new UnauthorizedException('MAX init data expired')
-    }
-
     return {
-      auth_date: authDate,
+      auth_date: Number.parseInt(authDateParam.value, 10),
       hash: hashParam.value,
       ip: getOptionalParam(params, 'ip'),
       query_id: getOptionalParam(params, 'query_id'),

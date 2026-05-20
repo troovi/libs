@@ -11,18 +11,11 @@ export type MaxModuleOptions = {
    * По умолчанию: `x-max-init-data`.
    */
   headerName?: string
-
-  /**
-   * Максимальный возраст init data в секундах.
-   * По умолчанию: 3600.
-   */
-  maxAgeSeconds?: number
 }
 
 export type MaxResolvedModuleOptions = {
   botToken: string
   headerName: string
-  maxAgeSeconds: number
 }
 
 export type MaxModuleAsyncOptions = Pick<ModuleMetadata, 'imports'> &
