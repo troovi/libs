@@ -60,10 +60,6 @@ export class MaxAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid MAX init data signature')
     }
 
-    if (!/^\d+$/.test(authDateParam.value)) {
-      throw new BadRequestException('Invalid MAX init data auth_date')
-    }
-
     return {
       auth_date: Number.parseInt(authDateParam.value, 10),
       hash: hashParam.value,
