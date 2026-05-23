@@ -28,10 +28,39 @@ export class YookassaWebhookGuard implements CanActivate {
   }
 
   private extractClientIp(req: Request): string {
-    const xff = req.headers['x-forwarded-for']
+    const clientIp = this.getForwardedForIp(req.headers['x-forwarded-for']) ?? req.socket.remoteAddress
+    return this.normalizeIp(clientIp ?? '')
+  }
 
-    if (typeof xff === 'string') return xff.split(',')[0].trim()
+  private getForwardedForIp(header: string | string[] | undefined): string | null {
+    const value = this.getHeaderValue(header)
 
-    return req.socket.remoteAddress ?? ''
+    if (!value) {
+      return null
+    }
+
+    return this.getFirstIp(value.split(',')[0]?.trim())
+  }
+
+  private getHeaderValue(header: string | string[] | undefined): string | null {
+    if (typeof header === 'string') {
+      return header
+    }
+
+    if (Array.isArray(header)) {
+      return header[0] ?? null
+    }
+
+    return null
+  }
+
+  private getFirstIp(value: string | null | undefined): string | null {
+    const ip = value?.trim()
+
+    return ip ? ip : null
+  }
+
+  private normalizeIp(value: string): string {
+    return value.startsWith('::ffff:') ? value.slice(7) : value
   }
 }
