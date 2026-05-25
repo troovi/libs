@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import { useRerender } from './use-rerender'
 
-export const useSyncSubmit = (): [boolean, (isSubmitted: boolean) => void] => {
+export const useSyncSubmit = (isSubmitted: boolean): [boolean, (isSubmitted: boolean) => void] => {
   const rerender = useRerender()
-  const ref = useRef(false)
+  const ref = useRef(isSubmitted)
 
   return [
     ref.current,
