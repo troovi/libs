@@ -26,7 +26,7 @@ export default defineConfig({
     }
   },
   server: {
-    host: '192.168.102.6'
+    host: 'localhost'
   },
   resolve: {
     alias: {

@@ -1,5 +1,6 @@
+import { useRerender } from '../__hooks/use-rerender'
 import { getNextCandleTime, getTimes, sleep } from '@companix/utils-js'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const formatTime = (num: number) => String(num).padStart(2, '0')
 
@@ -11,7 +12,7 @@ export interface CountDownProps {
 
 export const Countdown = ({ expiration, separator = ':', onExpired }: CountDownProps) => {
   const ref = useRef<null | NodeJS.Timeout>(null)
-  const [, rerender] = useState([])
+  const rerender = useRerender()
 
   useEffect(() => {
     const currentTime = Date.now()
@@ -23,10 +24,10 @@ export const Countdown = ({ expiration, separator = ':', onExpired }: CountDownP
     }
 
     sleep(waitToNextSecond).then(() => {
-      rerender([])
+      rerender()
 
       ref.current = setInterval(() => {
-        rerender([])
+        rerender()
       }, 1000)
     })
 
