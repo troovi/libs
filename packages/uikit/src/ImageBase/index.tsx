@@ -21,6 +21,7 @@ export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement
  * рисоваться поверх заблюренной фотографии
  *
  * — Обрабатывает ошибку загрузки картинки и позволяет повторить загрузку
+ *
  */
 
 export const ImageBase = (props: ImageBaseProps) => {
