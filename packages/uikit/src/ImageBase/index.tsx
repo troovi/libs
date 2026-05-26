@@ -1,13 +1,13 @@
 import cn from 'classnames'
 import { useMemo, useRef, useState } from 'react'
 
-export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface ImageBaseProps extends React.HTMLAttributes<HTMLDivElement> {
   src: string
   previewSrc?: string
   maskWidth: number
   maskHeight: number
   enableAspectRatio?: boolean
-  containerProps?: React.HTMLAttributes<HTMLDivElement>
+  imgAttrs?: Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'className'>
 }
 
 /**
@@ -33,8 +33,8 @@ export const ImageBase = (props: ImageBaseProps) => {
     src,
     children,
     enableAspectRatio,
-    containerProps,
-    ...imgAttrs
+    imgAttrs,
+    ...containerProps
   } = props
 
   const imgRef = useRef<HTMLImageElement>(null)
@@ -58,7 +58,7 @@ export const ImageBase = (props: ImageBaseProps) => {
     <div
       className={cn('image-base', { 'image-base-loading': !isLoaded }, className)}
       style={enableAspectRatio ? { aspectRatio: maskWidth / maskHeight } : {}}
-      onClick={handleFailed}
+      onClickCapture={handleFailed}
       {...containerProps}
     >
       {!isLoaded && <img className="image-base-placeholder" src={placeholderUrl} alt="" />}
@@ -79,6 +79,7 @@ export const ImageBase = (props: ImageBaseProps) => {
         src={src}
         decoding="async"
         onLoad={() => setIsLoaded(true)}
+        onError={() => setIsFailed(true)}
         {...imgAttrs}
       />
       {children}
