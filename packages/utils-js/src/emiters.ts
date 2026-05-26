@@ -1,25 +1,3 @@
-export class EventDispatcher<T> {
-  private store: Record<string, (data: T) => void> = {}
-
-  emit(event: string, data: T) {
-    if (this.store[event]) {
-      this.store[event](data)
-    }
-  }
-
-  on(event: string, callback: (data: T) => void) {
-    this.store[event] = callback
-
-    return () => {
-      this.rm(event)
-    }
-  }
-
-  rm(event: string) {
-    delete this.store[event]
-  }
-}
-
 export class EventEmmiter<T> {
   public store: Record<string, ((data: T) => void)[]> = {}
 
