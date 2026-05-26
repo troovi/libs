@@ -4,8 +4,8 @@ import { useMemo, useRef, useState } from 'react'
 export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string
   previewSrc?: string
-  width: number
-  height: number
+  maskWidth: number
+  maskHeight: number
   enableAspectRatio?: boolean
 }
 
@@ -24,12 +24,22 @@ export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement
  */
 
 export const ImageBase = (props: ImageBaseProps) => {
-  const { previewSrc, width, height, className, src, children, enableAspectRatio, ...imgAttrs } = props
+  const {
+    previewSrc,
+    maskHeight,
+    maskWidth,
+    className,
+    src,
+    children,
+    enableAspectRatio,
+    ...imgAttrs
+  } = props
+
   const imgRef = useRef<HTMLImageElement>(null)
 
   const placeholderUrl = useMemo(() => {
-    return generateSvgPlaceholderUrl(width, height)
-  }, [width, height])
+    return generateSvgPlaceholderUrl(maskWidth, maskHeight)
+  }, [maskWidth, maskHeight])
 
   const [isLoaded, setIsLoaded] = useState(false)
   const [isFailed, setIsFailed] = useState(false)
@@ -45,7 +55,7 @@ export const ImageBase = (props: ImageBaseProps) => {
   return (
     <div
       className={cn('image-base', { 'image-base-loading': !isLoaded }, className)}
-      style={enableAspectRatio ? { aspectRatio: width / height } : {}}
+      style={enableAspectRatio ? { aspectRatio: maskWidth / maskHeight } : {}}
       onClick={handleFailed}
     >
       {!isLoaded && <img className="image-base-placeholder" src={placeholderUrl} alt="" />}
@@ -53,7 +63,7 @@ export const ImageBase = (props: ImageBaseProps) => {
         <img
           className="image-base-preview"
           src={previewSrc}
-          style={{ maxWidth: `${width}px`, maxHeight: `${height}px` }}
+          style={{ maxWidth: `${maskWidth}px`, maxHeight: `${maskHeight}px` }}
           loading="lazy"
           decoding="async"
           onError={() => setIsPreviewFailed(true)}
