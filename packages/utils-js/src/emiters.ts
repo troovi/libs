@@ -23,13 +23,13 @@ export class EventDispatcher<T> {
 export class EventEmmiter<T> {
   public store: Record<string, ((data: T) => void)[]> = {}
 
-  emit(event: string, data: T) {
+  emit(event: string | number, data: T) {
     if (this.store[event]) {
       this.store[event].forEach((callback) => callback(data))
     }
   }
 
-  subscribe(event: string, callback: (data: T) => void) {
+  subscribe(event: string | number, callback: (data: T) => void) {
     if (!this.store[event]) {
       this.store[event] = []
     }
@@ -41,7 +41,7 @@ export class EventEmmiter<T> {
     }
   }
 
-  unsubscribe(event: string, callback: (data: T) => void) {
+  unsubscribe(event: string | number, callback: (data: T) => void) {
     if (this.store[event]) {
       const index = this.store[event].findIndex((u) => u === callback)
 
