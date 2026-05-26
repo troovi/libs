@@ -7,7 +7,6 @@ export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement
   maskWidth: number
   maskHeight: number
   enableAspectRatio?: boolean
-  n: string
 }
 
 /**
