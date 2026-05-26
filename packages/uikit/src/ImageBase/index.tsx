@@ -54,6 +54,8 @@ export const ImageBase = (props: ImageBaseProps) => {
     }
   }
 
+  console.log({ isLoaded })
+
   return (
     <div
       className={cn('image-base', { 'image-base-loading': !isLoaded }, className)}
