@@ -7,6 +7,7 @@ export interface ImageBaseProps extends React.ImgHTMLAttributes<HTMLImageElement
   maskWidth: number
   maskHeight: number
   enableAspectRatio?: boolean
+  containerProps?: React.HTMLAttributes<HTMLDivElement>
 }
 
 /**
@@ -32,6 +33,7 @@ export const ImageBase = (props: ImageBaseProps) => {
     src,
     children,
     enableAspectRatio,
+    containerProps,
     ...imgAttrs
   } = props
 
@@ -57,6 +59,7 @@ export const ImageBase = (props: ImageBaseProps) => {
       className={cn('image-base', { 'image-base-loading': !isLoaded }, className)}
       style={enableAspectRatio ? { aspectRatio: maskWidth / maskHeight } : {}}
       onClick={handleFailed}
+      {...containerProps}
     >
       {!isLoaded && <img className="image-base-placeholder" src={placeholderUrl} alt="" />}
       {previewSrc && previewSrc !== src && !isLoaded && !isPreviewFailed && (
