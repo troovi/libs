@@ -125,6 +125,9 @@ export type { DropAreaProps } from './DropArea'
 export { Table } from './Table'
 export type { TableProps } from './Table'
 
+export { ImageBase } from './ImageBase'
+export type { ImageBaseProps } from './ImageBase'
+
 // hooks
 export { ThemeProvider, useTheme } from './ThemeProvider'
 export { ColorSchemeScript, colorSchemeScript } from './ThemeProvider/script'
