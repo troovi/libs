@@ -20,7 +20,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
-    "test:max-scenes": "ts-node ./tests/max-scenes.smoke.ts"
+    "test:max-scenes": "ts-node ./src/tests/max-scenes.smoke.ts"
   },
   "dependencies": {
     "@companix/utils-nodejs": "file:../utils-nodejs",
