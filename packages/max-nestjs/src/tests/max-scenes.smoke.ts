@@ -6,7 +6,7 @@
  * курсора между апдейтами и выходом из сцены на последнем шаге.
  */
 import { Composer } from '@maxhub/max-bot-api'
-import { session, Stage, WizardScene } from '../src/scenes'
+import { session, Stage, WizardScene } from '../scenes'
 
 const log: string[] = []
 const noop = () => Promise.resolve()
