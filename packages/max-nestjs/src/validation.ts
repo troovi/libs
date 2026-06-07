@@ -5,17 +5,17 @@ import {
   Inject,
   Injectable
 } from '@nestjs/common'
-import type { MaxResolvedModuleOptions } from './max.interface'
 import { createHmac } from 'crypto'
-import { MAX_OPTIONS_SYMBOL, MAX_WEB_APP_DATA_KEY } from './max.constants'
 import type { MaxInitData } from './types'
 import { safeEqual } from '@companix/utils-nodejs'
+import { MAX_MODULE_OPTIONS, MAX_WEB_APP_DATA_KEY } from './constants'
+import { MaxModuleOptions } from './interfaces'
 
 @Injectable()
 export class MaxValidationService {
   public constructor(
-    @Inject(MAX_OPTIONS_SYMBOL)
-    private readonly options: MaxResolvedModuleOptions
+    @Inject(MAX_MODULE_OPTIONS)
+    private readonly options: MaxModuleOptions
   ) {}
 
   public verify(rawInitData: string) {
@@ -43,7 +43,7 @@ export class MaxValidationService {
       .map(([key, value]) => `${key}=${value}`)
       .join('\n')
 
-    const secretKey = createHmac('sha256', MAX_WEB_APP_DATA_KEY).update(this.options.botToken).digest()
+    const secretKey = createHmac('sha256', MAX_WEB_APP_DATA_KEY).update(this.options.token).digest()
     const calculatedHash = createHmac('sha256', secretKey).update(dataCheckString).digest('hex')
 
     return safeEqual(calculatedHash, hash)

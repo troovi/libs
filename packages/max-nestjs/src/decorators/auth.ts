@@ -1,5 +1,5 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common'
-import type { MaxRequest, MaxUserData } from './types'
+import { MaxRequest, MaxUserData } from '../types'
 
 export const MaxUser = createParamDecorator(
   (prop: keyof MaxUserData | null = null, ctx: ExecutionContext) => {

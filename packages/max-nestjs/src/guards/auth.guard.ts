@@ -5,28 +5,28 @@ import {
   UnauthorizedException,
   type ExecutionContext
 } from '@nestjs/common'
-import { MAX_OPTIONS_SYMBOL } from './max.constants'
-import type { MaxResolvedModuleOptions } from './max.interface'
-import type { MaxRequest } from './types'
-import { MaxValidationService } from './max.validation'
+import type { MaxRequest } from '../types'
+import { MaxValidationService } from '../validation'
+import { MaxModuleOptions } from '../interfaces'
+import { DEFAULT_MAX_INIT_DATA_HEADER, MAX_MODULE_OPTIONS } from '../constants'
 
 @Injectable()
 export class MaxAuthGuard implements CanActivate {
   public constructor(
-    @Inject(MAX_OPTIONS_SYMBOL)
-    private readonly options: MaxResolvedModuleOptions,
-    private readonly maxValidationService: MaxValidationService
+    @Inject(MAX_MODULE_OPTIONS)
+    private readonly options: MaxModuleOptions,
+    private readonly validationService: MaxValidationService
   ) {}
 
   public canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<MaxRequest>()
-    const rawInitData = request.headers[this.options.headerName]
+    const rawInitData = request.headers[this.options.headerName ?? DEFAULT_MAX_INIT_DATA_HEADER]
 
     if (!rawInitData || typeof rawInitData !== 'string') {
       throw new UnauthorizedException('MAX init data is missing')
     }
 
-    const initData = this.maxValidationService.verify(rawInitData)
+    const initData = this.validationService.verify(rawInitData)
 
     request.maxInitData = initData
 

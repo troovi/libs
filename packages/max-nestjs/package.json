@@ -1,6 +1,6 @@
 {
   "name": "max-nestjs",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "NestJS helpers for validating MAX Mini App init data.",
   "files": [
     "dist",
@@ -22,8 +22,9 @@
     "build": "rm -rf dist && tsc -p tsconfig.json"
   },
   "dependencies": {
-    "max-bridge": "file:../max-bridge",
-    "@companix/utils-nodejs": "file:../utils-nodejs"
+    "@companix/utils-nodejs": "file:../utils-nodejs",
+    "@maxhub/max-bot-api": "^0.2.2",
+    "max-bridge": "file:../max-bridge"
   },
   "devDependencies": {
     "@nestjs/common": "^11.1.17",

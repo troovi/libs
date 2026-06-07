@@ -1,40 +1,183 @@
-import { Global, Module, type DynamicModule } from '@nestjs/common'
-import { DEFAULT_MAX_INIT_DATA_HEADER, MAX_OPTIONS_SYMBOL } from './max.constants'
-import type { MaxModuleOptions, MaxResolvedModuleOptions } from './max.interface'
-import { MaxAuthGuard } from './max-auth.guard'
-import { MaxValidationService } from './max.validation'
+import {
+  DynamicModule,
+  ForbiddenException,
+  Global,
+  Inject,
+  Logger,
+  Module,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Provider,
+  Type
+} from '@nestjs/common'
+import { DiscoveryModule, ModuleRef } from '@nestjs/core'
+import { Bot, Context } from '@maxhub/max-bot-api'
+import { MAX_BOT_NAME, MAX_MODULE_OPTIONS, MAX_STAGE } from './constants'
+import { MaxModuleAsyncOptions, MaxModuleOptions, MaxOptionsFactory } from './interfaces'
+import { ListenersExplorerService, MetadataAccessorService } from './services'
+import { Stage, WizardContext, session } from './scenes'
+import { getBotToken } from './utils'
+import { MaxAuthGuard } from './guards/auth.guard'
+import { MaxValidationService } from './validation'
 
+const RETRY_BASE_MS = 5000
+const RETRY_MAX_MS = 60000
+
+const formatError = (error: unknown) =>
+  error instanceof Error ? (error.stack ?? error.message) : String(error)
+
+/**
+ * Корневой модуль мини-фреймворка сцен/wizard для @maxhub/max-bot-api.
+ * Аналог `TelegrafModule` из nestjs-telegraf.
+ */
 @Global()
-@Module({})
-export class MaxModule {
-  public static forRoot(options: MaxModuleOptions): DynamicModule {
+@Module({
+  imports: [DiscoveryModule],
+  providers: [ListenersExplorerService, MetadataAccessorService]
+})
+export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutdown {
+  private readonly logger = new Logger(MaxCoreModule.name)
+  private isStopping = false
+  private bot?: Bot<Context>
+
+  constructor(
+    @Inject(MAX_BOT_NAME) private readonly botName: string,
+    @Inject(MAX_MODULE_OPTIONS) private readonly options: MaxModuleOptions,
+    private readonly moduleRef: ModuleRef
+  ) {}
+
+  static forRoot(options: MaxModuleOptions): DynamicModule {
+    if (!options.token.trim()) {
+      throw new Error('MAX bot token is required')
+    }
+
     return {
-      module: MaxModule,
+      module: MaxCoreModule,
+      global: true,
       providers: [
-        {
-          provide: MAX_OPTIONS_SYMBOL,
-          useValue: normalizeOptions(options)
-        },
+        { provide: MAX_MODULE_OPTIONS, useValue: options },
+        ...this.coreProviders(getBotToken(options.botName)),
         MaxValidationService,
         MaxAuthGuard
       ],
-      exports: [MAX_OPTIONS_SYMBOL, MaxAuthGuard, MaxValidationService],
-      global: true
+      exports: [
+        MAX_STAGE,
+        MAX_MODULE_OPTIONS,
+        getBotToken(options.botName),
+        MaxValidationService,
+        MaxAuthGuard
+      ]
     }
   }
-}
 
-const normalizeOptions = (options: MaxModuleOptions): MaxResolvedModuleOptions => {
-  const botToken = options.botToken.trim()
+  static forRootAsync(options: MaxModuleAsyncOptions): DynamicModule {
+    const botToken = getBotToken(options.botName)
 
-  if (!botToken) {
-    throw new Error('MAX bot token is required')
+    return {
+      module: MaxCoreModule,
+      global: true,
+      imports: options.imports ?? [],
+      providers: [
+        ...this.createAsyncProviders(options),
+        ...this.coreProviders(botToken),
+        MaxValidationService,
+        MaxAuthGuard
+      ],
+      exports: [MAX_STAGE, MAX_MODULE_OPTIONS, botToken, MaxValidationService, MaxAuthGuard]
+    }
   }
 
-  const headerName = options.headerName?.trim() || DEFAULT_MAX_INIT_DATA_HEADER
+  // Провайдеры, общие для forRoot/forRootAsync (бот, имя, stage).
+  private static coreProviders(botToken: string): Provider[] {
+    return [
+      { provide: MAX_BOT_NAME, useValue: botToken },
+      { provide: MAX_STAGE, useClass: Stage },
+      {
+        provide: botToken,
+        useFactory: (options: MaxModuleOptions) => {
+          const contextType = options.contextType ?? WizardContext
+          const bot = new Bot<Context>(options.token, { contextType })
+          bot.use(session())
 
-  return {
-    botToken,
-    headerName
+          if (options.middlewares?.length) {
+            bot.use(...options.middlewares)
+          }
+
+          bot.catch((error) => {
+            // Отказ guard'а (CanActivate → false) бросает ForbiddenException;
+            // пользователю уже ответил сам guard — шумить в лог не нужно.
+            if (error instanceof ForbiddenException) {
+              return
+            }
+            Logger.error(`${formatError(error)}`, 'MaxBot')
+          })
+
+          return bot
+        },
+        inject: [MAX_MODULE_OPTIONS]
+      }
+    ]
+  }
+
+  private static createAsyncProviders(options: MaxModuleAsyncOptions): Provider[] {
+    if (options.useFactory) {
+      return [
+        {
+          provide: MAX_MODULE_OPTIONS,
+          useFactory: options.useFactory,
+          inject: options.inject ?? []
+        }
+      ]
+    }
+
+    const inject = (options.useExisting || options.useClass) as Type<MaxOptionsFactory>
+    const providers: Provider[] = [
+      {
+        provide: MAX_MODULE_OPTIONS,
+        useFactory: (factory: MaxOptionsFactory) => factory.createMaxOptions(),
+        inject: [inject]
+      }
+    ]
+    if (options.useClass) {
+      providers.push({ provide: options.useClass, useClass: options.useClass })
+    }
+    return providers
+  }
+
+  // ── Жизненный цикл polling'а ──────────────────────────────────────────────
+
+  onApplicationBootstrap(): void {
+    if (this.options.launch) {
+      this.bot = this.moduleRef.get<Bot<Context>>(this.botName, { strict: false })
+      this.initialize()
+    }
+  }
+
+  private initialize(attempt = 0): void {
+    if (this.isStopping || !this.bot) {
+      return
+    }
+
+    this.logger.log('MAX bot initializing ...')
+
+    this.bot.start().catch((error) => {
+      if (this.isStopping) {
+        return
+      }
+
+      this.bot?.stop()
+      this.logger.error(`MAX bot polling crashed ${formatError(error)}`)
+
+      const delay = Math.min(RETRY_BASE_MS * 2 ** attempt, RETRY_MAX_MS)
+      this.logger.warn(`MAX bot restarting in ${delay / 1000}s (attempt ${attempt + 1})`)
+
+      setTimeout(() => this.initialize(attempt + 1), delay)
+    })
+  }
+
+  onApplicationShutdown(): void {
+    this.isStopping = true
+    this.bot?.stop()
+    this.logger.log('MAX bot polling stopped')
   }
 }
