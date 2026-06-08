@@ -24,7 +24,7 @@ const RETRY_BASE_MS = 5000
 const RETRY_MAX_MS = 60000
 
 const formatError = (error: unknown) =>
-  error instanceof Error ? (error.stack ?? error.message) : String(error)
+  error instanceof Error ? error.stack ?? error.message : String(error)
 
 /**
  * Корневой модуль мини-фреймворка сцен/wizard для @maxhub/max-bot-api.
@@ -109,6 +109,7 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
             if (error instanceof ForbiddenException) {
               return
             }
+
             Logger.error(`${formatError(error)}`, 'MaxBot')
           })
 
@@ -147,7 +148,7 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
   // ── Жизненный цикл polling'а ──────────────────────────────────────────────
 
   onApplicationBootstrap(): void {
-    if (this.options.launch) {
+    if (this.options.enable) {
       this.bot = this.moduleRef.get<Bot<Context>>(this.botName, { strict: false })
       this.initialize()
     }
@@ -176,8 +177,10 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
   }
 
   onApplicationShutdown(): void {
-    this.isStopping = true
-    this.bot?.stop()
-    this.logger.log('MAX bot polling stopped')
+    if (this.options.enable) {
+      this.isStopping = true
+      this.bot?.stop()
+      this.logger.log('MAX bot polling stopped')
+    }
   }
 }

@@ -28,7 +28,7 @@ export interface MaxModuleOptions {
   /** Дополнительные middleware, применяемые сразу после session. */
   middlewares?: ReadonlyArray<Middleware<Context>>
   /** Запускать ли polling (false для dev/тестов). */
-  launch?: boolean
+  enable?: boolean
   /**
    * Имя HTTP-заголовка, из которого guard читает raw init data.
    * По умолчанию: `x-max-init-data`.
