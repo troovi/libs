@@ -3,7 +3,8 @@ export class EventEmmiter<T> {
 
   emit(event: string | number, data: T) {
     if (this.store[event]) {
-      this.store[event].forEach((callback) => callback(data))
+      // страховка от unsubscribe внутри колбека
+      ;[...this.store[event]].forEach((callback) => callback(data))
     }
   }
 
@@ -38,9 +39,8 @@ export class EventBroadcaster<T> {
   public subscribers: ((data: T) => void)[] = []
 
   emit(data: T) {
-    this.subscribers.forEach((callback) => {
-      callback(data)
-    })
+    // страховка от unsubscribe внутри колбека
+    ;[...this.subscribers].forEach((callback) => callback(data))
   }
 
   subscribe(callback: (data: T) => void) {
