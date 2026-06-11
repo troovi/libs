@@ -17,7 +17,7 @@ export const useTheme = () => {
 }
 
 export interface ThemeProviderProps extends React.PropsWithChildren {
-  fixed?: BooleanConstructor
+  fixed?: boolean
   storageKey?: string
   defaultColorScheme?: ColorSchemeExtendedType
 }
