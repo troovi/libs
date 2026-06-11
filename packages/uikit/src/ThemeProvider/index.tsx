@@ -17,19 +17,26 @@ export const useTheme = () => {
 }
 
 export interface ThemeProviderProps extends React.PropsWithChildren {
+  fixed?: BooleanConstructor
   storageKey?: string
   defaultColorScheme?: ColorSchemeExtendedType
 }
 
 export const ThemeProvider = (props: ThemeProviderProps) => {
-  const { defaultColorScheme = 'system', storageKey = 'theme', children } = props
+  const { fixed, defaultColorScheme = 'system', storageKey = 'theme', children } = props
   const [colorScheme, setColorScheme] = useState<ColorSchemeExtendedType>(() => {
+    if (fixed) {
+      return defaultColorScheme
+    }
+
     return getColorScheme(storageKey, defaultColorScheme)
   })
 
   const handleColorScheme = (newColorScheme: ColorSchemeExtendedType) => {
-    setColorScheme(newColorScheme)
-    localStorage.setItem(storageKey, newColorScheme)
+    if (!fixed) {
+      setColorScheme(newColorScheme)
+      localStorage.setItem(storageKey, newColorScheme)
+    }
   }
 
   // handle system theme changing
