@@ -351,6 +351,12 @@ const Root = (props: MobileDrawerProps) => {
 
   React.useEffect(() => {
     if (isOpen) {
+      // Radix calls onOpenChange only for internal events (trigger, esc, outside click),
+      // so when `open` is controlled externally we have to mark the drawer as opened
+      // ourselves — otherwise usePreventScroll stays disabled and iOS scrolls the page
+      // away when the keyboard opens.
+      setHasBeenOpened(true)
+
       set(document.documentElement, {
         scrollBehavior: 'auto'
       })
