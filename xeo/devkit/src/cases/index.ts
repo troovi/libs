@@ -4,6 +4,11 @@ import { caseFIX, caseJRO, caseKRO } from './basic/error-model-not-exists'
 import { caseFIA, caseFIB, caseFIC } from './basic/find-methods'
 import { caseVIA } from './basic/update'
 import { caseXNI } from './basic/update-discriminated'
+import { caseCDA } from './basic/change-discriminator/success'
+import { caseCDB } from './basic/change-discriminator/success-reverse'
+import { caseCDU } from './basic/change-discriminator/error-via-update'
+import { caseCDD } from './basic/change-discriminator/error-dependency'
+import { caseCDS, caseCDK, caseCDN } from './basic/change-discriminator/error-invalid-target'
 import { caseNIX } from './complex/check-removing'
 import { caseMFO } from './complex/crossmodels-cleanup-on-remove'
 import { caseMOS } from './complex/recursive-removing'
@@ -59,6 +64,14 @@ export const cases = [
   caseFIC,
   caseXNI,
   caseVIA,
+  // basic/change-discriminator
+  caseCDA,
+  caseCDB,
+  caseCDU,
+  caseCDD,
+  caseCDS,
+  caseCDK,
+  caseCDN,
   // relations/reference-set
   caseWIO,
   caseAIX,
@@ -124,6 +137,14 @@ export {
   caseFIC,
   caseXNI,
   caseVIA,
+  // basic/change-discriminator
+  caseCDA,
+  caseCDB,
+  caseCDU,
+  caseCDD,
+  caseCDS,
+  caseCDK,
+  caseCDN,
   // relations/reference-set
   caseWIO,
   caseAIX,

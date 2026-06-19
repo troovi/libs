@@ -1,6 +1,6 @@
 import { DataScheme, CollectionScheme, CollectionDriverParams, CollectionDriverSync } from '../core'
 import { BaseTableDriver } from './table.driver'
-import { __DEV__, ExtractType } from '../utils'
+import { ExtractType } from '../utils'
 import { IndexedCollectionStore } from './indexed.collection'
 
 export namespace MutationEvents {
@@ -18,9 +18,18 @@ export namespace MutationEvents {
     type: 'create'
     data: CollectionDriverParams.Create
   }
+
+  export interface Replace {
+    type: 'replace'
+    data: CollectionDriverParams.Replace
+  }
 }
 
-export type MutationEvent = MutationEvents.Create | MutationEvents.Remove | MutationEvents.Update
+export type MutationEvent =
+  | MutationEvents.Create
+  | MutationEvents.Remove
+  | MutationEvents.Update
+  | MutationEvents.Replace
 
 export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverSync {
   readonly type = 'sync'
@@ -117,6 +126,14 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
 
     this.onMutationCallbacks.forEach((cb) => {
       cb({ type: 'update', data: { model, id, patches } })
+    })
+  }
+
+  replace({ model, id, data }: CollectionDriverParams.Replace) {
+    this.collections[model].replace(id, data)
+
+    this.onMutationCallbacks.forEach((cb) => {
+      cb({ type: 'replace', data: { model, id, data } })
     })
   }
 }

@@ -30,6 +30,14 @@ export type RelationRestrictInfo =
   | 'has-many >0'
   | 'has-many !== 0'
   | 'invalid discriminator'
+  // менять дискриминатор через update нельзя — только через changeDiscriminator
+  | 'discriminator-immutable'
+  // changeDiscriminator вызван на недискриминированной коллекции
+  | 'not-discriminated'
+  // целевое значение дискриминатора не объявлено в модели
+  | 'unknown-discriminator'
+  // целевой дискриминатор совпадает с текущим
+  | 'same-discriminator'
 
 export type CoreErrorData = Exists | NotExists | RelationRestrict | DependencyRestrict
 

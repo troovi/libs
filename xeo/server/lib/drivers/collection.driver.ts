@@ -35,7 +35,10 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
 
   public tables: MongoRelationsTable<Scheme>
 
-  constructor(private dataScheme: DataScheme<Scheme>, { connection, dev }: MongoDriverOptions) {
+  constructor(
+    private dataScheme: DataScheme<Scheme>,
+    { connection, dev }: MongoDriverOptions
+  ) {
     Logger.log('Driver bootstrap', 'MongoDriver')
 
     this.dev = dev ?? false
@@ -43,7 +46,7 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
 
     const factory = new DefinitionsFactory(dataScheme)
 
-    const useModel = <T>(model: string, schema: Schema): Model<T> => {
+    const getModel = <T>(model: string, schema: Schema): Model<T> => {
       return connection.models[model] ?? connection.model(model, schema)
     }
 
@@ -54,11 +57,11 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
       const baseDefinition = factory.createForScheme(scheme)
 
       if (scheme.type === 'base') {
-        this.collections[model] = useModel(model, new Schema(baseDefinition))
+        this.collections[model] = getModel(model, new Schema(baseDefinition))
       }
 
       if (scheme.type === 'discriminated') {
-        this.collections[model] = useModel(
+        this.collections[model] = getModel(
           model,
           new Schema(baseDefinition, {
             discriminatorKey: scheme.discriminatorKey
@@ -199,6 +202,16 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
     if (this.dev) {
       this.log({ op: 'COLLECTIONS:UPDATE', id, patches })
     }
+  }
+
+  // полная замена документа по id (используется при смене дискриминатора).
+  // replaceOne по базовой модели перезаписывает документ целиком, включая поле-дискриминатор
+  async replace({ model, id, data }: CollectionDriverParams.Replace) {
+    if (this.dev) {
+      this.log({ op: 'COLLECTIONS:REPLACE', model, id, data })
+    }
+
+    await this.collections[model].replaceOne({ [this.getIdentifierKey(model)]: id }, data).exec()
   }
 
   private async getCollection({ model, id }: CollectionDriverParams.Record) {

@@ -87,7 +87,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
         'has-many !== 0': `Нельзя удалить ${getModelTitle(model)}: поле "${
           data.address
         }" содержит связанные элементы`,
-        'invalid discriminator': `Поле "${data.address}" ссылается на сущность недопустимого типа`
+        'invalid discriminator': `Поле "${data.address}" ссылается на сущность недопустимого типа`,
+        'discriminator-immutable': `Поле "${data.address}" нельзя менять через update (используйте changeDiscriminator)`,
+        'not-discriminated': `Коллекция не является дискриминированной`,
+        'unknown-discriminator': `Недопустимое значение дискриминатора для поля "${data.address}"`,
+        'same-discriminator': `Целевой дискриминатор совпадает с текущим`
       }
 
       return (

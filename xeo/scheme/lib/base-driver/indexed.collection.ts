@@ -52,6 +52,23 @@ export class IndexedCollectionStore<T> {
     }
   }
 
+  // полная замена документа по id (id остаётся прежним) — нужна при смене дискриминатора,
+  // чтобы выкинуть скалярные поля старой формы (set-патчи это не умеют)
+  replace(id: IType, data: T) {
+    if (__DEV__) {
+      xRay.print('COLLECTIONS:REPLACE', styles.pink)({ name: this.name, id }, 'data:', data)
+    }
+
+    const index = this.data.findIndex((item) => {
+      return item[this.identifierKey] === id
+    })
+
+    if (index !== -1) {
+      this.data[index] = data
+      this.store[id] = data
+    }
+  }
+
   update(id: IType, patches: UpdatePatch[]) {
     const target = this.get(id)
 

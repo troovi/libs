@@ -145,7 +145,7 @@ export { Toast } from './Toaster/Toast'
 // types
 export * from './types'
 export type { CalendarProps } from './Calendar/Calendar'
-export type { OptionsSource, UseOptionsResponse } from './Select/OptionsPopover'
+export type { OptionsSource, OptionsPopover, UseOptionsResponse } from './Select/OptionsPopover'
 // helpers
 export {
   createPopupRegistry,
@@ -159,5 +159,6 @@ export { createScope, createStaticScope } from './__helpers/createScope'
 // helpers types
 export type { PopupProps } from './__helpers/createPopupRegistry'
 export type { PopoverContentProps } from './__helpers/createPopoversRegistry'
+
 export { RemoveListener } from './__utils/RemoveListener'
 export * from './__libs/calendar'

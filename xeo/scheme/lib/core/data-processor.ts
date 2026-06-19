@@ -22,7 +22,10 @@ const isUniqe = (items: (string | number)[]) => {
 }
 
 export class DataProcessor<T extends CollectionScheme> {
-  constructor(private dataScheme: DataScheme<T>, private driver: AppCollectionDriver) {}
+  constructor(
+    private dataScheme: DataScheme<T>,
+    private driver: AppCollectionDriver
+  ) {}
 
   async create(data: object, model: string) {
     const modeldata = this.dataScheme.models[model]
@@ -232,6 +235,21 @@ export class DataProcessor<T extends CollectionScheme> {
 
     const { changedPaths, nextState } = changesTracker(data, mutate)
 
+    // дискриминатор нельзя менять через update — у новой формы другой набор полей/связей,
+    // которые update (резолвящий по карте СТАРОЙ формы) либо уронит, либо тихо испортит.
+    // Для смены формы есть отдельный changeDiscriminator.
+    if (modeldata.scheme.type === 'discriminated') {
+      const discriminatorKey = modeldata.scheme.discriminatorKey
+
+      if (changedPaths.some((path) => path.length === 1 && path[0] === discriminatorKey)) {
+        throw new CoreError(model, {
+          reason: 'RELATION_RESTRICT',
+          address: discriminatorKey,
+          info: 'discriminator-immutable'
+        })
+      }
+    }
+
     const relationsBuffer: { address: string; prevValue: unknown; nextValue: unknown }[] = []
 
     const queryBuilder = createQueryBuilder()
@@ -378,7 +396,252 @@ export class DataProcessor<T extends CollectionScheme> {
     return this.save(queryBuilder.build())
   }
 
+  // TODO: кажется метод слишком большой, не помешало бы найти общие практики во всем классе, и уменьшить количество кода
+
+  // смена дискриминированной формы сущности (id и общие поля сохраняются).
+  // концептуально = «снести срез старой формы + создать срез новой»: чистим связи/таблицы старой
+  // формы, валидируем и проставляем связи новой формы, и заменяем запись целиком (replace),
+  // чтобы выкинуть скалярные поля старой формы. Блокируется, если у старой формы есть живые
+  // зависимости (непустой has-many).
+  async changeDiscriminator(id: IType, model: string, nextValue: string, patch: object) {
+    const modeldata = this.dataScheme.models[model]
+    const { scheme, refscheme } = modeldata
+
+    if (scheme.type !== 'discriminated') {
+      throw new CoreError(model, {
+        reason: 'RELATION_RESTRICT',
+        address: '',
+        info: 'not-discriminated'
+      })
+    }
+
+    const data = await this.driver.get({ model, id })
+
+    if (!data) {
+      throw new CoreError(model, { reason: 'NOT_EXISTS', refId: id })
+    }
+
+    const discriminatorKey = scheme.discriminatorKey
+    const prevValue = data[discriminatorKey as keyof object] as string
+
+    if (!scheme.discriminators.some((discriminator) => discriminator.value === nextValue)) {
+      throw new CoreError(model, {
+        reason: 'RELATION_RESTRICT',
+        address: discriminatorKey,
+        info: 'unknown-discriminator'
+      })
+    }
+
+    if (prevValue === nextValue) {
+      throw new CoreError(model, {
+        reason: 'RELATION_RESTRICT',
+        address: discriminatorKey,
+        info: 'same-discriminator'
+      })
+    }
+
+    const prevRefs: TargetReferencesStore = refscheme.discriminatorRefs?.[prevValue] ?? {}
+    const nextRefs: TargetReferencesStore = refscheme.discriminatorRefs?.[nextValue] ?? {}
+
+    if (__DEV__) {
+      xRay.splitter()
+      xRay.print('🔀 PROCESSOR.CHANGE_DISCRIMINATOR', styles.yellow)('id', id, '"model":', model)
+      xRay.print('FROM → TO', styles.info)(prevValue, '→', nextValue, 'patch:', patch)
+    }
+
+    const queryBuilder = createQueryBuilder()
+
+    // (1) СНОС связей старой формы (только variant-specific; общие связи не трогаем)
+    for (const address in prevRefs) {
+      const ref = prevRefs[address]
+
+      if (ref.refType === 'owner' || ref.refType === 'owner-fallback') {
+        // структурные связи нельзя переносить на другую форму
+        throw new CoreError(model, { reason: 'RELATION_RESTRICT', address, info: ref.refType })
+      }
+
+      if (ref.refType === 'has-many') {
+        const refSet = getGuaranteedValueByAddress(data, address) as IType[]
+
+        // у старой формы есть живые зависимости — морфить нельзя
+        if (refSet.length > 0) {
+          throw new CoreError(model, { reason: 'DEPENDENCY_RESTRICT', model: ref.model })
+        }
+
+        continue
+      }
+
+      if (ref.refType === 'belongs-to') {
+        const refId = getGuaranteedValueByAddress(data, address)
+
+        queryBuilder.put('collections.update', {
+          model: ref.model,
+          id: refId,
+          patches: [{ type: 'pull', items: [id], address: ref.modelHasManyProperty }]
+        })
+
+        continue
+      }
+
+      if (ref.refType === 'reference-to' || ref.refType === 'reference-set') {
+        queryBuilder.put('table.removeRecordsByModel', {
+          tableName: ref.tableName,
+          modelSide: model,
+          modelId: id
+        })
+
+        continue
+      }
+    }
+
+    // (2) сборка сущности новой формы: общие поля из текущей + id + дискриминатор + поля патча
+    const nextData = this.composeDiscriminatedData(modeldata, data, nextValue, patch)
+
+    // (3) ВАЛИДАЦИЯ + установка связей новой формы (логика как в create, но только variant-specific)
+    for (const address in nextRefs) {
+      const ref = nextRefs[address]
+
+      if (ref.refType === 'owner-fallback') {
+        continue
+      }
+
+      if (ref.refType === 'owner') {
+        const refId = getGuaranteedValueByAddress(nextData, address)
+        const isExists = await this.driver.exists({ model: ref.model, id: refId })
+
+        if (!isExists) {
+          throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
+        }
+
+        continue
+      }
+
+      if (ref.refType === 'reference-set') {
+        const refSet = getGuaranteedValueByAddress(nextData, address) as IType[]
+
+        if (!isUniqe(refSet)) {
+          throw new CoreError(ref.model, { reason: 'RELATION_RESTRICT', address, info: 'unique' })
+        }
+
+        for (const refId of refSet) {
+          const isExists = await this.driver.exists({ model: ref.model, id: refId })
+
+          if (!isExists) {
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
+          }
+
+          queryBuilder.put('table.createRecord', {
+            tableName: ref.tableName,
+            modelSide: model,
+            modelId: id,
+            oppositeId: refId
+          })
+        }
+
+        continue
+      }
+
+      if (ref.refType === 'reference-to') {
+        const refId = getGuaranteedValueByAddress(nextData, address) as IType
+
+        if (!ref.nullable || (ref.nullable && refId !== null)) {
+          const isExists = await this.driver.exists({ model: ref.model, id: refId })
+
+          if (!isExists) {
+            throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
+          }
+
+          queryBuilder.put('table.createRecord', {
+            tableName: ref.tableName,
+            modelSide: model,
+            modelId: id,
+            oppositeId: refId
+          })
+        }
+
+        continue
+      }
+
+      if (ref.refType === 'has-many') {
+        const refSet = getGuaranteedValueByAddress(nextData, address) as IType[]
+
+        // has-many новой формы обязан стартовать пустым (как при create)
+        if (refSet.length > 0) {
+          throw new CoreError(ref.model, { reason: 'RELATION_RESTRICT', address, info: 'has-many >0' })
+        }
+
+        continue
+      }
+
+      if (ref.refType === 'belongs-to') {
+        const refId = getGuaranteedValueByAddress(nextData, address)
+        const refTarget = await this.driver.get({ model: ref.model, id: refId })
+
+        if (!refTarget) {
+          throw new CoreError(ref.model, { reason: 'NOT_EXISTS', refId })
+        }
+
+        const refScheme = this.dataScheme.models[ref.model].scheme
+
+        if (refScheme.type === 'discriminated' && ref.modelDiscriminatorValue) {
+          if (refTarget[refScheme.discriminatorKey as keyof object] !== ref.modelDiscriminatorValue) {
+            throw new CoreError(ref.model, {
+              reason: 'RELATION_RESTRICT',
+              info: 'invalid discriminator',
+              address
+            })
+          }
+        }
+
+        queryBuilder.put('collections.update', {
+          model: ref.model,
+          id: refId,
+          patches: [{ type: 'push', items: [id], address: ref.modelHasManyProperty }]
+        })
+
+        continue
+      }
+    }
+
+    // (4) замена записи целиком (выкидывает скалярные поля старой формы)
+    queryBuilder.put('collections.replace', { model, id, data: nextData })
+
+    if (__DEV__) {
+      xRay.print('QUERIES')(queryBuilder.build())
+    }
+
+    return this.save(queryBuilder.build())
+  }
+
   // helpers
+
+  // собирает данные сущности новой формы: общие поля переносятся из текущей сущности,
+  // identifier и дискриминатор форсируются (неизменность id + целевая форма), variant-поля — из патча
+  private composeDiscriminatedData(
+    { scheme, map }: ModelData,
+    data: object,
+    nextValue: string,
+    patch: object
+  ): object {
+    const next: Record<string, unknown> = {}
+
+    // общие скалярные/embedded поля (map.common НЕ содержит identifier — он отдельным декоратором)
+    for (const key of Object.keys(map.common)) {
+      next[key] = data[key as keyof object]
+    }
+
+    // поля новой формы
+    Object.assign(next, patch)
+
+    // форсируем неизменность id и целевую форму (на случай мусора в патче)
+    next[scheme.identifier.propertyKey] = data[scheme.identifier.propertyKey as keyof object]
+
+    if (scheme.type === 'discriminated') {
+      next[scheme.discriminatorKey] = nextValue
+    }
+
+    return next
+  }
 
   private async getRemoveQueries({ model, id, isBase }: Options) {
     const modeldata = this.dataScheme.models[model]
@@ -666,6 +929,10 @@ export class DataProcessor<T extends CollectionScheme> {
 
         if (action === 'collections.update') {
           return this.driver.update(params)
+        }
+
+        if (action === 'collections.replace') {
+          return this.driver.replace(params)
         }
 
         if (action === 'table.createRecord') {

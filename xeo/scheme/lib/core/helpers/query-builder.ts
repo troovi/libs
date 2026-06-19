@@ -11,6 +11,7 @@ export interface DriverQueries {
   'collections.create': CollectionDriverParams.Create
   'collections.remove': CollectionDriverParams.Record
   'collections.update': CollectionDriverParams.Update
+  'collections.replace': CollectionDriverParams.Replace
   // table
   'table.removeRecordsByModel': TableRelationSlice
   'table.removeRecord': RelationRecord

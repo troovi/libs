@@ -39,6 +39,12 @@ export namespace CollectionDriverParams {
     data: object
   }
 
+  // полная замена документа по id (используется при смене дискриминатора —
+  // нужно выкинуть скалярные поля старой формы, чего set-патчи не умеют)
+  export interface Replace extends Record {
+    data: object
+  }
+
   export interface Update extends Record {
     patches: UpdatePatch[]
   }
@@ -61,6 +67,7 @@ interface CollectionDriverSyncApis {
   create: (params: CollectionDriverParams.Create) => void
   remove: (params: CollectionDriverParams.Record) => void
   update: (params: CollectionDriverParams.Update) => void
+  replace: (params: CollectionDriverParams.Replace) => void
 }
 
 export interface CollectionDriverSync extends CollectionDriverSyncApis {

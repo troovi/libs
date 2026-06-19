@@ -35,15 +35,35 @@ export interface ModelMap {
   discriminators?: { [value: string]: PropertyMap }
 }
 
-export interface CollectionInfo<T, K extends KeyOfType<T, IType> = KeyOfType<T, IType>> {
+/**
+ * Type-level метаинформация дискриминированной коллекции. Присутствует только у коллекций,
+ * созданных через defineDiscriminatedCollection; несёт фантомные типы базы (B) и объединения
+ * вариантов (VU), по которым вычисляется тип патча в changeDiscriminator. В рантайме хранит
+ * только discriminatorKey.
+ */
+export interface DiscriminatedMeta<B = unknown, VU = unknown, DK extends string = string> {
+  discriminatorKey: DK
+  /** phantom — база (для Omit<вариант, keyof B> при вычислении патча) */
+  readonly __base?: B
+  /** phantom — объединение типов вариантов */
+  readonly __variants?: VU
+}
+
+export interface CollectionInfo<
+  T,
+  K extends KeyOfType<T, IType> = KeyOfType<T, IType>,
+  DM extends DiscriminatedMeta | null = null
+> {
   model: Type<T>
   name: string
   identifierKey: K
   identifierType: T[K]
+  // null для обычных коллекций; для дискриминированных несёт type-info
+  discriminated: DM
 }
 
 export interface CollectionScheme {
-  [name: string]: CollectionInfo<any>
+  [name: string]: CollectionInfo<any, any, any>
 }
 
 export interface ModelData {
@@ -335,21 +355,52 @@ export const defineCollection = <T, K extends KeyOfType<T, IType>>(model: Type<T
     throw new Error(`Provided ${identifierKey as string} not match with model ${data.identifier.propertyKey}`)
   }
 
-  return { model, name: data.name, identifierType: {} as T[K], identifierKey }
+  return { model, name: data.name, identifierType: {} as T[K], identifierKey, discriminated: null }
 }
 
-export interface DiscriminatedCollectionOptions<B, D extends readonly Type<unknown>[], K> {
+export interface DiscriminatedCollectionOptions<
+  B,
+  D extends readonly Type<unknown>[],
+  K,
+  DK
+> {
   baseScheme: Type<B>
   discriminators: D
   identifier: K
+  // ключ-дискриминатор базовой модели; должен совпадать с @DiscriminatedModel({ discriminatorKey })
+  discriminatorKey: DK
 }
 
 type DiscriminatedFrom<D extends readonly Type<unknown>[]> = D[number] extends Type<infer A> ? A : never
 
 // prettier-ignore
-export const defineDiscriminatedCollection = <B, K extends KeyOfType<B, IType>, D extends readonly Type<unknown>[]>(options: DiscriminatedCollectionOptions<B, D, K>) => {
-  return defineCollection(
+export const defineDiscriminatedCollection = <
+  B,
+  K extends KeyOfType<B, IType>,
+  DK extends KeyOfType<B, string> & string,
+  D extends readonly Type<unknown>[]
+>(
+  options: DiscriminatedCollectionOptions<B, D, K, DK>
+): CollectionInfo<DiscriminatedFrom<D>, K, DiscriminatedMeta<B, DiscriminatedFrom<D>, DK>> => {
+  const meta = TypeMetadataStorage.getModelSchemaByTarget(() => options.baseScheme)
+
+  if (meta.type !== 'discriminated') {
+    throw new Error(`Model "${meta.name}" is not a discriminated model (use @DiscriminatedModel)`)
+  }
+
+  if (meta.discriminatorKey !== (options.discriminatorKey as string)) {
+    throw new Error(
+      `Provided discriminatorKey "${String(options.discriminatorKey)}" does not match model "${meta.name}" key "${meta.discriminatorKey}"`
+    )
+  }
+
+  const base = defineCollection(
     options.baseScheme as Type<DiscriminatedFrom<D>>,
-    options.identifier
+    options.identifier as unknown as KeyOfType<DiscriminatedFrom<D>, IType>
   )
+
+  return {
+    ...base,
+    discriminated: { discriminatorKey: options.discriminatorKey }
+  } as CollectionInfo<DiscriminatedFrom<D>, K, DiscriminatedMeta<B, DiscriminatedFrom<D>, DK>>
 }

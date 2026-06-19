@@ -2,7 +2,7 @@ import { xRay } from '../utils/x-ray'
 import { __DEV__, DeepPartial, ExtractType, Promisify } from '../utils'
 
 import { DataProcessor, IType } from './data-processor'
-import { DataScheme, CollectionScheme } from './data-scheme'
+import { DataScheme, CollectionScheme, DiscriminatedMeta } from './data-scheme'
 import { AppCollectionDriver } from './types/driver.types'
 
 export interface DriverApiMethods<T = object, I extends IType = IType> {
@@ -36,12 +36,38 @@ type CollectionApiShape = {
   [K in keyof CollectionApi]: (...params: Parameters<CollectionApi[K]>) => unknown
 }
 
+// ─── расширение API для дискриминированных коллекций ───
+
+// все значения дискриминатора (literal union) из объединения вариантов VU по ключу DK
+type DiscriminatorValues<VU, DK extends PropertyKey> = VU extends Record<DK, infer V> ? V : never
+// конкретный вариант VU, у которого DK === NV
+type VariantByValue<VU, DK extends PropertyKey, NV> = VU extends Record<DK, NV> ? VU : never
+
+// prettier-ignore
+export type DiscriminatedApi<B, VU, DK extends PropertyKey, I extends IType = IType> = {
+  // patch — поля ТОЛЬКО новой формы (всё, что есть у целевого варианта сверх базы B);
+  // id и сам дискриминатор задаются отдельно и не входят в патч
+  changeDiscriminator: <NV extends DiscriminatorValues<VU, DK>>(
+    id: I,
+    nextValue: NV,
+    patch: Omit<VariantByValue<VU, DK, NV>, keyof B>
+  ) => Promise<boolean>
+}
+
+// если у коллекции есть discriminated-метаинформация — подмешиваем DiscriminatedApi
+// prettier-ignore
+type DiscriminatedExtension<C, I extends IType> =
+  C extends { discriminated: DiscriminatedMeta<infer B, infer VU, infer DK> }
+    ? DiscriminatedApi<B, VU, DK, I>
+    : unknown
+
 interface DataSourceOptions<Scheme extends CollectionScheme, Driver extends AppCollectionDriver> {
   createDriver: (dataScheme: DataScheme<Scheme>) => Driver
 }
 
 export type Collections<Scheme extends CollectionScheme, DT extends DriverType = DriverType> = {
-  [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType'], DT>
+  [K in keyof Scheme]: CollectionApi<ExtractType<Scheme[K]['model']>, Scheme[K]['identifierType'], DT> &
+    DiscriminatedExtension<Scheme[K], Scheme[K]['identifierType']>
 }
 
 // prettier-ignore
@@ -102,7 +128,16 @@ export class DataSource<Scheme extends CollectionScheme, Driver extends AppColle
         }
       }
 
-      this.collections[name] = base as CollectionApi<any, any, Driver['type']>
+      // changeDiscriminator существует в рантайме у всех коллекций, но в типах открыт только у
+      // дискриминированных (см. DiscriminatedExtension); на обычной коллекции бросит CoreError
+      const api = {
+        ...base,
+        changeDiscriminator: (id: IType, nextValue: string, patch: object) => {
+          return processor.changeDiscriminator(id, collection.name, nextValue, patch)
+        }
+      }
+
+      ;(this.collections as Record<string, unknown>)[name] = api
     }
   }
 }

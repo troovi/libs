@@ -17,7 +17,8 @@ export const dataScheme = new DataScheme({
   worker: defineDiscriminatedCollection({
     baseScheme: WorkerEntities.BaseWorker,
     discriminators: [WorkerEntities.OfficeProfile, WorkerEntities.RevisorProfile],
-    identifier: 'workerId'
+    identifier: 'workerId',
+    discriminatorKey: 'type'
   }),
   scan: defineCollection(WorkerEntities.Scan, 'scanId'),
   bankCard: defineCollection(WorkerEntities.BankCard, 'cardId'),
@@ -26,7 +27,8 @@ export const dataScheme = new DataScheme({
   chat: defineDiscriminatedCollection({
     baseScheme: ChatEntities.BaseChat,
     discriminators: [ChatEntities.SeatChat, ChatEntities.NoteChat],
-    identifier: 'chatId'
+    identifier: 'chatId',
+    discriminatorKey: 'type'
   }),
   // client
   client: defineCollection(ClientEntities.Client, 'clientId'),

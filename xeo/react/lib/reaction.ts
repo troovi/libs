@@ -34,6 +34,12 @@ export class ReactionService<Scheme extends CollectionScheme> {
       if (type === 'remove') {
         this.notify({ type: 'remove', model: data.model, id: data.id })
       }
+
+      if (type === 'replace') {
+        // запись заменена целиком (смена дискриминатора) — без fields, чтобы обновились
+        // все потребители сущности (shouldUpdateEntity при отсутствии fields → true)
+        this.notify({ type: 'update', model: data.model, id: data.id })
+      }
     })
   }
 
