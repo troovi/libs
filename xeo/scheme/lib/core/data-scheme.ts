@@ -72,9 +72,8 @@ export interface ModelData {
   map: ModelMap
 }
 
-export type InferScheme<T extends DataScheme<CollectionScheme>> = T extends DataScheme<infer P>
-  ? P
-  : never
+export type InferScheme<T extends DataScheme<CollectionScheme>> =
+  T extends DataScheme<infer P> ? P : never
 
 export class DataScheme<T extends CollectionScheme> {
   public metadata = TypeMetadataStorage
@@ -358,12 +357,7 @@ export const defineCollection = <T, K extends KeyOfType<T, IType>>(model: Type<T
   return { model, name: data.name, identifierType: {} as T[K], identifierKey, discriminated: null }
 }
 
-export interface DiscriminatedCollectionOptions<
-  B,
-  D extends readonly Type<unknown>[],
-  K,
-  DK
-> {
+export interface DiscriminatedCollectionOptions<B, D extends readonly Type<unknown>[], K, DK> {
   baseScheme: Type<B>
   discriminators: D
   identifier: K

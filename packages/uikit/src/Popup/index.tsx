@@ -10,6 +10,12 @@ export interface PopupLayotProps {
   defaultOpen?: boolean
   disableEsc?: boolean
   onClosed?: () => void
+  /** Управление модальностью Radix Dialog (фокус-трап/блокировка скролла/aria-hidden окружения).
+   *  Для встроенных (contained) попапов передавайте `false`, чтобы остальной UI оставался живым. */
+  modal?: boolean
+  /** DOM-узел для портала Radix. По умолчанию портал идёт в `document.body`; передайте элемент,
+   *  чтобы открыть попап/drawer внутри конкретного контейнера (например рабочей области). */
+  container?: HTMLElement | null
   overlay?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
   overlayRef?: React.Ref<HTMLDivElement>
   content?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
@@ -19,7 +25,7 @@ export interface PopupLayotProps {
 }
 
 export const PopupLayout = (props: PopupLayotProps) => {
-  const { open, onOpenChange, children, onClosed, disableEsc, overlay = {}, overlayRef, content = {}, contentRef } = props
+  const { open, onOpenChange, children, onClosed, disableEsc, modal, container, overlay = {}, overlayRef, content = {}, contentRef } = props
 
   const handleEscape = (e: KeyboardEvent) => {
     if (disableEsc) {
@@ -28,8 +34,8 @@ export const PopupLayout = (props: PopupLayotProps) => {
   }
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} modal={modal}>
+      <DialogPrimitive.Portal container={container}>
         <DialogPrimitive.Overlay {...overlay} ref={overlayRef} className={cn('popup-overlay', overlay.className)} />
         <DialogPrimitive.Content {...content} ref={contentRef} onEscapeKeyDown={handleEscape}>
           <RemoveListener callback={onClosed} />
