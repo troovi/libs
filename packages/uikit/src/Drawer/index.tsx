@@ -5,14 +5,22 @@ import { PopupLayotProps, PopupLayout } from '../Popup'
 export interface DrawerProps extends Omit<PopupLayotProps, 'content' | 'overlay'> {
   direction?: 'bottom' | 'top' | 'left' | 'right'
   className?: string
+  overlayClassName?: string
   size?: string
 }
 
-export const Drawer = ({ direction, children, size, className, ...props }: DrawerProps) => {
+export const Drawer = ({
+  direction,
+  children,
+  size,
+  overlayClassName,
+  className,
+  ...props
+}: DrawerProps) => {
   return (
     <PopupLayout
       {...props}
-      overlay={{ className: 'drawer-overlay' }}
+      overlay={{ className: cn('drawer-overlay', overlayClassName) }}
       content={{
         className: cn('popup drawer', className),
         style: customCSS({ '--drawer-size': size ?? '50%' }),
