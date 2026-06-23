@@ -11,3 +11,8 @@ export { MaxExecutionContext, MaxArgumentsHost } from './execution-context'
 export type { MaxContextType } from './execution-context'
 export { MetadataAccessorService, ListenersExplorerService, BaseExplorerService } from './services'
 export * from './types'
+
+// Реэкспорт ходовых сущностей @maxhub/max-bot-api, чтобы приложения работали
+// только через max-nestjs и не импортировали базовую библиотеку напрямую.
+export { Bot, Context, Composer, Api, Keyboard, MaxError } from '@maxhub/max-bot-api'
+export type { FilteredContext, Middleware, MiddlewareFn, NextFn } from '@maxhub/max-bot-api'

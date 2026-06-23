@@ -1,7 +1,6 @@
 import {
   DynamicModule,
   ForbiddenException,
-  Global,
   Inject,
   Logger,
   Module,
@@ -29,8 +28,13 @@ const formatError = (error: unknown) =>
 /**
  * Корневой модуль мини-фреймворка сцен/wizard для @maxhub/max-bot-api.
  * Аналог `TelegrafModule` из nestjs-telegraf.
+ *
+ * Globality управляется опцией `global` (по умолчанию `true` — обратная
+ * совместимость с одиночным ботом). Для нескольких ботов в одном приложении
+ * регистрируйте каждый `forRoot` с `global: false` и собственным `botName` —
+ * тогда токены MAX_STAGE/MAX_MODULE_OPTIONS/MAX_BOT_NAME остаются локальными для
+ * каждого модуля и не конфликтуют между ботами.
  */
-@Global()
 @Module({
   imports: [DiscoveryModule],
   providers: [ListenersExplorerService, MetadataAccessorService]
@@ -47,23 +51,31 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
   ) {}
 
   static forRoot(options: MaxModuleOptions): DynamicModule {
-    if (!options.token.trim()) {
-      throw new Error('MAX bot token is required')
+    // Пустой токен больше не валит приложение: бот регистрируется, но polling
+    // отключается. Удобно для нескольких ботов, когда часть токенов не задана.
+    const enable = !!options.enable && !!options.token?.trim()
+
+    if (!options.token?.trim()) {
+      new Logger(MaxCoreModule.name).warn(
+        `MAX bot "${options.botName ?? 'default'}" token is empty — polling disabled`
+      )
     }
+
+    const resolved: MaxModuleOptions = { ...options, enable }
 
     return {
       module: MaxCoreModule,
-      global: true,
+      global: options.global ?? true,
       providers: [
-        { provide: MAX_MODULE_OPTIONS, useValue: options },
-        ...this.coreProviders(getBotToken(options.botName)),
+        { provide: MAX_MODULE_OPTIONS, useValue: resolved },
+        ...this.coreProviders(getBotToken(resolved.botName)),
         MaxValidationService,
         MaxAuthGuard
       ],
       exports: [
         MAX_STAGE,
         MAX_MODULE_OPTIONS,
-        getBotToken(options.botName),
+        getBotToken(resolved.botName),
         MaxValidationService,
         MaxAuthGuard
       ]
@@ -75,7 +87,7 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
 
     return {
       module: MaxCoreModule,
-      global: true,
+      global: options.global ?? true,
       imports: options.imports ?? [],
       providers: [
         ...this.createAsyncProviders(options),

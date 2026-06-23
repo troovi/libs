@@ -30,6 +30,13 @@ export interface MaxModuleOptions {
   /** Запускать ли polling (false для dev/тестов). */
   enable?: boolean
   /**
+   * Регистрировать ли модуль как глобальный. По умолчанию `true` (одиночный
+   * бот). Для нескольких ботов в одном приложении ставьте `false`, чтобы
+   * внутренние токены (MAX_STAGE/MAX_MODULE_OPTIONS/MAX_BOT_NAME) не
+   * конфликтовали между регистрациями.
+   */
+  global?: boolean
+  /**
    * Имя HTTP-заголовка, из которого guard читает raw init data.
    * По умолчанию: `x-max-init-data`.
    */
@@ -42,6 +49,8 @@ export interface MaxOptionsFactory {
 
 export interface MaxModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   botName?: string
+  /** См. `MaxModuleOptions.global`. По умолчанию `true`. */
+  global?: boolean
   useExisting?: Type<MaxOptionsFactory>
   useClass?: Type<MaxOptionsFactory>
   useFactory?: (...args: any[]) => Promise<MaxModuleOptions> | MaxModuleOptions
