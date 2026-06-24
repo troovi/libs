@@ -28,6 +28,7 @@ export interface PopoverProps {
   fitMaxHeight?: boolean
   disabled?: boolean
   zIndex?: number
+  style?: React.CSSProperties
 }
 
 // Important remark: Anchor will always double rerender!
@@ -48,6 +49,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
     onAnimationStart,
     onOpenAutoFocus,
     onCloseAutoFocus,
+    style,
     triggerRef,
     triggerProps,
     open,
@@ -94,7 +96,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
           alignOffset={alignOffset}
           avoidCollisions
           arrowPadding={10}
-          style={{ zIndex }}
+          style={{ zIndex, ...style }}
           onAnimationStart={onAnimationStart}
           onAnimationEnd={onAnimationEnd}
           onOpenAutoFocus={onOpenAutoFocus}
