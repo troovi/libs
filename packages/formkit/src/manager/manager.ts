@@ -38,6 +38,10 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
     name: K & string,
     callback: (value: FlattenValues[K], prevValue: FlattenValues[K]) => void
   ) => () => void
+  // подписка на ЛЮБОЕ изменение значений формы (срабатывает на каждый onChange); возвращает отписку
+  subscribeToAny: (callback: () => void) => () => void
+  // плоский список имён всех полей схемы (dotted-пути, вложенные context раскрыты)
+  getNames: () => string[]
   registryExtraForm: (names: string[], callback: () => void) => { unregistry: () => void }
   getForm: (name: string) => FormItem
   onChange: (name: string, value: any) => void
@@ -63,6 +67,9 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
   }
 
   const forms: Forms = {}
+
+  // подписчики на любое изменение формы (для гейтов/агрегатов поверх всех полей)
+  const anySubscribers = new Set<() => void>()
 
   const extraForms = {
     subscribers: [] as { visualizeEvalueatedForms: () => void }[],
@@ -227,7 +234,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       })
     },
     setAsDefault(){
-      readScheme(scheme, [], {}, ({}, name) => {
+      readScheme(scheme, [], {}, (_, name) => {
         forms[name].startValue = forms[name].value
         forms[name].isDirty = false
       })
@@ -276,6 +283,18 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
         form.subscribers = form.subscribers.filter((o) => o !== observer)
       }
     },
+    subscribeToAny(callback) {
+      anySubscribers.add(callback)
+
+      return () => {
+        anySubscribers.delete(callback)
+      }
+    },
+    getNames() {
+      // `forms` уже построен начальным readScheme (включая extra-реестры) и состав ключей не
+      // меняется за жизнь менеджера → это и есть полный список dotted-имён полей.
+      return Object.keys(forms)
+    },
     registryExtraForm(names, visualizeEvalueatedForms) {
       const observer = { visualizeEvalueatedForms }
 
@@ -320,6 +339,11 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       // trigger subscribers
       form.subscribers.forEach(({ callback }) => {
         callback(value, prevValue)
+      })
+
+      // trigger any-change subscribers
+      anySubscribers.forEach((callback) => {
+        callback()
       })
     }
   }

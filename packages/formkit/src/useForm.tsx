@@ -94,6 +94,14 @@ const useForm = <
     // prettier-ignore
     subscribe: <K extends keyof FlattenValues>(name: K & string, callback: (value: FlattenValues[K], prevValue: FlattenValues[K]) => void) => {
       return manager.subscribeToForm(name, callback)
+    },
+    // подписка на любое изменение значений формы (для гейтов поверх всех полей)
+    subscribeAny: (callback: () => void) => {
+      return manager.subscribeToAny(callback)
+    },
+    // плоский список имён всех полей (dotted-пути; вложенные context раскрыты)
+    getNames: (): string[] => {
+      return manager.getNames()
     }
   }
 }
