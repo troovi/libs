@@ -22,6 +22,7 @@ export interface PopoverProps {
   showArrows?: boolean
   minimal?: boolean
   sideOffset?: number
+  alignOffset?: number
   matchTarget?: 'width' | 'min-width'
   className?: string
   fitMaxHeight?: boolean
@@ -41,6 +42,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
   const {
     children,
     sideOffset,
+    alignOffset,
     matchTarget,
     onAnimationEnd,
     onAnimationStart,
@@ -89,6 +91,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
           data-appearance={minimal ? 'minimal' : 'default'}
           data-match-target={matchTarget}
           sideOffset={sideOffset ?? 6}
+          alignOffset={alignOffset}
           avoidCollisions
           arrowPadding={10}
           style={{ zIndex }}
