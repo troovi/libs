@@ -1,0 +1,29 @@
+@use '../mixins.scss';
+
+.counter-input-field {
+  text-align: center;
+}
+
+.counter-input-button {
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0px var(--form_space, 0);
+  background: none;
+  border: none;
+  outline: none;
+
+  @include mixins.use-styles(select, tools);
+
+  &:hover:not(:disabled) {
+    @include mixins.use-styles(select, tools, hovered);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+}

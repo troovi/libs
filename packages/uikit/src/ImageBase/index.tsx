@@ -81,6 +81,7 @@ export const ImageBase = (props: ImageBaseProps) => {
         onLoad={() => setIsLoaded(true)}
         onError={() => setIsFailed(true)}
         {...imgAttrs}
+        alt=""
       />
       {children}
     </div>

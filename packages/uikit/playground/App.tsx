@@ -19,6 +19,7 @@ import { DrawerExample } from './drawer'
 import { FormGroupExample } from './form-group'
 import { TimePickerExample } from './time-picker'
 import { NumberInputs } from './number-inputs'
+import { CounterInputExample } from './counter-input'
 import { ProgressBarExample } from './progress'
 import { FileExample } from './file'
 import { DialogRegistries } from './__registries/popups'
@@ -82,6 +83,9 @@ const AppLayout = () => {
         </Example>
         <Example name="NumberInputs">
           <NumberInputs />
+        </Example>
+        <Example name="CounterInput">
+          <CounterInputExample />
         </Example>
         <Example name="TextArea">
           <TextAreaExample />

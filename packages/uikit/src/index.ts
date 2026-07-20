@@ -45,6 +45,9 @@ export type { OptionProps } from './OptionItem/OptionItem'
 export { NumberInput } from './NumberInput'
 export type { NumberInputProps, ReactNumberFormatParams } from './NumberInput'
 
+export { CounterInput } from './CounterInput'
+export type { CounterInputProps } from './CounterInput'
+
 export { OptionsList } from './OptionItem/OptionsList'
 export type { OptionsListProps } from './OptionItem/OptionsList'
 
