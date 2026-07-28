@@ -90,7 +90,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
   }, [props.options, props.defaultOptions])
 
   const activeOption: Option<T> | null =
-    value === null ? null : optionsStore.current[value as symbol] ?? null
+    value === null ? null : (optionsStore.current[value as symbol] ?? null)
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
   const { scrollToElement, optionsWrapperRef, scrollBoxRef } = useScrollListController()
@@ -144,31 +144,26 @@ export const Select = <T,>(props: SelectProps<T>) => {
         />
       )}
     >
-      {isCustomTrigger
-        ? children({
-            option: activeOption,
-            title: activeOption?.title ?? '',
-            isOpen,
-            clear: handleClear
-          })
-        : children ?? (
-            <SelectInput
-              required={required}
-              className={className}
-              leftElement={leftElement}
-              inputRef={inputRef}
-              onClear={handleClear}
-              fill={fill}
-              size={size}
-              placeholder={placeholder}
-              onClick={onClick}
-              disabled={disabled}
-              clearButton={clearButton}
-              customElement={activeOption?.indicator}
-              clearButtonIcon={clearButtonIcon}
-              value={activeOption?.title ?? ''}
-            />
-          )}
+      {isCustomTrigger ? (
+        children({ option: activeOption, title: activeOption?.title ?? '', isOpen, clear: handleClear })
+      ) : (
+        <SelectInput
+          required={required}
+          className={className}
+          leftElement={leftElement}
+          inputRef={inputRef}
+          onClear={handleClear}
+          fill={fill}
+          size={size}
+          placeholder={placeholder}
+          onClick={onClick}
+          disabled={disabled}
+          clearButton={clearButton}
+          customElement={activeOption?.indicator}
+          clearButtonIcon={clearButtonIcon}
+          value={activeOption?.title ?? ''}
+        />
+      )}
     </Popover>
   )
 }
