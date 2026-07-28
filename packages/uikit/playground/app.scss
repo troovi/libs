@@ -330,3 +330,50 @@ body {
     margin-right: 0;
   }
 }
+
+.select-card-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+
+  &[data-open='true'] {
+    border-color: #a855f7;
+  }
+
+  .select-card-trigger-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex-grow: 1;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .select-card-trigger-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0.5;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.theme-dark .select-card-trigger {
+  border-color: #262626;
+}

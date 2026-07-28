@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Select, SelectParams } from '@/Select'
 import { Icon } from '@/Icon'
-import { faGift } from '@companix/icons-solid'
+import { Button } from '@/Button'
+import { Avatar } from '@/Avatar'
+import { faChevronDown, faGift, faXmark } from '@companix/icons-solid'
 import { useServerOptions } from '../helpers'
 import { Option } from '@/types'
 
@@ -36,6 +38,14 @@ export const SelectExample = () => {
           <div style={{ minWidth: '240px', width: '240px' }}>
             <SelectItemWithLabelss />
           </div>
+        </div>
+      </div>
+      <div className="row-group">
+        <div style={{ minWidth: '240px', width: '240px' }}>
+          <SelectCustomButton />
+        </div>
+        <div style={{ minWidth: '280px', width: '280px' }}>
+          <SelectCustomCard />
         </div>
       </div>
     </div>
@@ -129,6 +139,69 @@ const SelectItemClosable = (props: ItemProps) => {
       placeholder="Не выбрано"
       options={options}
     />
+  )
+}
+
+// children как функция: получает только внутреннее состояние селекта,
+// всё остальное (placeholder, disabled и т.д.) остаётся на стороне триггера.
+// Триггер должен быть одним элементом, пробрасывающим ref и пропсы (Popover рендерит его через asChild)
+const SelectCustomButton = (props: ItemProps) => {
+  const [value, onChange] = useState<null | number>(null)
+
+  return (
+    <Select<number> value={value} onChange={onChange} {...props} minimalOptions options={options}>
+      {({ title, isOpen }) => (
+        <Button
+          fill
+          mode="outline"
+          active={isOpen}
+          icon={<Icon icon={faGift} size="xxs" />}
+          iconRight={
+            <Icon
+              icon={faChevronDown}
+              size="xxs"
+              style={{
+                transform: isOpen ? 'rotate(180deg)' : undefined,
+                transition: 'transform 150ms'
+              }}
+            />
+          }
+        >
+          {title || 'Не выбрано'}
+        </Button>
+      )}
+    </Select>
+  )
+}
+
+// clear доступен только вместе с clearButton, событие клика он останавливает сам
+const SelectCustomCard = (props: ItemProps) => {
+  const [value, onChange] = useState<null | number>(null)
+
+  return (
+    <Select<number>
+      value={value}
+      onChange={onChange}
+      clearButton
+      {...props}
+      minimalOptions
+      options={options}
+    >
+      {({ option, title, isOpen, clear }) => (
+        <div className="select-card-trigger" data-open={isOpen}>
+          <Avatar size={28} initials={title.slice(0, 1) || '?'} />
+          <div className="select-card-trigger-text">
+            <span>{title || 'Выберите политика'}</span>
+            {option && <span className="custom-sub-label">value: {option.value}</span>}
+          </div>
+          {option && (
+            <button type="button" className="select-card-trigger-clear" onClick={clear}>
+              <Icon icon={faXmark} size="xxs" />
+            </button>
+          )}
+        </div>
+      )}
+    </Select>
   )
 }
 

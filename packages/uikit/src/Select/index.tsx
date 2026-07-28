@@ -1,4 +1,4 @@
-import { useImperativeHandle, useMemo, useRef } from 'react'
+import { useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { Popover } from '../Popover'
 import { useFroozeClosing } from '../__hooks/use-frooze-closing'
 import { SelectFormProps, SelectInput } from './SelectInput'
@@ -25,12 +25,29 @@ export interface SelectParams extends SelectOptionsPopoverParams {
   scrollRef?: React.Ref<{ scrollTo: (index: number) => void }>
 }
 
+export interface SelectTriggerParams<T> {
+  /** Опция текущего значения, null — если значение не выбрано или опция ещё не загружена */
+  option: Option<T> | null
+  /** Заголовок текущей опции, пустая строка — если значение не выбрано */
+  title: string
+  /** Открыт ли список опций */
+  isOpen: boolean
+  /** Сброс значения. Работает только вместе с clearButton */
+  clear: (event: React.MouseEvent) => void
+}
+
+/**
+ * Кастомный триггер селекта. Должен вернуть один элемент,
+ * принимающий ref и обработчики (Popover рендерит его через asChild)
+ */
+export type SelectTrigger<T> = (params: SelectTriggerParams<T>) => React.ReactNode
+
 export type SelectProps<T> = OptionsSource<T> &
   Omit<SelectFormProps, 'value'> &
   SelectParams &
   OnChangeValueType<T> & {
     value: T | null
-    children?: React.ReactNode
+    children?: React.ReactNode | SelectTrigger<T>
   }
 
 export const Select = <T,>(props: SelectProps<T>) => {
@@ -59,6 +76,9 @@ export const Select = <T,>(props: SelectProps<T>) => {
   } = props
 
   const optionsStore = useRef({} as Record<symbol, Option<T>>)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const isCustomTrigger = typeof children === 'function'
 
   // startup store
   useMemo(() => {
@@ -102,6 +122,8 @@ export const Select = <T,>(props: SelectProps<T>) => {
       sideOffset={0}
       matchTarget={matchTarget}
       onAnimationEnd={handleAnimationEnd}
+      // состояние открытия нужно только кастомному триггеру, иначе не перерисовываем селект
+      onOpenChange={isCustomTrigger ? setIsOpen : undefined}
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
       disabled={disabled}
@@ -122,24 +144,31 @@ export const Select = <T,>(props: SelectProps<T>) => {
         />
       )}
     >
-      {children ?? (
-        <SelectInput
-          required={required}
-          className={className}
-          leftElement={leftElement}
-          inputRef={inputRef}
-          onClear={handleClear}
-          fill={fill}
-          size={size}
-          placeholder={placeholder}
-          onClick={onClick}
-          disabled={disabled}
-          clearButton={clearButton}
-          customElement={activeOption?.indicator}
-          clearButtonIcon={clearButtonIcon}
-          value={activeOption?.title ?? ''}
-        />
-      )}
+      {isCustomTrigger
+        ? children({
+            option: activeOption,
+            title: activeOption?.title ?? '',
+            isOpen,
+            clear: handleClear
+          })
+        : children ?? (
+            <SelectInput
+              required={required}
+              className={className}
+              leftElement={leftElement}
+              inputRef={inputRef}
+              onClear={handleClear}
+              fill={fill}
+              size={size}
+              placeholder={placeholder}
+              onClick={onClick}
+              disabled={disabled}
+              clearButton={clearButton}
+              customElement={activeOption?.indicator}
+              clearButtonIcon={clearButtonIcon}
+              value={activeOption?.title ?? ''}
+            />
+          )}
     </Popover>
   )
 }

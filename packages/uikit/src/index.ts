@@ -31,7 +31,7 @@ export { Tooltip } from './Tooltip'
 export type { TooltipProps } from './Tooltip'
 
 export { Select } from './Select'
-export type { SelectProps, SelectParams } from './Select'
+export type { SelectProps, SelectParams, SelectTrigger, SelectTriggerParams } from './Select'
 
 export { SelectTags } from './SelectTags'
 export type { SelectTagsProps, SelectTagsParams } from './SelectTags'
