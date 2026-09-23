@@ -9,22 +9,32 @@ import { EntitiesDemo } from './Tabs/Entities'
 import { FieldAndCountDemo } from './Tabs/FieldAndCount'
 
 export const AppPlay = () => {
-  const [tab, setTab] = useState<'roles' | 'fields' | 'projects' | 'workers' | 'shifts' | 'stats' | 'entities' | 'field+count'>(
-    'field+count'
-  )
+  const [tab, setTab] = useState<
+    'roles' | 'fields' | 'projects' | 'workers' | 'shifts' | 'stats' | 'entities' | 'field+count'
+  >('field+count')
 
   return (
     <div style={{ fontFamily: 'system-ui', padding: 16, maxWidth: 720 }}>
       <h2>xeo-react playground</h2>
 
       <nav style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-        {(['roles', 'fields', 'projects', 'workers', 'shifts', 'stats', 'entities', 'field+count'] as const).map((t) => (
+        {(
+          [
+            'roles',
+            'fields',
+            'projects',
+            'workers',
+            'shifts',
+            'stats',
+            'entities',
+            'field+count'
+          ] as const
+        ).map((t) => (
           <button key={t} onClick={() => setTab(t)} style={{ fontWeight: tab === t ? 700 : 400 }}>
             {t}
           </button>
         ))}
       </nav>
-
       {tab === 'roles' && <RolesTab />}
       {tab === 'fields' && <FieldTrackingDemo />}
       {tab === 'projects' && <ProjectsSection />}
