@@ -50,8 +50,8 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
       return connection.models[model] ?? connection.model(model, schema)
     }
 
-    for (const name in dataScheme.collections) {
-      const model = dataScheme.collections[name].name
+    for (const name in dataScheme.collectionsScheme) {
+      const model = dataScheme.collectionsScheme[name].name
       const scheme = dataScheme.models[model].scheme
 
       const baseDefinition = factory.createForScheme(scheme)
@@ -88,7 +88,7 @@ export class MongoCollectionDriver<Scheme extends CollectionScheme> implements C
 
   // prettier-ignore
   subscribeCleanup<K extends keyof Scheme>(name: K, callback: (data: ExtractType<Scheme[K]['model']>) => void){
-    const model = this.dataScheme.collections[name].name
+    const model = this.dataScheme.collectionsScheme[name].name
 
     if(!this.onClenupCallbacks[model]){
       this.onClenupCallbacks[model] = []

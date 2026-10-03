@@ -37,9 +37,7 @@ export interface ModelMap {
 
 /**
  * Type-level метаинформация дискриминированной коллекции. Присутствует только у коллекций,
- * созданных через defineDiscriminatedCollection; несёт фантомные типы базы (B) и объединения
- * вариантов (VU), по которым вычисляется тип патча в changeDiscriminator. В рантайме хранит
- * только discriminatorKey.
+ * созданных через defineDiscriminatedCollection;
  */
 export interface DiscriminatedMeta<B = unknown, VU = unknown, DK extends string = string> {
   discriminatorKey: DK
@@ -75,13 +73,20 @@ export interface ModelData {
 export type InferScheme<T extends DataScheme<CollectionScheme>> =
   T extends DataScheme<infer P> ? P : never
 
+/**
+ * Компилирует метаданные моделей из TypeMetadataStorage (собранные декораторами) в структуры для быстрого
+ * поиска в рантайме. Класс подготавливает данные для DataProcessor, вычисляет связи, на основе
+ * информации по моделям
+ */
 export class DataScheme<T extends CollectionScheme> {
   public metadata = TypeMetadataStorage
 
   public models: { [model: string]: ModelData } = {}
   public tables: RelationsTableInfo[] = []
 
-  constructor(public collections: T) {
+  // collectionScheme не используется в данном класе, схема передается в конструктор, чтобы выполнить код
+  // класса после того как все коллекции будут объявлены и собраны в TypeMetadataStorage
+  constructor(public collectionsScheme: T) {
     const buffer: { model: string; fields: ModelProperties; target: TargetReferencesStore }[] = []
 
     // initialize data sources

@@ -47,7 +47,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
 
     canUpdateRef.current = canUpdate
 
-    const modelName = dataSource.scheme.collections[collectionName].name
+    const modelName = dataSource.scheme.collectionsScheme[collectionName].name
 
     const subscribe = useCallback(
       (onStoreChange: () => void) => {
@@ -132,7 +132,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
       return shouldUpdateEntity(event, fieldsMapRef.current.get(event.id) ?? new Set())
     })
 
-    const idKey = dataSource.scheme.collections[collectionName].identifierKey
+    const idKey = dataSource.scheme.collectionsScheme[collectionName].identifierKey
 
     return getCollection(collectionName)
       .getAll()
@@ -185,7 +185,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
     })
 
     const entity = getCollection(collectionName).get(id)
-    
+
     return entity === null ? null : entity[field]
   }
 

@@ -21,7 +21,7 @@ interface TestOptions {
 }
 
 const createTableTest = (name: keyof AppScheme, { column, rows }: TestOptions): Result => {
-  const field = column(dataScheme.models[dataScheme.collections[name].name].refscheme)
+  const field = column(dataScheme.models[dataScheme.collectionsScheme[name].name].refscheme)
 
   if (field.refType === 'reference-to' || field.refType === 'reference-set') {
     const { rules } = dataScheme.tables.find((table) => table.tableName === field.tableName)!
@@ -37,7 +37,7 @@ const createTableTest = (name: keyof AppScheme, { column, rows }: TestOptions): 
       const tableRow = {} as TableRow
 
       for (const model in row) {
-        const side = modelsOfTable[dataScheme.collections[model as keyof AppScheme].name]
+        const side = modelsOfTable[dataScheme.collectionsScheme[model as keyof AppScheme].name]
 
         if (!side) {
           throw `${model} not belongs to ${JSON.stringify(rules)}`

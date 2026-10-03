@@ -7,8 +7,8 @@ export class ReactionService<Scheme extends CollectionScheme> {
   constructor(dataSource: DataSource<Scheme, BaseCollectionDriver<Scheme>>) {
     const identifierKeys: { [model: string]: IType } = {}
 
-    for (const key in dataSource.scheme.collections) {
-      const info = dataSource.scheme.collections[key]
+    for (const key in dataSource.scheme.collectionsScheme) {
+      const info = dataSource.scheme.collectionsScheme[key]
       identifierKeys[info.name] = info.identifierKey
 
       this.store[info.name] = new Set()

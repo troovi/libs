@@ -87,57 +87,57 @@ export class DataSource<Scheme extends CollectionScheme, Driver extends AppColle
     this.driver = driver
     this.scheme = dataScheme
 
-    for (const name in dataScheme.collections) {
-      const collection = dataScheme.collections[name]
+    for (const name in dataScheme.collectionsScheme) {
+      const collectionScheme = dataScheme.collectionsScheme[name]
 
-      const base: CollectionApiShape = {
+      const baseCollectionApi: CollectionApiShape = {
         // driver methods
         getAll: () => {
-          return driver.getAll({ model: collection.name })
+          return driver.getAll({ model: collectionScheme.name })
         },
         get: (id) => {
-          return driver.get({ model: collection.name, id })
+          return driver.get({ model: collectionScheme.name, id })
         },
         findOneBy: (filter) => {
-          return driver.findOneBy({ model: collection.name, filter })
+          return driver.findOneBy({ model: collectionScheme.name, filter })
         },
         findBy: (filter) => {
-          return driver.findBy({ model: collection.name, filter })
+          return driver.findBy({ model: collectionScheme.name, filter })
         },
         existsBy: (filter) => {
-          return driver.existsBy({ model: collection.name, filter })
+          return driver.existsBy({ model: collectionScheme.name, filter })
         },
         exists: (id) => {
-          return driver.exists({ model: collection.name, id })
+          return driver.exists({ model: collectionScheme.name, id })
         },
         count: () => {
-          return driver.count({ model: collection.name })
+          return driver.count({ model: collectionScheme.name })
         },
         // data changing
         create: (data) => {
-          return processor.create(data, collection.name)
+          return processor.create(data, collectionScheme.name)
         },
         remove: (id) => {
-          return processor.remove(id, collection.name)
+          return processor.remove(id, collectionScheme.name)
         },
         update: (id, mutate) => {
-          return processor.update(id, collection.name, mutate)
+          return processor.update(id, collectionScheme.name, mutate)
         },
         getExternalRelations: (id) => {
-          return processor.getExternalRelations(id, collection.name)
+          return processor.getExternalRelations(id, collectionScheme.name)
         }
       }
 
       // changeDiscriminator существует в рантайме у всех коллекций, но в типах открыт только у
       // дискриминированных (см. DiscriminatedExtension); на обычной коллекции бросит CoreError
-      const api = {
-        ...base,
+      const collection = {
+        ...baseCollectionApi,
         changeDiscriminator: (id: IType, nextValue: string, patch: object) => {
-          return processor.changeDiscriminator(id, collection.name, nextValue, patch)
+          return processor.changeDiscriminator(id, collectionScheme.name, nextValue, patch)
         }
       }
 
-      ;(this.collections as Record<string, unknown>)[name] = api
+      ;(this.collections as Record<string, unknown>)[name] = collection
     }
   }
 }

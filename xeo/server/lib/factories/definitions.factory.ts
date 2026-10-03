@@ -20,7 +20,9 @@ export class DefinitionsFactory<T extends CollectionScheme> {
   constructor(private dataScheme: DataScheme<T>) {}
 
   createForCollection(name: keyof T): SchemaDefinition {
-    return this.createForScheme(this.dataScheme.models[this.dataScheme.collections[name].name].scheme)
+    return this.createForScheme(
+      this.dataScheme.models[this.dataScheme.collectionsScheme[name].name].scheme
+    )
   }
 
   createForScheme(scheme: ModelScheme): SchemaDefinition {

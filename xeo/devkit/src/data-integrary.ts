@@ -31,7 +31,10 @@ interface IntegrityError {
 // }
 
 export class DevtoolsDataIntegrity<Scheme extends CollectionScheme = CollectionScheme> {
-  constructor(private dataSource: DataSource<Scheme>, private dataScheme: DataScheme<Scheme>) {}
+  constructor(
+    private dataSource: DataSource<Scheme>,
+    private dataScheme: DataScheme<Scheme>
+  ) {}
 
   async check() {
     const errors: IntegrityError[] = []
@@ -39,7 +42,7 @@ export class DevtoolsDataIntegrity<Scheme extends CollectionScheme = CollectionS
     for (const name in this.dataSource.collections) {
       const collectionName = name as keyof Scheme
 
-      const collectionInfo = this.dataScheme.collections[collectionName]
+      const collectionInfo = this.dataScheme.collectionsScheme[collectionName]
       const collection = this.dataSource.collections[collectionName]
 
       const modeldata = this.dataScheme.models[collectionInfo.name]

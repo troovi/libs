@@ -26,10 +26,7 @@ export namespace MutationEvents {
 }
 
 export type MutationEvent =
-  | MutationEvents.Create
-  | MutationEvents.Remove
-  | MutationEvents.Update
-  | MutationEvents.Replace
+  MutationEvents.Create | MutationEvents.Remove | MutationEvents.Update | MutationEvents.Replace
 
 export class BaseCollectionDriver<Scheme extends CollectionScheme> implements CollectionDriverSync {
   readonly type = 'sync'
@@ -43,22 +40,22 @@ export class BaseCollectionDriver<Scheme extends CollectionScheme> implements Co
   constructor(private dataScheme: DataScheme<Scheme>) {
     this.tables = new BaseTableDriver(dataScheme)
 
-    for (const model in dataScheme.collections) {
-      this.collections[dataScheme.collections[model].name] = new IndexedCollectionStore(
-        dataScheme.collections[model]
+    for (const model in dataScheme.collectionsScheme) {
+      this.collections[dataScheme.collectionsScheme[model].name] = new IndexedCollectionStore(
+        dataScheme.collectionsScheme[model]
       )
     }
   }
 
   bootstrap(data: { [K in keyof Scheme]: ExtractType<Scheme[K]['model']>[] }) {
     for (const key in data) {
-      this.collections[this.dataScheme.collections[key].name].initialize(data[key])
+      this.collections[this.dataScheme.collectionsScheme[key].name].initialize(data[key])
     }
   }
 
   // prettier-ignore
   subscribeCreate<K extends keyof Scheme>(name: K, callback: (data: ExtractType<Scheme[K]['model']>) => void) {
-    const model = this.dataScheme.collections[name].name
+    const model = this.dataScheme.collectionsScheme[name].name
 
     if (!this.onCreateCallbacks[model]) {
       this.onCreateCallbacks[model] = []

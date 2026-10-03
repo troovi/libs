@@ -1,7 +1,2 @@
 node_modules
 dist
-*.test.json
-.ds-sync/
-ds-bundle/
-.design-sync
-.playwright-mcp
