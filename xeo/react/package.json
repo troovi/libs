@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "echo": "echo \"@companix/xeo-react\"",
+    "echo": "echo \"@companix/xeo-react.\"",
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
     "dev": "vite --config vite.config.ts"
   },

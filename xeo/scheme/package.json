@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "echo": "echo \"@companix/xeo-scheme\"",
+    "echo": "echo \"@companix/xeo-scheme.\"",
     "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
     "dev": "tsc --noEmit && tsx ./playground/run.ts",
     "dev:browser": "vite --config vite.config.ts",
