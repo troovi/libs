@@ -1,31 +1,24 @@
-import { IOpattern } from '@companix/xeo-types'
+/**
+ * Типы для приложения, внутри toolkit не используются: HTTP-маршруты контроллеров и оболочка сервера
+ * как тип поля класса.
+ */
+import type { DomainEvent, DomainRoutes, DomainsMap } from './shell/helpers'
+import type { createServerShell } from './shell/server'
 
-type ValueOf<T> = T[keyof T]
-
-interface RoutesSource {
-  [route: string]: IOpattern<any>
-}
-
-type RoutesMap<B> = {
-  [T in keyof B]: RoutesSource
-}
-
-type PropsMap<T extends Record<string, (props: any, ...args: any) => unknown>> = {
-  [key in keyof T]: {
-    params: Parameters<T[key]>[0]
-    answer: Awaited<ReturnType<T[key]>>
+/** Маршруты HTTP: ответ сервера — событие журнала с результатом метода. */
+export type DomainApiRoutes<T extends DomainsMap> = {
+  [D in keyof T]: {
+    [M in keyof DomainRoutes<T>[D]]: {
+      params: DomainRoutes<T>[D][M]['params']
+      answer: DomainEvent<DomainRoutes<T>[D][M]['answer']>
+    }
   }
 }
 
-export type RoutesToEvents<T extends RoutesMap<unknown>> = ValueOf<{
-  [context in keyof T]: ValueOf<{
-    [service in keyof T[context]]: {
-      domain: context
-      service: service
-      payload: T[context][service]
-    }
-  }>
-}>
-
-export type DomainToRoutes<Service extends Record<string, any>> = PropsMap<Pick<Service, keyof Service>>
-export type WithLoopback<Params, T> = Params & { fallback?: T }
+/** Оболочка, собранная `createServerShell`, — тип для поля класса (например, сервиса NestJS). */
+export type ServerShell<
+  T extends DomainsMap,
+  C extends ConstructorParameters<T[keyof T]>[0],
+  Identity,
+  Actor
+> = ReturnType<typeof createServerShell<T, C, Identity, Actor>>
