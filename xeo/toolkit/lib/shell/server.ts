@@ -66,6 +66,11 @@ export interface ServerShellOptions<C, Identity, Actor> {
   serialize?: <D extends object>(document: D) => D
 }
 
+export interface RunOptions {
+  /** Момент вызова, мс; по умолчанию — сейчас. */
+  at?: number
+}
+
 const MUTATIONS = new Set(['create', 'update', 'remove', 'changeDiscriminator'])
 
 /** Коллекции, которые считают успешные записи текущего вызова (коллекция счётчиков не считается). */
@@ -129,14 +134,19 @@ export const createServerShell = <
 
   const services = initializeDomains(domains, collections)
 
-  /** Выполнить вызов от имени идентичности или системы (`null`); ответ — событие журнала. */
+  /**
+   * Выполнить вызов от имени идентичности или системы (`null`); ответ — событие журнала. `opts.at` —
+   * момент вызова вместо текущего (посев истории, проигрывание прошлого): от него же считается `today`,
+   * реплики получают его в контексте события как обычно.
+   */
   const run = <D extends keyof T & string, M extends keyof DomainRoutes<T>[D] & string>(
     call: { domain: D; method: M; params: DomainRoutes<T>[D][M]['params'] },
-    identity: Identity | null
+    identity: Identity | null,
+    opts: RunOptions = {}
   ) => {
     return queue.add(async () => {
       const actor = identity === null ? null : await options.resolveActor(identity)
-      const at = Date.now()
+      const at = opts.at ?? Date.now()
       const recording = Context.record(counter, { actor, at, today: options.today(at) })
 
       mutations = 0

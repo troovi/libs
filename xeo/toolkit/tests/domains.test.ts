@@ -274,6 +274,18 @@ describe('createServerShell', () => {
     expect(server.revision).toBe(0)
   })
 
+  it('opts.at задаёт момент вызова: он уходит в контекст события и в today', async () => {
+    const { server } = createJournal()
+    const at = Date.UTC(2026, 0, 15, 9, 30)
+    const event = await server.run({ domain: 'notes', method: 'add', params: { text: 'a' } }, null, {
+      at
+    })
+    const note = server.snapshot().then((snapshot) => snapshot.entities.note[0])
+
+    expect(event.ctx.at).toBe(at)
+    expect((await note).createdAt).toBe(at)
+  })
+
   it('снимок ждёт текущий вызов и проходит через serialize', async () => {
     const { server } = createJournal((document) => ({ ...document, serialized: true }))
     const running = server.run({ domain: 'notes', method: 'add', params: { text: 'a' } }, null)

@@ -23,6 +23,7 @@ jobs:
       xeo-react: ${{ steps.filter.outputs.xeo-react }}
       xeo-toolkit: ${{ steps.filter.outputs.xeo-toolkit }}
       xeo-types: ${{ steps.filter.outputs.xeo-types }}
+      xeo-visual: ${{ steps.filter.outputs.xeo-visual }}
       yookassa: ${{ steps.filter.outputs.yookassa }}
       max-bridge: ${{ steps.filter.outputs.max-bridge }}
       max-nestjs: ${{ steps.filter.outputs.max-nestjs }}
@@ -68,6 +69,8 @@ jobs:
               - 'xeo/toolkit/package.json'
             xeo-types:
               - 'xeo/types/package.json'
+            xeo-visual:
+              - 'xeo/visual/package.json'
 
       - run: echo '${{ toJson(github.event) }}'
 
@@ -446,5 +449,26 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: xeo/types
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  xeo-visual:
+    needs: changes
+    if: ${{ needs.changes.outputs.xeo-visual == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/xeo-visual
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: xeo/visual
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
