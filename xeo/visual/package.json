@@ -1,7 +1,7 @@
 {
   "name": "@companix/xeo-visual",
   "version": "0.1.0",
-  "description": "Интерактивная карта схемы данных xeo: модели, поля, embedded-блоки и связи по исходникам схемы",
+  "description": "Интерактивная карта схемы данных xeo: модели, поля, embedded-блоки и связи по исходникам схемы.",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
