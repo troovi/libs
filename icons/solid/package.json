@@ -1,6 +1,7 @@
 {
   "name": "@companix/icons-solid",
-  "version": "0.0.03",
+  "sideEffects": false,
+  "version": "0.0.4",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./src/index.ts",
