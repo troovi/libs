@@ -41,6 +41,11 @@ export interface MaxModuleOptions {
    * По умолчанию: `x-max-init-data`.
    */
   headerName?: string
+  /**
+   * Максимальный возраст `auth_date` init data, секунды: данные запуска старше отклоняются. Документация MAX срок
+   * не задаёт, поэтому по умолчанию возраст не проверяется.
+   */
+  maxAgeSeconds?: number
 }
 
 export interface MaxOptionsFactory {

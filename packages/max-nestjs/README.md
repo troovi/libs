@@ -14,16 +14,18 @@ npm i max-nestjs
 
 ## Подключение
 
-Подключите `MaxModule` в корневом модуле приложения:
+Подключите `MaxCoreModule` в корневом модуле приложения:
 
 ```ts
 import { Module } from '@nestjs/common'
-import { MaxModule } from 'max-nestjs'
+import { MaxCoreModule } from 'max-nestjs'
 
 @Module({
   imports: [
-    MaxModule.forRoot({
-      botToken: process.env.MAX_BOT_TOKEN!
+    MaxCoreModule.forRoot({
+      token: process.env.MAX_BOT_TOKEN!,
+      enable: true,
+      maxAgeSeconds: 86400
     })
   ]
 })
@@ -32,9 +34,11 @@ export class AppModule {}
 
 Параметры модуля:
 
-- `botToken` - токен бота MAX для валидации подписи.
+- `token` - токен бота MAX: подпись `initData` и API бота.
+- `enable` - запускать ли long polling бота (без него guard и `bot.api` работают).
 - `headerName` - имя заголовка с raw init data. По умолчанию `x-max-init-data`.
-- `maxAgeSeconds` - максимальный возраст `auth_date` в секундах. По умолчанию `3600`.
+- `maxAgeSeconds` - максимальный возраст `auth_date` в секундах. По умолчанию не проверяется: документация MAX срок
+  не задаёт.
 
 ## Использование
 
@@ -84,5 +88,5 @@ public getProfile(@MaxUser('id') userId: number) {
 - собирает `launch_params` по правилам MAX
 - вычисляет HMAC-подпись по `WebAppData`
 - сравнивает `hash`
-- проверяет срок жизни `auth_date`
+- проверяет срок жизни `auth_date`, если задан `maxAgeSeconds`
 - записывает данные в `request.maxInitData` и `request.maxUser`

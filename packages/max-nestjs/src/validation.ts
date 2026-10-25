@@ -26,6 +26,10 @@ export class MaxValidationService {
         throw new UnauthorizedException('Invalid MAX init data signature')
       }
 
+      if (this.isExpired(initData.auth_date)) {
+        throw new UnauthorizedException('MAX init data expired')
+      }
+
       return initData
     } catch (error) {
       if (error instanceof HttpException) {
@@ -34,6 +38,17 @@ export class MaxValidationService {
 
       throw new UnauthorizedException('Failed to validate Max init data')
     }
+  }
+
+  /** Данные запуска старше `maxAgeSeconds` (если он задан); `auth_date` — Unix-время в секундах. */
+  private isExpired(authDate: number) {
+    const { maxAgeSeconds } = this.options
+
+    if (maxAgeSeconds === undefined) {
+      return false
+    }
+
+    return Date.now() / 1000 - authDate > maxAgeSeconds
   }
 
   private validateInitData(entities: [string, string][], hash: string) {
