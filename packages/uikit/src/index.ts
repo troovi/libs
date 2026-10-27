@@ -90,6 +90,7 @@ export type { TextAreaProps } from './TextArea'
 
 export { DatePicker } from './DatePicker'
 export type { DatePickerProps } from './DatePicker'
+export { Calendar } from './Calendar/Calendar'
 
 export { DateInput } from './DateInput'
 export type { DateInputProps } from './DateInput'
