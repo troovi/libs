@@ -13,6 +13,24 @@
     @include mixins.use-styles(form-group, label);
   }
 
+  // подпись и содержимое у противоположного края — по общей линии текста
+  &-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+
+    .form-group-label {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  &-aside {
+    flex: none;
+  }
+
   &-caption {
     @include mixins.truncate-text();
     @include mixins.use-styles(form-group, caption);
