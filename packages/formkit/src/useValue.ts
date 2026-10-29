@@ -34,6 +34,22 @@ export const useValue = <T = any>(name: string): T => {
   return form.value
 }
 
+/**
+ * Запись значения поля изнутри формы — из раскладки или компонента схемы, которые сами полем не являются:
+ * подстановка значения у подписи, выбор, заполняющий несколько полей. Имя — полный путь поля (`contact.name`).
+ */
+export const useSetValue = <T = any>(name: string) => {
+  const manager = useContext(FormContext)
+
+  if (!manager) {
+    throw new Error('useSetValue cannot be used outside Form context')
+  }
+
+  return (value: T) => {
+    manager.setValue(name, value)
+  }
+}
+
 // prettier-ignore
 export const createUseValue = <Items extends SchemeItems.All[]>() => {
   return <FlattenValues extends ExtractFlatValues<Items[number]>, K extends keyof FlattenValues>(name: K & string): FlattenValues[K] => {

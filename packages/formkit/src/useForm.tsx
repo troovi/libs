@@ -25,7 +25,13 @@ export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedVa
   onDirty?: (event: DirtyEvent<FlattenValues>) => void
   onChangeEvent?: (event: ChangeEvent<FlattenValues>) => void
   onFormDirty?: (isDirty: boolean) => void
-  onSubmit: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
+  /**
+   * Значения формы после каждого изменения поля — у формы, которая отдаёт значения сразу, без отправки
+   * (расчёт поверх полей). Поля скрытых условий в значения не входят, как и при отправке.
+   */
+  onChange?: (values: Values) => void
+  /** Отправка после проверки полей; без неё `handleSubmit` только проверяет поля. */
+  onSubmit?: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
 }
 
 export type GetDefaultValues<Items extends SchemeItems.All[]> = DeepPartial<
@@ -59,8 +65,9 @@ const useForm = <
   useEffect(() => {
     if (managerRef.current) {
       managerRef.current.submitRef.onSubmit = opts.onSubmit
+      managerRef.current.changeRef.onChange = opts.onChange
     }
-  }, [opts.onSubmit])
+  }, [opts.onSubmit, opts.onChange])
 
   return {
     manager,

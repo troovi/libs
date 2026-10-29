@@ -27,7 +27,8 @@ export interface ResetOptions {
 }
 
 export interface FormManager<Values, FlattenValues, ClonedValues> {
-  submitRef: { onSubmit: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => void }
+  submitRef: { onSubmit?: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void> }
+  changeRef: { onChange?: (values: Values) => void }
   scheme: SchemeItems.All[]
   disabled?: boolean
   activate: () => void
@@ -55,10 +56,11 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
 
 // prettier-ignore
 export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(scheme: SchemeItems.All[], options: MainOptions<Values, Flatten, Cloned>): FormManager<Values, Flatten, Cloned> => {
-  const { onSubmit, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = options
+  const { onSubmit, onChange, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = options
 
   // can be redefined on rerenders
   const submitRef = { onSubmit }
+  const changeRef = { onChange }
 
   const state = {
     isActive: false,
@@ -105,6 +107,7 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
 
   return {
     submitRef,
+    changeRef,
     scheme,
     disabled,
     activate() {
@@ -176,6 +179,11 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       if (!isErrorsExist) {
         if (state.dirtyCount === 0 && onEqual) {
           onEqual()
+          return
+        }
+
+        // форма без отправки — её значения уходят через onChange
+        if (!submitRef.onSubmit) {
           return
         }
 
@@ -345,6 +353,9 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       anySubscribers.forEach((callback) => {
         callback()
       })
+
+      // values of the whole form
+      changeRef.onChange?.(createValues<Values>(scheme, forms))
     }
   }
 }
