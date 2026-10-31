@@ -20,17 +20,30 @@ export interface SubmitCallbacls<FlattenValues> {
 
 export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedValues> {
   disabled?: boolean
+  /**
+   * Стартовые значения полей. Поле, которому значения не дали (`undefined`), начинает с умолчания своего
+   * компонента. Поле, которое скрыло условие, значение теряет и снова показанным начинает со стартового.
+   */
   defaultValues?: DeepPartial<ClonedValues>
   onEqual?: () => void
+  /** Поле стало изменённым или снова стартовым — правкой, скрытием, `reset` и `setAsDefault`. */
   onDirty?: (event: DirtyEvent<FlattenValues>) => void
   onChangeEvent?: (event: ChangeEvent<FlattenValues>) => void
+  /**
+   * Форма стала изменённой (первое изменённое поле) или снова стартовой (последнее изменение снято): правкой полей,
+   * `reset` и `setAsDefault`.
+   */
   onFormDirty?: (isDirty: boolean) => void
   /**
    * Значения формы после каждого изменения поля — у формы, которая отдаёт значения сразу, без отправки
-   * (расчёт поверх полей). Поля скрытых условий в значения не входят, как и при отправке.
+   * (расчёт поверх полей). Поля скрытых условий в значения не входят, как и при отправке. Поля, которые
+   * изменение только что показало, входят сразу, ещё до монтирования, — со стартовым значением.
    */
   onChange?: (values: Values) => void
-  /** Отправка после проверки полей; без неё `handleSubmit` только проверяет поля. */
+  /**
+   * Отправка после проверки полей; без неё `handleSubmit` только проверяет поля. Проверяются поля, которые форма
+   * показывает: поле скрытого условия в отправку не входит, поле скрытой `visability` несёт значение без проверки.
+   */
   onSubmit?: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
 }
 
