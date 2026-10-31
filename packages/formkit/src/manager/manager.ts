@@ -26,8 +26,11 @@ export interface ResetOptions {
   asDirty?: boolean
 }
 
-export interface FormManager<Values, FlattenValues, ClonedValues> {
-  submitRef: { onSubmit?: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void> }
+export interface FormManager<Values, FlattenValues, ClonedValues, SubmitValues = Values> {
+  // значения отправки — после проверки полей: обязательное поле без null и undefined
+  submitRef: {
+    onSubmit?: (values: SubmitValues, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
+  }
   changeRef: { onChange?: (values: Values) => void }
   scheme: SchemeItems.All[]
   disabled?: boolean
@@ -57,7 +60,7 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
 }
 
 // prettier-ignore
-export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(scheme: SchemeItems.All[], options: MainOptions<Values, Flatten, Cloned>): FormManager<Values, Flatten, Cloned> => {
+export const createFormManager = <Values extends FieldValues, Flatten, Cloned, Submit = Values>(scheme: SchemeItems.All[], options: MainOptions<Values, Flatten, Cloned, Submit>): FormManager<Values, Flatten, Cloned, Submit> => {
   const { onSubmit, onChange, onEqual, disabled, onDirty, onFormDirty, onChangeEvent, defaultValues } = options
 
   // can be redefined on rerenders
@@ -205,7 +208,8 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
           return
         }
 
-        const values = createValues<Values>(scheme, forms)
+        // проверка прошла: обязательные поля без пустого — значения отправки
+        const values = createValues<Submit>(scheme, forms)
 
         await submitRef.onSubmit(values, {
           setError: (name, error) => {

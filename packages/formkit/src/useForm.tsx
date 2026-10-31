@@ -1,6 +1,6 @@
 import { useRef, useMemo, useEffect } from 'react'
 
-import { ExtractValues, ExtractFlatValues } from './core/extract'
+import { ExtractValues, ExtractSubmitValues, ExtractFlatValues } from './core/extract'
 import { SchemeBuilder } from './SchemeBuilder'
 import { SchemeItems } from './core/types'
 import { FormManager, ResetOptions, createFormManager } from './manager/manager'
@@ -18,7 +18,8 @@ export interface SubmitCallbacls<FlattenValues> {
   setError: SetError<FlattenValues>
 }
 
-export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedValues> {
+// prettier-ignore
+export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedValues, SubmitValues = Values> {
   disabled?: boolean
   /**
    * Стартовые значения полей. Поле, которому значения не дали (`undefined`), начинает с умолчания своего
@@ -43,8 +44,9 @@ export interface MainOptions<Values extends FieldValues, FlattenValues, ClonedVa
   /**
    * Отправка после проверки полей; без неё `handleSubmit` только проверяет поля. Проверяются поля, которые форма
    * показывает: поле скрытого условия в отправку не входит, поле скрытой `visability` несёт значение без проверки.
+   * Обязательное поле (`required: true`) приходит без `null` и `undefined` — так и в типе значений.
    */
-  onSubmit?: (values: Values, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
+  onSubmit?: (values: SubmitValues, callbacks: SubmitCallbacls<FlattenValues>) => Promise<void>
 }
 
 export type GetDefaultValues<Items extends SchemeItems.All[]> = DeepPartial<
@@ -62,12 +64,13 @@ const useForm = <
   Items extends SchemeItems.All[],
   Values extends ExtractValues<Items[number]>,
   FlattenValues extends ExtractFlatValues<Items[number]>,
-  Cloned extends Copy<Values>
+  Cloned extends Copy<Values>,
+  SubmitValues extends ExtractSubmitValues<Items[number]>
 >(
   scheme: Items,
-  opts: MainOptions<Values, FlattenValues, Cloned>
+  opts: MainOptions<Values, FlattenValues, Cloned, SubmitValues>
 ) => {
-  const managerRef = useRef<FormManager<Values, FlattenValues, Cloned> | null>(null)
+  const managerRef = useRef<FormManager<Values, FlattenValues, Cloned, SubmitValues> | null>(null)
 
   if (managerRef.current === null) {
     managerRef.current = createFormManager(scheme, opts)

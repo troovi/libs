@@ -9,10 +9,13 @@ export interface FieldError {
 export namespace SchemeItems {
   export type All = Form | Layout | Context | Condition | Extra | Visablility
 
-  export interface Form<N extends string = string, V extends any = any, P extends any = any> {
+  // prettier-ignore
+  export interface Form<N extends string = string, V extends any = any, P extends any = any, R extends boolean = boolean> {
     type: 'form'
     name: N
     defaultValue: V
+    /** Поле обязательное (`$rules.required`): в значениях отправки оно без `null` и `undefined`. */
+    required: R
     validate: (value: V) => FieldError | void
     Form: ReturnType<FormBuilder<P, V>['getForm']>
   }

@@ -18,9 +18,13 @@ export interface FormControl<V> {
   error: FieldError | null
 }
 
-export interface Rules<V> {
+export interface Rules<V, R extends boolean = boolean> {
   $rules?: {
-    required?: boolean
+    /**
+     * Поле обязательное: пустое не проходит проверку, и в значениях отправки поле без `null` и `undefined`. Сужает
+     * тип только литерал `true`; флаг-переменная (`boolean`) оставляет тип как есть.
+     */
+    required?: R
     /**
      *  Validation will execute only after satisfies the required condition
      */
@@ -35,7 +39,9 @@ export interface FormBuilder<P, V> {
 }
 
 export const createForm = <V, P>(builder: FormBuilder<P, V>) => {
-  return <N extends string>(name: N, params: P & Rules<V>): SchemeItems.Form<N, V, P> => {
+  // R — только из $rules: без NoInfer раскладка и контекст, куда поставлено поле, расширяют true до boolean
+  // prettier-ignore
+  return <N extends string, R extends boolean = false>(name: N, params: P & Rules<V, R>): SchemeItems.Form<N, V, P, NoInfer<R>> => {
     const check = builder.getRequireCheck(params)
 
     const { $rules = {}, ...clientParams } = params
@@ -45,10 +51,17 @@ export const createForm = <V, P>(builder: FormBuilder<P, V>) => {
       type: 'form',
       name,
       defaultValue: builder.defaultValue,
+      required: (required ?? false) as R,
       Form: builder.getForm(clientParams as P),
       validate: (value) => {
         // required case
         if (required) {
+          // пустое (null, undefined) обязательное поле не проходит при любом примитиве: на этом держится тип
+          // значений отправки
+          if (value === null || value === undefined) {
+            return { error: true }
+          }
+
           const error = getError(() => check(value))
 
           if (error) {
