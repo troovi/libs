@@ -5,6 +5,20 @@ import { SchemeItems } from '../core/types'
 type cb = (item: SchemeItems.Form, name: string, value?: any) => void
 type shownCb = (name: string) => void
 
+// у имён ветки NullableCondition null — отсутствие данных, а не значение поля: поле получит стартовым умолчание
+// компонента, как без данных
+const omitNulls = (values: FieldValues) => {
+  const result: FieldValues = {}
+
+  for (const name in values) {
+    if (values[name] !== null) {
+      result[name] = values[name]
+    }
+  }
+
+  return result
+}
+
 const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValues, callback: cb) => {
   scheme.forEach((item) => {
     if (item.type === 'form') {
@@ -16,8 +30,13 @@ const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValu
       return
     }
 
-    if (item.type === 'layout' || item.type === 'condition' || item.type === 'visability') {
+    if (item.type === 'layout' || item.type === 'visability') {
       readScheme(item.childs, path, values, callback)
+      return
+    }
+
+    if (item.type === 'condition') {
+      readScheme(item.childs, path, item.nullable ? omitNulls(values) : values, callback)
       return
     }
 

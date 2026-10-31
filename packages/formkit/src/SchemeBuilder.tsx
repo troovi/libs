@@ -1,4 +1,4 @@
-import { Condition } from './Condition'
+import { ConditionBranch } from './ConditionBranch'
 import { Form } from './Form'
 import { SchemeItems } from './core/types'
 import { ExtraScheme } from './Extra'
@@ -32,13 +32,13 @@ export const SchemeBuilder = ({ scheme, path }: SchemeBuilderProps) => {
 
         if (Item.type === 'condition') {
           return (
-            <Condition
+            <ConditionBranch
               key={`condition--${k}-${Item.depended}-${path.length}`}
               name={Item.depended}
               canActivate={Item.canActivate}
             >
               <SchemeBuilder path={path} scheme={Item.childs} />
-            </Condition>
+            </ConditionBranch>
           )
         }
 

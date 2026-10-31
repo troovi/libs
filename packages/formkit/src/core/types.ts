@@ -41,10 +41,12 @@ export namespace SchemeItems {
     getForm: <Q extends N>(name: Q, remove: () => void) => T
   }
 
-  export interface Condition<T extends All[] = All[]> {
+  export interface Condition<T extends All[] = All[], Nullable extends boolean = boolean> {
     type: 'condition'
     depended: string
     canActivate: (value: any) => boolean
+    /** Скрытая ветка не пропадает из значений, а отдаёт `null` своим именам — `NullableCondition`. */
+    nullable: Nullable
     childs: T
   }
 

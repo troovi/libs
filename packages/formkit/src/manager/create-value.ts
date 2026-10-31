@@ -15,6 +15,23 @@ interface Props {
   shown: boolean
 }
 
+/** Скрытая ветка `NullableCondition`: её имена — поля и контексты уровня ветки — получают `null`. */
+const writeNulls = (scheme: SchemeItems.All[], values: FieldValues) => {
+  scheme.forEach((item) => {
+    if (item.type === 'form') {
+      values[item.name] = null
+    }
+
+    if (item.type === 'context') {
+      values[item.context] = null
+    }
+
+    if (item.type === 'layout' || item.type === 'condition' || item.type === 'visability') {
+      writeNulls(item.childs, values)
+    }
+  })
+}
+
 const iterate = ({ scheme, values, path, forms, shown }: Props) => {
   scheme.forEach((item) => {
     if (item.type === 'form') {
@@ -59,6 +76,10 @@ const iterate = ({ scheme, values, path, forms, shown }: Props) => {
       if (item.canActivate(value)) {
         iterate({ scheme: item.childs, path, values, forms, shown })
         return
+      }
+
+      if (item.nullable) {
+        writeNulls(item.childs, values)
       }
     }
 

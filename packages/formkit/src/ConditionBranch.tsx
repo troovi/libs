@@ -6,7 +6,8 @@ interface Props {
   children: React.ReactNode
 }
 
-export const Condition = ({ canActivate, name, children }: Props) => {
+/** Ветка `OptionalCondition` или `NullableCondition`: рисуется, пока `canActivate` верно для значения поля `name`. */
+export const ConditionBranch = ({ canActivate, name, children }: Props) => {
   const value = useValue(name)
 
   if (canActivate(value)) {

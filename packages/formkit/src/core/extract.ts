@@ -1,12 +1,17 @@
 import { SchemeItems } from './types'
 import { Compute, UnionToIntersection } from '../utils/typescript'
 
+// имена ветки NullableCondition: скрытая ветка отдаёт им null
+type OrNull<T> = { [K in keyof T]: T[K] | null }
+
 type ExtractValue<T> = T extends SchemeItems.Form<infer N, infer V>
   ? { [K in N]: V }
   : T extends SchemeItems.Layout<infer C>
   ? ExtractValue<C[number]>
   : T extends SchemeItems.Context<infer N, infer C>
   ? { [K in N]: Compute<UnionToIntersection<ExtractValue<C[number]>>> }
+  : T extends SchemeItems.Condition<infer C, true>
+  ? OrNull<ExtractValue<C[number]>>
   : T extends SchemeItems.Condition<infer C>
   ? Partial<ExtractValue<C[number]>>
   : T extends SchemeItems.Visablility<infer C>
