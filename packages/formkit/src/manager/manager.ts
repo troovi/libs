@@ -34,6 +34,8 @@ export interface FormManager<Values, FlattenValues, ClonedValues> {
   activate: () => void
   disactivate: () => void
   handleSubmit: () => Promise<void>
+  // тихая проверка: пройдёт ли форма handleSubmit — без ошибок у полей, фокуса и перерисовки
+  isValid: () => boolean
   registry: (name: string, callback: () => void) => { unregistry: () => void }
   subscribeToForm: <K extends keyof FlattenValues>(
     name: K & string,
@@ -115,6 +117,19 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
     }
   }
 
+  // ошибки полей, которые форма показывает, — со значением, с которым она их покажет (как createValues):
+  // скрытое поле в отправку не входит, а его ошибку не увидеть и не исправить. Общий обход handleSubmit и isValid
+  const readErrors = (callback: (name: string, error: FieldError) => void) => {
+    readShown(scheme, [], forms, (name) => {
+      const { value, startValue, validate } = forms[name]
+      const error = validate(value === undefined ? startValue : value)
+
+      if (error) {
+        callback(name, error)
+      }
+    })
+  }
+
   return {
     submitRef,
     changeRef,
@@ -165,25 +180,17 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
       let isFocusSetted = false
       let isErrorsExist = false
 
-      // validating: проверяются поля, которые форма показывает, — скрытое поле в отправку не входит,
-      // а его ошибку не увидеть и не исправить
-      readShown(scheme, [], forms, (name) => {
+      readErrors((name, error) => {
         const item = forms[name]
 
-        if (item.value !== undefined) {
-          const error = item.validate(item.value)
+        isErrorsExist = true
 
-          if (error) {
-            isErrorsExist = true
+        item.error = error
+        item.rerender()
 
-            item.error = error
-            item.rerender()
-
-            if (!isFocusSetted && item.focus) {
-              item.focus()
-              isFocusSetted = true
-            }
-          }
+        if (!isFocusSetted && item.focus) {
+          item.focus()
+          isFocusSetted = true
         }
       })
 
@@ -215,6 +222,15 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned>(s
           console.log('[formkit] submit exception:', e)
         })
       }
+    },
+    isValid() {
+      let isValid = true
+
+      readErrors(() => {
+        isValid = false
+      })
+
+      return isValid
     },
     reset(values, { asDirty }) {
       readScheme(scheme, [], values, (form, name, value) => {

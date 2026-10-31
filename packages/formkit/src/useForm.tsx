@@ -111,6 +111,10 @@ const useForm = <
     handleSubmit: async () => {
       await manager.handleSubmit()
     },
+    // тихая проверка: пройдёт ли форма handleSubmit — без ошибок у полей, фокуса и перерисовки
+    isValid: () => {
+      return manager.isValid()
+    },
     // prettier-ignore
     subscribe: <K extends keyof FlattenValues>(name: K & string, callback: (value: FlattenValues[K], prevValue: FlattenValues[K]) => void) => {
       return manager.subscribeToForm(name, callback)
