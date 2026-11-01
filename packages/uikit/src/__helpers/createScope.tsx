@@ -40,14 +40,28 @@ export const createScope = <T,>(defaultValue: T): [ScopeProvider<T>, () => Scope
   return [Provider, useScope, (value) => store.setValue(value)]
 }
 
-// prettier-ignore
-export const createStaticScope = <T,>(defaultValue: T): [ (props: { children: React.ReactNode; value: T }) => JSX.Element, () => T] => {
-  const context = createContext<T>(defaultValue)
+/** Значение контекста вне провайдера: по нему хук области узнаёт, что вызван не в ней. */
+const OUTSIDE = Symbol('outside')
 
-  return [
-    ({ value, children }) => {
-      return <context.Provider value={value}>{children}</context.Provider>
-    },
-    () => useContext(context)
-  ]
+/**
+ * Область с неизменным значением — идентификатор записи, движок экрана. Провайдер — сам `Provider` контекста
+ * (`<Scope value={…}>`), без обёртки; хук отдаёт значение и бросает ошибку, если вызван вне провайдера. `name` — имя
+ * области в ошибке и в React DevTools.
+ */
+export const createStaticScope = <T,>(name: string): [React.Provider<T>, () => T] => {
+  const context = createContext<T | typeof OUTSIDE>(OUTSIDE)
+
+  context.displayName = name
+
+  const useScope = () => {
+    const value = useContext(context)
+
+    if (value === OUTSIDE) {
+      throw new Error(`${name}: хук области вызван вне её провайдера`)
+    }
+
+    return value
+  }
+
+  return [context.Provider as React.Provider<T>, useScope]
 }

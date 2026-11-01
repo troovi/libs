@@ -13,6 +13,7 @@ jobs:
       utils-nodejs: ${{ steps.filter.outputs.utils-nodejs }}
       utils-math: ${{ steps.filter.outputs.utils-math }}
       repulse: ${{ steps.filter.outputs.repulse }}
+      statekit: ${{ steps.filter.outputs.statekit }}
       formkit: ${{ steps.filter.outputs.formkit }}
       uikit: ${{ steps.filter.outputs.uikit }}
       icons-solid: ${{ steps.filter.outputs.icons-solid }}
@@ -43,6 +44,8 @@ jobs:
               - 'packages/utils-math/package.json'
             repulse:
               - 'packages/repulse/package.json'
+            statekit:
+              - 'packages/statekit/package.json'
             formkit:
               - 'packages/formkit/package.json'
             uikit:
@@ -239,6 +242,27 @@ jobs:
       - run: npm run github:setup
       - run: npm publish --access public
         working-directory: packages/repulse
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  statekit:
+    needs: changes
+    if: ${{ needs.changes.outputs.statekit == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build --workspace=@companix/statekit
+      - run: npm run github:setup
+      - run: npm publish --access public
+        working-directory: packages/statekit
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
