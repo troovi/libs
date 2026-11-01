@@ -24,6 +24,13 @@ export interface Filter<T> {
   filter?: (item: T) => boolean
 }
 
+/** Копия сущности `useEntitySnapshot` и то, по чему она снята. */
+interface EntitySnapshot<Scheme extends CollectionScheme, K extends keyof Scheme> {
+  collection: K
+  id?: IdType<Scheme, K>
+  entity: ModelType<Scheme, K> | null
+}
+
 // ---------------------------------------------------------------------------
 // createStore
 // ---------------------------------------------------------------------------
@@ -83,6 +90,32 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
 
     const entity: ModelType<Scheme, K> | null = id === undefined ? null : getCollection(collection).get(id)
     return entity !== null ? createEntityProxy(entity, fieldsRef.current) : null
+  }
+
+  // -------------------------------------------------------------------------
+  // useEntitySnapshot — own copy of an entity at mount, no reactivity
+  // -------------------------------------------------------------------------
+
+  /**
+   * Своя версия сущности: глубокая копия на момент первого рендера, без подписки на изменения. Для формы, которая
+   * работает со своей версией и сравнивает правку с ней, а не с живой сущностью: драйвер меняет записи на месте, и
+   * прочитанный объект — не снимок. Новая копия — при смене коллекции или `id`; сущности не было — `null`, пока
+   * `id` тот же.
+   */
+  // prettier-ignore
+  const useEntitySnapshot = <K extends keyof Scheme>(collection: K, id?: IdType<Scheme, K>): ModelType<Scheme, K> | null => {
+    const snapshotRef = useRef<EntitySnapshot<Scheme, K> | null>(null)
+    const current = snapshotRef.current
+
+    if (current && current.collection === collection && current.id === id) {
+      return current.entity
+    }
+
+    const entity: ModelType<Scheme, K> | null = id === undefined ? null : getCollection(collection).get(id)
+    const copy = entity !== null ? structuredClone(entity) : null
+
+    snapshotRef.current = { collection, id, entity: copy }
+    return copy
   }
 
   // prettier-ignore
@@ -248,6 +281,7 @@ export const createDataSourceHooks = <Scheme extends CollectionScheme>(
 
   return {
     useEntity,
+    useEntitySnapshot,
     useEntities,
     useField,
     useAll,
