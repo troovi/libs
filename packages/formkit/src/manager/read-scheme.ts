@@ -19,7 +19,8 @@ const omitNulls = (values: FieldValues) => {
   return result
 }
 
-const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValues, callback: cb) => {
+// prettier-ignore
+export const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValues, callback: cb) => {
   scheme.forEach((item) => {
     if (item.type === 'form') {
       callback(item, [...path, item.name].join('.'), values[item.name])
@@ -48,11 +49,19 @@ const readScheme = (scheme: SchemeItems.All[], path: string[], values: FieldValu
   })
 }
 
+/** Ветка условия показана: по значению его поля, а у условия без поля — по ответу при создании схемы. */
+export const isConditionActive = (item: SchemeItems.Condition, forms: Forms) => {
+  const value = item.depended === null ? undefined : forms[item.depended]?.value
+
+  return item.canActivate(value)
+}
+
+// prettier-ignore
 /**
  * Обход полей, которые форма показывает: ветки активных условий и нескрытой visability, добавленные поля
  * extraForm — у них отсутствие значения означает, что поля нет.
  */
-const readShown = (scheme: SchemeItems.All[], path: string[], forms: Forms, callback: shownCb) => {
+export const readShown = (scheme: SchemeItems.All[], path: string[], forms: Forms, callback: shownCb) => {
   scheme.forEach((item) => {
     if (item.type === 'form') {
       callback([...path, item.name].join('.'))
@@ -73,7 +82,7 @@ const readShown = (scheme: SchemeItems.All[], path: string[], forms: Forms, call
       return
     }
 
-    if (item.type === 'condition' && item.canActivate(forms[item.depended]?.value)) {
+    if (item.type === 'condition' && isConditionActive(item, forms)) {
       readShown(item.childs, path, forms, callback)
       return
     }
@@ -87,5 +96,3 @@ const readShown = (scheme: SchemeItems.All[], path: string[], forms: Forms, call
     }
   })
 }
-
-export { readScheme, readShown }

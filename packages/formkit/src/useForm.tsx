@@ -53,14 +53,7 @@ export type GetDefaultValues<Items extends SchemeItems.All[]> = DeepPartial<
   ExtractValues<Items[number]>
 >
 
-const useDynamicForm = (
-  scheme: SchemeItems.All[],
-  opts: MainOptions<FieldValues, FieldValues, FieldValues>
-) => {
-  return useForm(scheme as [], opts)
-}
-
-const useForm = <
+export const useForm = <
   Items extends SchemeItems.All[],
   Values extends ExtractValues<Items[number]>,
   FlattenValues extends ExtractFlatValues<Items[number]>,
@@ -154,5 +147,3 @@ export const FormLayout = ({ manager }: Props) => {
     </FormContext.Provider>
   )
 }
-
-export { useForm, useDynamicForm }

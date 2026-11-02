@@ -1,6 +1,7 @@
 import { FieldValues } from '../types'
 import { SchemeItems } from '../core/types'
 import { Forms } from './manager'
+import { isConditionActive } from './read-scheme'
 
 interface Props {
   scheme: SchemeItems.All[]
@@ -71,9 +72,7 @@ const iterate = ({ scheme, values, path, forms, shown }: Props) => {
     }
 
     if (item.type === 'condition') {
-      const value = forms[item.depended]?.value
-
-      if (item.canActivate(value)) {
+      if (isConditionActive(item, forms)) {
         iterate({ scheme: item.childs, path, values, forms, shown })
         return
       }

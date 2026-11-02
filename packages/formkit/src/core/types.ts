@@ -46,7 +46,8 @@ export namespace SchemeItems {
 
   export interface Condition<T extends All[] = All[], Nullable extends boolean = boolean> {
     type: 'condition'
-    depended: string
+    /** Поле условия — полный путь; `null` — условие по значению вне формы, ответ известен при создании схемы. */
+    depended: string | null
     canActivate: (value: any) => boolean
     /** Скрытая ветка не пропадает из значений, а отдаёт `null` своим именам — `NullableCondition`. */
     nullable: Nullable

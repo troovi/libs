@@ -31,6 +31,17 @@ export const SchemeBuilder = ({ scheme, path }: SchemeBuilderProps) => {
         }
 
         if (Item.type === 'condition') {
+          // условие без поля: ответ известен при создании схемы, подписываться не на что
+          if (Item.depended === null) {
+            if (!Item.canActivate(undefined)) {
+              return null
+            }
+
+            return (
+              <SchemeBuilder key={`condition--${k}-${path.length}`} path={path} scheme={Item.childs} />
+            )
+          }
+
           return (
             <ConditionBranch
               key={`condition--${k}-${Item.depended}-${path.length}`}
