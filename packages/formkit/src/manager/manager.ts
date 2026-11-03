@@ -84,6 +84,11 @@ export const createFormManager = <Values extends FieldValues, Flatten, Cloned, S
   }
 
   readScheme(scheme, [], defaultValues ?? {}, (form, name, defaultValue) => {
+    // одно поле на путь: второе объявление, даже в другой ветке условия, отдало бы обеим свои правила и умолчание
+    if (forms[name]) {
+      throw new Error(`[formkit] field "${name}" is declared twice in the scheme`)
+    }
+
     forms[name] = {
       error: null,
       isDirty: false,
