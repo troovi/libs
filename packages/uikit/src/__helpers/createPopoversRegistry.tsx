@@ -16,12 +16,21 @@ type PopoversStore<T extends Store> = {
   [P in keyof T]: (props: Omit<PopoverProps, 'content'> & (UnwrapProps<T[P]> extends never ? { data?: unknown } : { data: UnwrapProps<T[P]> })) => JSX.Element
 }
 
+/**
+ * Реестр поповеров: поповер — компонент с `{ data, close }`, место вызова оборачивает им триггер. Содержимое рисуется
+ * элементом, а не вызовом функции: Radix монтирует его только у открытого поповера, поэтому хуки поповера живут от
+ * открытия до закрытия — состояние начинается заново при каждом открытии, а очистка эффектов срабатывает при закрытии.
+ */
 export const createPopoversRegistry = <T extends Store>(mapping: T) => {
   const Popovers = {} as PopoversStore<T>
 
   for (const name in mapping) {
+    const Content: PopoverSignature = mapping[name]
+
     Popovers[name] = ({ data, ...popoverProps }) => {
-      return <Popover content={({ close }) => mapping[name]({ data, close })} {...popoverProps} />
+      return (
+        <Popover content={({ close }) => <Content data={data} close={close} />} {...popoverProps} />
+      )
     }
   }
 
