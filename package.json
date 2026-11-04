@@ -3,7 +3,8 @@
   "workspaces": [
     "packages/*",
     "icons/*",
-    "xeo/*"
+    "xeo/*",
+    "xeo/scheme/sandbox"
   ],
   "scripts": {
     "github:setup": "node ./setup.js",

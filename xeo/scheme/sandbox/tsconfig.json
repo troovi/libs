@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node", "multer"],
+    "baseUrl": ".",
+    "paths": {
+      "@companix/xeo-scheme": ["../lib/index.ts"],
+      "@companix/xeo-toolkit": ["../../toolkit/lib/index.ts"],
+      "@companix/xeo-toolkit/dist/schemaOf": ["../../toolkit/lib/schemaOf.ts"],
+      "@companix/xeo-react": ["../../react/lib/index.ts"]
+    }
+  },
+  "include": [
+    "app",
+    "server",
+    "scripts",
+    "versions",
+    "../lib/globals.d.ts",
+    "../../toolkit/lib/globals.d.ts",
+    "../../react/lib/globals.d.ts"
+  ]
+}

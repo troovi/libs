@@ -1,0 +1,22 @@
+// Стили приложения песочницы одной sass-компиляцией: сброс, тема uikit `classic` (токены копятся в карте
+// модуля `src/theme.scss` и нужны его компонентам), стили uikit, токены песочницы и блоки kit.
+@use './preflight.scss';
+@use '@companix/uikit/themes/classic/theme.scss';
+@use '@companix/uikit/src/index.scss' as uikit;
+@use './tokens.scss';
+@use './components/index.scss' as components;
+
+html {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  color: var(--text-primary);
+  background-color: var(--root-bg);
+}

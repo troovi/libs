@@ -1,0 +1,51 @@
+// Страница приложения: ссылка назад над заголовком, заголовок с числом справа, блоки столбцом.
+.app-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &-back {
+    align-self: flex-start;
+    margin-bottom: -6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--theme-primary-color);
+    }
+  }
+
+  &-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &-aside {
+    color: var(--text-secondary);
+  }
+
+  &-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  &-empty {
+    padding: 32px 0;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+}
