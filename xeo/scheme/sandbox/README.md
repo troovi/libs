@@ -48,7 +48,9 @@ sandbox/
 
 1. Скопировать `versions/v-0.1.32` в `versions/<key>` — без `node_modules`.
 2. Переименовать пакет в `package.json` версии и задать её библиотеку: другие опубликованные пакеты или свой
-   набросок (`lib/`); затем `npm install` в корне libs.
+   набросок (`lib/`); затем `npm install` в корне libs. Версия — отдельный пакет: всё, что она импортирует (React,
+   роутер, formkit, zod, NestJS), объявлено в её `package.json` теми же диапазонами, что у песочницы, — этого ждёт
+   правило `import/no-extraneous-dependencies`, а npm сводит их к общим копиям.
 3. Заменить ключ версии там, где он записан в коде: `client/data.ts` (`BASE_URL`), `client/App/index.tsx` (`basename`
    роутера), `client/index.tsx` (`version` экрана), `xeo-visual.config.ts` (заголовок зоны карты). Имена серверного
    модуля и контроллера (`VersionModule`, `VersionController`) у всех версий одни — хост различает их импортом.

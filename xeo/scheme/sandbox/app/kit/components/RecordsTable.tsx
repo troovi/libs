@@ -30,7 +30,11 @@ export const RecordsTable = <T extends object>({ rows, onRowClick }: RecordsTabl
             const value = row[column]
             const text = value === undefined ? '' : format.value(value)
 
-            return <span title={text}>{text}</span>
+            return (
+              <span key={`cell-${String(column)}`} title={text}>
+                {text}
+              </span>
+            )
           })
         }}
       />

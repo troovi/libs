@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common'
-import { Response } from 'express'
+import type { Response } from 'express'
 
 /**
  * Общий фильтр хоста: HTTP-исключения — как есть, остальное — 500 с записью в лог. Отказы библиотеки (ошибка
