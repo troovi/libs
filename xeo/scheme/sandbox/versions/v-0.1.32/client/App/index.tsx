@@ -50,7 +50,7 @@ const router = createBrowserRouter(
       ]
     }
   ],
-  { basename: '/v-current' }
+  { basename: '/v-0.1.32' }
 )
 
 /** Клиентское приложение версии: страницы списков и записей на react-router, данные — хуки реплики. */

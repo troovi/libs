@@ -10,9 +10,9 @@ export interface VersionEntry {
 /** Реестр клиентов версий; серверные модули — `server/versions.ts`. */
 export const versions: VersionEntry[] = [
   {
-    key: 'v-current',
-    title: 'v-current — текущая библиотека',
+    key: 'v-0.1.32',
+    title: 'v-0.1.32 — опубликованная библиотека',
     description: `Точка отсчёта: полный снимок базы при входе, повтор событий журнала над локальной базой, синхронные хуки. Показывает, что приложение держит локально и сколько это стоит.`,
-    load: () => import('../versions/v-current/client')
+    load: () => import('../versions/v-0.1.32/client')
   }
 ]

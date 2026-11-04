@@ -4,7 +4,7 @@
  * исходников под `tsx`, как на сервере песочницы; CLI `xeo-visual` для этого понадобился бы `ts-node`. Зовёт
  * `scripts/visual.js` — процесс на версию.
  *
- *   npx tsx scripts/visual-build.ts versions/v-current/xeo-visual.config.ts
+ *   npx tsx scripts/visual-build.ts versions/v-0.1.32/xeo-visual.config.ts
  */
 import { mkdirSync, writeFileSync } from 'fs'
 import { dirname, join, relative, resolve } from 'path'

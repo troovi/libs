@@ -1,0 +1,11 @@
+{
+  "name": "@companix/xeo-sandbox-v-0.1.32",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Версия песочницы на опубликованных xeo-scheme 0.1.32, xeo-toolkit 0.1.1 и xeo-react 0.1.3",
+  "dependencies": {
+    "@companix/xeo-react": "https://registry.npmjs.org/@companix/xeo-react/-/xeo-react-0.1.3.tgz",
+    "@companix/xeo-scheme": "https://registry.npmjs.org/@companix/xeo-scheme/-/xeo-scheme-0.1.32.tgz",
+    "@companix/xeo-toolkit": "https://registry.npmjs.org/@companix/xeo-toolkit/-/xeo-toolkit-0.1.1.tgz"
+  }
+}

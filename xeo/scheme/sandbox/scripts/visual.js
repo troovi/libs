@@ -2,8 +2,8 @@
  * Карты схем версий (`@companix/xeo-visual`): каждая версия с `xeo-visual.config.ts` собирается в своём процессе —
  * декораторы xeo регистрируют модели в глобальном хранилище, и две схемы в одном процессе задвоили бы его.
  *
- *   npm run visual -w=@companix/xeo-sandbox               # все версии
- *   npm run visual -w=@companix/xeo-sandbox -- v-current  # одна
+ *   npm run visual -w=@companix/xeo-sandbox              # все версии
+ *   npm run visual -w=@companix/xeo-sandbox -- v-0.1.32  # одна
  */
 const { spawnSync } = require('child_process')
 const fs = require('fs')

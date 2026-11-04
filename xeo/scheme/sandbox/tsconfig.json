@@ -12,22 +12,8 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node", "multer"],
-    "baseUrl": ".",
-    "paths": {
-      "@companix/xeo-scheme": ["../lib/index.ts"],
-      "@companix/xeo-toolkit": ["../../toolkit/lib/index.ts"],
-      "@companix/xeo-toolkit/dist/schemaOf": ["../../toolkit/lib/schemaOf.ts"],
-      "@companix/xeo-react": ["../../react/lib/index.ts"]
-    }
+    "types": ["node", "multer"]
   },
-  "include": [
-    "app",
-    "server",
-    "scripts",
-    "versions",
-    "../lib/globals.d.ts",
-    "../../toolkit/lib/globals.d.ts",
-    "../../react/lib/globals.d.ts"
-  ]
+  "include": ["app", "server", "scripts", "versions"],
+  "exclude": ["versions/*/node_modules"]
 }

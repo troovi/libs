@@ -4,17 +4,12 @@
  * `network` kit — их видит панель Networks. Рядом — состояние подключения.
  */
 import { createStore, network } from '../../../app/kit'
-import {
-  DataSource,
-  DomainsTransport,
-  createBaseDriver,
-  createClientShell,
-  createDataSourceHooks
-} from '../lib'
+import { DataSource, DomainsTransport, createBaseDriver, createClientShell } from '../lib'
+import { createDataSourceHooks } from '../lib/react'
 import { appDomains } from '../core/domains'
 import { dataScheme } from '../core/scheme'
 
-export const BASE_URL = '/api/v-current'
+export const BASE_URL = '/api/v-0.1.32'
 
 export const dataSource = new DataSource(dataScheme, {
   createDriver: createBaseDriver

@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common'
-import { CurrentModule } from '../versions/v-current/server/current.module'
+import { VersionModule as V0132Module } from '../versions/v-0.1.32/server/version.module'
 
 export interface ServerVersion {
   /** Ключ версии — префикс маршрутов и папка `versions/<key>`. */
@@ -8,4 +8,4 @@ export interface ServerVersion {
 }
 
 /** Реестр серверных модулей версий; клиентские — `app/versions.ts`. */
-export const versions: ServerVersion[] = [{ key: 'v-current', module: CurrentModule }]
+export const versions: ServerVersion[] = [{ key: 'v-0.1.32', module: V0132Module }]

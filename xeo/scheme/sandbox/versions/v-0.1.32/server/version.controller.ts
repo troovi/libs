@@ -1,14 +1,27 @@
-import { Body, Controller, Get, Headers, Inject, MessageEvent, Param, Post, Sse } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Inject,
+  MessageEvent,
+  Param,
+  Post,
+  Sse,
+  UseFilters
+} from '@nestjs/common'
 import { Observable, map } from 'rxjs'
+import { DomainExceptionsFilter } from './domain-exceptions.filter'
 import { JournalService } from './journal.service'
 
 /**
- * Протокол текущей версии — как у CRM: `POST domains/<domain>/<method>` → событие журнала, `GET
+ * Протокол версии — как у CRM: `POST domains/<domain>/<method>` → событие журнала, `GET
  * snapshot` — вся база, поток событий всем подключённым — SSE вместо сокета (той же односторонней
  * природы, без зависимостей). `POST reset` — песочнице: база заново, с посевом.
  */
 @Controller()
-export class CurrentController {
+@UseFilters(DomainExceptionsFilter)
+export class VersionController {
   constructor(@Inject(JournalService) private readonly journal: JournalService) {}
 
   @Post('domains/:domain/:method')

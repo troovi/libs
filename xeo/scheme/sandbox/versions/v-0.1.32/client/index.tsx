@@ -27,7 +27,7 @@ export const Screen = () => {
 
   return (
     <SandboxScreen
-      version="v-current"
+      version="v-0.1.32"
       onReset={resetBase}
       banner={status.kind === 'resync' && <ResyncBanner reason={status.reason} />}
       domains={<DomainsPanel groups={domainForms} />}

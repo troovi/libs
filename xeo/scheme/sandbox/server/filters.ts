@@ -1,12 +1,9 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common'
 import { Response } from 'express'
-import { CoreError } from '@companix/xeo-scheme'
-import { DomainError } from '@companix/xeo-toolkit'
 
 /**
- * Отказы в один формат `{ code, message }`: HTTP-исключения — как есть, ошибка домена — 400
- * (неизвестная операция — 404), ошибка целостности xeo — 400 с моделью и причиной, остальное — 500 с
- * записью в лог.
+ * Общий фильтр хоста: HTTP-исключения — как есть, остальное — 500 с записью в лог. Отказы библиотеки (ошибка
+ * домена, целостности) ловит фильтр самой версии: классы ошибок у каждой версии — её экземпляр библиотеки.
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -15,25 +12,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       response.status(exception.getStatus()).json(exception.getResponse())
-      return
-    }
-
-    if (exception instanceof DomainError) {
-      const status = exception.code === 'notFound' ? 404 : 400
-
-      response.status(status).json({ code: exception.code, message: exception.message })
-      return
-    }
-
-    if (exception instanceof CoreError) {
-      const { model, data } = exception
-
-      response.status(400).json({
-        code: 'integrity',
-        message: `Целостность: ${model} — ${data.reason}`,
-        model,
-        data
-      })
       return
     }
 

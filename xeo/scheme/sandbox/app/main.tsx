@@ -5,7 +5,7 @@ import { versions } from './versions'
 import './styles/index.scss'
 
 /**
- * Версия — первый сегмент адреса (`/v-current/workers/12`), дальше — маршруты её приложения; корень — список
+ * Версия — первый сегмент адреса (`/v-0.1.32/workers/12`), дальше — маршруты её приложения; корень — список
  * версий. Тема одна — светлая.
  */
 const key = window.location.pathname.split('/')[1]

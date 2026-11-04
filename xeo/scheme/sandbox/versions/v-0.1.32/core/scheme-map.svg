@@ -42,7 +42,7 @@
 <pattern id="xv-hatch-scheme" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" style="stroke: var(--xv-zone-scheme); stroke-width: 1.5; stroke-opacity: 0.4"/></pattern>
 </defs>
 <g class="xv-zones">
-<g class="xv-zone" data-zone="scheme" style="--z: var(--xv-zone-scheme)"><rect class="xv-zone-bg" x="40" y="40" width="1230" height="967" rx="14"/><text class="xv-zone-title" x="64" y="78">scheme · v-current<tspan class="xv-zone-meta" dx="12">1 файл · 8 коллекций</tspan></text></g>
+<g class="xv-zone" data-zone="scheme" style="--z: var(--xv-zone-scheme)"><rect class="xv-zone-bg" x="40" y="40" width="1230" height="967" rx="14"/><text class="xv-zone-title" x="64" y="78">scheme · v-0.1.32<tspan class="xv-zone-meta" dx="12">1 файл · 8 коллекций</tspan></text></g>
 </g>
 <g class="xv-files">
 <g class="xv-file" data-file="scheme.ts" style="--z: var(--xv-zone-scheme)"><rect class="xv-file-bg" x="64" y="120" width="1182" height="863" rx="8"/><text class="xv-file-label" x="94" y="141" data-label="scheme.ts · DictionaryEntities">scheme.ts<tspan class="ns"> · DictionaryEntities</tspan></text></g>

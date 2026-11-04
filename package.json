@@ -4,7 +4,8 @@
     "packages/*",
     "icons/*",
     "xeo/*",
-    "xeo/scheme/sandbox"
+    "xeo/scheme/sandbox",
+    "xeo/scheme/sandbox/versions/*"
   ],
   "scripts": {
     "github:setup": "node ./setup.js",

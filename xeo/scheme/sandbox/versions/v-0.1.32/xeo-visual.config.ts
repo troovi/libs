@@ -14,7 +14,7 @@ export default defineConfig({
   zones: [
     {
       id: 'scheme',
-      title: 'v-current',
+      title: 'v-0.1.32',
       color: '#2563eb',
       colorDark: '#60a5fa',
       files: [['scheme.ts']]
