@@ -23,6 +23,6 @@
     "@rollup/plugin-strip": "^3.0.4",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@companix/xeo-types": "file:../../xeo/types"
+    "@companix/xeo-types": "latest"
   }
 }

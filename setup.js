@@ -7,7 +7,7 @@ const updatePackage = (path, mutate) => {
 }
 
 console.log('Github node script')
-;[`packages`, `icons`, `xeo`].forEach((directory) => {
+;[`packages`, `icons`].forEach((directory) => {
   fs.readdirSync(directory).forEach((packageName) => {
     const packagePath = `${directory}/${packageName}/package.json`
 
@@ -20,11 +20,6 @@ console.log('Github node script')
           const dependencies = packageContent[source]
 
           for (const package in dependencies) {
-            if (package === '@companix/xeo-devkit') {
-              delete dependencies[package]
-              continue
-            }
-
             if (
               package.startsWith('@companix') ||
               package === 'max-bridge' ||
