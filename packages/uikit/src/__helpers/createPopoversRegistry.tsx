@@ -5,7 +5,7 @@ export type PopoverContentProps<T> = {
   close: () => void
 }
 
-type PopoverSignature = (options: PopoverContentProps<any>) => JSX.Element
+type PopoverSignature = (options: PopoverContentProps<any>) => JSX.Element | null
 type Store = { [name: string]: PopoverSignature }
 
 // prettier-ignore

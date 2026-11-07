@@ -10,7 +10,7 @@ export interface PopupProps<T> {
   close: () => void
 }
 
-type PopupSignature = (options: PopupProps<any>) => JSX.Element
+type PopupSignature = (options: PopupProps<any>) => JSX.Element | null
 type Store = { [name: string]: PopupSignature }
 
 type UnwrapProps<T extends PopupSignature> = Parameters<T>[0] extends PopupProps<infer Q> ? Q : never
