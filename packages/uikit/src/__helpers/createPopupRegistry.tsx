@@ -167,18 +167,31 @@ export const DialogShell = ({ children, ...props }: DialogShellProps) => {
 }
 
 /**
- * Окно, пока грузится код его содержимого: открывается и закрывается как окно реестра, но его размонтирование
- * окно не закрывает — его сменяет `DialogShell` содержимого и появляется без анимации.
+ * Окно, пока грузится код его содержимого: открывается и закрывается как окно реестра. Его размонтирование в открытом
+ * окне — смена на `DialogShell` содержимого, она появляется без анимации и окно не закрывает; закрытое ожидание,
+ * доиграв закрытие, закрывает окно — иначе реестр держал бы данные, и пришедшее после закрытия содержимое
+ * смонтировалось бы скрытым и досталось следующему открытию.
  */
 export const DialogPending = ({ children, ...props }: DialogShellProps) => {
-  const { open, onOpenChange, pending } = usePopup()
+  const { open, onOpenChange, onClosed, pending } = usePopup()
+
+  // слушатель конца закрытия создаётся при монтировании — состояние окна он читает отсюда
+  const isOpen = useRef(open)
+
+  isOpen.current = open
 
   useLayoutEffect(() => {
     pending.current = true
   }, [])
 
+  const handleClosed = () => {
+    if (!isOpen.current) {
+      onClosed()
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} {...props}>
+    <Dialog open={open} onOpenChange={onOpenChange} onClosed={handleClosed} {...props}>
       {children}
     </Dialog>
   )
