@@ -153,6 +153,7 @@ export type { OptionsSource, OptionsPopover, UseOptionsResponse } from './Select
 // helpers
 export {
   createPopupRegistry,
+  DialogPending,
   DialogShell,
   DrawerShell,
   MobileDrawerShell,

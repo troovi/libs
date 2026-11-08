@@ -16,7 +16,9 @@ export interface PopupLayotProps {
   /** DOM-узел для портала Radix. По умолчанию портал идёт в `document.body`; передайте элемент,
    *  чтобы открыть попап/drawer внутри конкретного контейнера (например рабочей области). */
   container?: HTMLElement | null
-  overlay?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+  overlay?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> & {
+    [data: `data-${string}`]: string | undefined
+  }
   overlayRef?: React.Ref<HTMLDivElement>
   content?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     [data: `data-${string}`]: string | undefined

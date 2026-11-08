@@ -15,6 +15,12 @@
     }
   }
 
+  // оболочка, сменившая другую (`instant`), появляется без анимации: окно уже на экране
+  &-overlay[data-instant][data-state='open'],
+  &-container[data-instant][data-state='open'] {
+    animation: none;
+  }
+
   &-container {
     position: fixed;
     inset: 0;

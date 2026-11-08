@@ -1,4 +1,14 @@
-import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  memo,
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import { hash } from '@companix/utils-js'
 
 import { Dialog, DialogProps } from '../Dialog'
@@ -10,7 +20,8 @@ export interface PopupProps<T> {
   close: () => void
 }
 
-type PopupSignature = (options: PopupProps<any>) => JSX.Element | null
+// окно всегда рисует оболочку: её размонтирование реестр считает закрытием
+type PopupSignature = (options: PopupProps<any>) => JSX.Element
 type Store = { [name: string]: PopupSignature }
 
 type UnwrapProps<T extends PopupSignature> = Parameters<T>[0] extends PopupProps<infer Q> ? Q : never
@@ -71,17 +82,8 @@ const Popup = <T extends Store>({ name, Open, Close, Content }: SinglePopupProps
     open: false
   })
 
-  useEffect(() => {
-    Open[name] = (data) => {
-      setState({ data, open: true })
-    }
-
-    Close[name] = () => {
-      if (open) {
-        onClose()
-      }
-    }
-  }, [])
+  // в этом открытии окно уже показало ожидание (`DialogPending`)
+  const pending = useRef(false)
 
   const onClose = useCallback(() => {
     setState(({ data }) => ({ data, open: false }))
@@ -95,9 +97,18 @@ const Popup = <T extends Store>({ name, Open, Close, Content }: SinglePopupProps
     if (!open) onClose()
   }, [])
 
+  useEffect(() => {
+    Open[name] = (data) => {
+      pending.current = false
+      setState({ data, open: true })
+    }
+
+    Close[name] = onClose
+  }, [])
+
   if (data) {
     return (
-      <PopupContext.Provider value={{ open, onOpenChange, onClosed }}>
+      <PopupContext.Provider value={{ open, onOpenChange, onClosed, pending }}>
         <ContentWraper data={data} close={onClose} Content={Content} />
       </PopupContext.Provider>
     )
@@ -120,6 +131,8 @@ interface PopupContextValue {
   open: boolean
   onOpenChange: (value: boolean) => void
   onClosed: () => void
+  /** В этом открытии окно уже показало ожидание: следующая оболочка появляется без анимации. */
+  pending: MutableRefObject<boolean>
 }
 
 const PopupContext = createContext<PopupContextValue | null>(null)
@@ -138,13 +151,34 @@ export const usePopup = () => {
  * Dialog
  * -----------------------------------------------------------------------------------------------*/
 
-interface DialogShellProps extends Omit<DialogProps, 'open' | 'onOpenChange' | 'onClosed'> {}
+interface DialogShellProps extends Omit<DialogProps, 'open' | 'onOpenChange' | 'onClosed' | 'instant'> {}
 
 export const DialogShell = ({ children, ...props }: DialogShellProps) => {
-  const control = usePopup()
+  const { open, onOpenChange, onClosed, pending } = usePopup()
+
+  // оболочка, сменившая ожидание открытого окна, появляется без анимации: окно уже на экране
+  const [instant] = useState(() => open && pending.current)
 
   return (
-    <Dialog {...control} {...props}>
+    <Dialog open={open} onOpenChange={onOpenChange} onClosed={onClosed} {...props} instant={instant}>
+      {children}
+    </Dialog>
+  )
+}
+
+/**
+ * Окно, пока грузится код его содержимого: открывается и закрывается как окно реестра, но его размонтирование
+ * окно не закрывает — его сменяет `DialogShell` содержимого и появляется без анимации.
+ */
+export const DialogPending = ({ children, ...props }: DialogShellProps) => {
+  const { open, onOpenChange, pending } = usePopup()
+
+  useLayoutEffect(() => {
+    pending.current = true
+  }, [])
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange} {...props}>
       {children}
     </Dialog>
   )
@@ -157,10 +191,10 @@ export const DialogShell = ({ children, ...props }: DialogShellProps) => {
 interface DrawerShellProps extends Omit<DrawerProps, 'open' | 'onOpenChange' | 'onClosed'> {}
 
 export const DrawerShell = ({ children, ...props }: DrawerShellProps) => {
-  const control = usePopup()
+  const { open, onOpenChange, onClosed } = usePopup()
 
   return (
-    <Drawer {...control} {...props}>
+    <Drawer open={open} onOpenChange={onOpenChange} onClosed={onClosed} {...props}>
       {children}
     </Drawer>
   )
@@ -174,10 +208,10 @@ interface MobileDrawerShellProps
   extends Omit<MobileDrawerProps, 'open' | 'onOpenChange' | 'onClosed'> {}
 
 export const MobileDrawerShell = ({ children, ...props }: MobileDrawerShellProps) => {
-  const control = usePopup()
+  const { open, onOpenChange, onClosed } = usePopup()
 
   return (
-    <MobileDrawer {...control} {...props}>
+    <MobileDrawer open={open} onOpenChange={onOpenChange} onClosed={onClosed} {...props}>
       {children}
     </MobileDrawer>
   )
