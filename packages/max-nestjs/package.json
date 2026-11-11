@@ -1,6 +1,6 @@
 {
   "name": "max-nestjs",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "NestJS helpers for validating MAX Mini App init data",
   "files": [
     "dist",
@@ -20,7 +20,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
-    "test:max-scenes": "ts-node ./src/tests/max-scenes.smoke.ts"
+    "test:max-scenes": "ts-node ./src/tests/max-scenes.smoke.ts",
+    "test:marker-polling": "ts-node ./src/tests/marker-polling.smoke.ts"
   },
   "dependencies": {
     "@companix/utils-nodejs": "file:../utils-nodejs",

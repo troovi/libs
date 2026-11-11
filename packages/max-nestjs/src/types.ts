@@ -1,3 +1,4 @@
+import type { Context } from '@maxhub/max-bot-api'
 import type { Request } from 'express'
 import type { MaxBridgeInitData, MaxBridgeInitDataChat, MaxBridgeInitDataUser } from 'max-bridge'
 
@@ -14,3 +15,12 @@ export interface MaxInitData
 export interface MaxRequest extends Request {
   maxInitData: MaxInitData
 }
+
+/** Обновление бота MAX — то, что приходит опросом или webhook. */
+export type MaxUpdate = Context['update']
+
+/** Сообщение бота MAX: новое (`message_created`), правка, нажатие кнопки. */
+export type MaxMessage = Extract<MaxUpdate, { update_type: 'message_created' }>['message']
+
+/** Вложение сообщения MAX: фото, видео, аудио, файл, стикер, контакт, ссылка, геопозиция, клавиатура. */
+export type MaxAttachment = NonNullable<MaxMessage['body']['attachments']>[number]

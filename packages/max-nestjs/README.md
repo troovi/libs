@@ -90,3 +90,42 @@ public getProfile(@MaxUser('id') userId: number) {
 - сравнивает `hash`
 - проверяет срок жизни `auth_date`, если задан `maxAgeSeconds`
 - записывает данные в `request.maxInitData` и `request.maxUser`
+
+## Бот: опрос с сохранённым маркером
+
+С `enable: true` модуль запускает long polling бота. Без маркера MAX отдаёт только последнее обновление, поэтому
+после перезапуска приложения всё, что пришло за простой, кроме одного, теряется. Хранилище маркера это чинит: опрос
+начинается с сохранённого маркера, обновления пачки обрабатываются по очереди (порядок сообщений одного человека
+сохраняется), маркер сохраняется после обработки пачки. Сбой посреди пачки повторит её после перезапуска — повтор
+приложение отсекает само, например по `body.mid` сообщения.
+
+```ts
+import { Injectable, Module } from '@nestjs/common'
+import { MaxCoreModule, type MaxMarkerStore } from 'max-nestjs'
+
+@Injectable()
+export class BotMarkerStorage implements MaxMarkerStore {
+  async load() {
+    return readMarker() // number | null
+  }
+
+  async save(marker: number) {
+    await writeMarker(marker)
+  }
+}
+
+@Module({
+  imports: [MaxCoreModule.forRoot({ token, enable: true, markerStore: BotMarkerStorage })],
+  providers: [BotMarkerStorage]
+})
+export class BotModule {}
+```
+
+`markerStore` — класс провайдера приложения: модуль берёт экземпляр из контейнера. Без него — `bot.start()`
+библиотеки MAX с маркером в памяти.
+
+## Обработка обновления вне опроса
+
+`MaxUpdateHandler.handle(update)` прогоняет одно обновление через ту же цепочку, что опрос: контекст, сцены,
+обработчики `@Update`; ошибка обработчика остаётся в логе. Так приложение подаёт обновления, полученные иначе: свой
+webhook, проверку на стенде без MAX. Типы обновления — `MaxUpdate`, `MaxMessage`, `MaxAttachment`.

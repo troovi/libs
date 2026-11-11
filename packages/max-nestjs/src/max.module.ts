@@ -1,6 +1,5 @@
 import {
   DynamicModule,
-  ForbiddenException,
   Inject,
   Logger,
   Module,
@@ -18,6 +17,8 @@ import { Stage, WizardContext, session } from './scenes'
 import { getBotToken } from './utils'
 import { MaxAuthGuard } from './guards/auth.guard'
 import { MaxValidationService } from './validation'
+import { MaxUpdateHandler, reportUpdateError } from './updates'
+import { MarkerPolling } from './polling'
 
 const RETRY_BASE_MS = 5000
 const RETRY_MAX_MS = 60000
@@ -43,6 +44,7 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
   private readonly logger = new Logger(MaxCoreModule.name)
   private isStopping = false
   private bot?: Bot<Context>
+  private polling?: MarkerPolling
 
   constructor(
     @Inject(MAX_BOT_NAME) private readonly botName: string,
@@ -70,14 +72,16 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
         { provide: MAX_MODULE_OPTIONS, useValue: resolved },
         ...this.coreProviders(getBotToken(resolved.botName)),
         MaxValidationService,
-        MaxAuthGuard
+        MaxAuthGuard,
+        MaxUpdateHandler
       ],
       exports: [
         MAX_STAGE,
         MAX_MODULE_OPTIONS,
         getBotToken(resolved.botName),
         MaxValidationService,
-        MaxAuthGuard
+        MaxAuthGuard,
+        MaxUpdateHandler
       ]
     }
   }
@@ -93,9 +97,17 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
         ...this.createAsyncProviders(options),
         ...this.coreProviders(botToken),
         MaxValidationService,
-        MaxAuthGuard
+        MaxAuthGuard,
+        MaxUpdateHandler
       ],
-      exports: [MAX_STAGE, MAX_MODULE_OPTIONS, botToken, MaxValidationService, MaxAuthGuard]
+      exports: [
+        MAX_STAGE,
+        MAX_MODULE_OPTIONS,
+        botToken,
+        MaxValidationService,
+        MaxAuthGuard,
+        MaxUpdateHandler
+      ]
     }
   }
 
@@ -115,15 +127,7 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
             bot.use(...options.middlewares)
           }
 
-          bot.catch((error) => {
-            // Отказ guard'а (CanActivate → false) бросает ForbiddenException;
-            // пользователю уже ответил сам guard — шумить в лог не нужно.
-            if (error instanceof ForbiddenException) {
-              return
-            }
-
-            Logger.error(`${formatError(error)}`, 'MaxBot')
-          })
+          bot.catch(reportUpdateError)
 
           return bot
         },
@@ -173,12 +177,12 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
 
     this.logger.log('MAX bot initializing ...')
 
-    this.bot.start().catch((error) => {
+    this.start(this.bot).catch((error) => {
       if (this.isStopping) {
         return
       }
 
-      this.bot?.stop()
+      this.stopPolling()
       this.logger.error(`MAX bot polling crashed ${formatError(error)}`)
 
       const delay = Math.min(RETRY_BASE_MS * 2 ** attempt, RETRY_MAX_MS)
@@ -188,10 +192,38 @@ export class MaxCoreModule implements OnApplicationBootstrap, OnApplicationShutd
     })
   }
 
+  /**
+   * Опрос: с хранилищем маркера — свой цикл (`MarkerPolling`) с маркером из хранилища и обработкой по очереди, без
+   * него — `bot.start()` библиотеки MAX с маркером в памяти.
+   */
+  private start(bot: Bot<Context>) {
+    const { markerStore } = this.options
+
+    if (!markerStore) {
+      return bot.start()
+    }
+
+    const handler = this.moduleRef.get(MaxUpdateHandler)
+
+    this.polling = new MarkerPolling({
+      bot,
+      store: this.moduleRef.get(markerStore, { strict: false }),
+      handle: (update) => handler.handle(update)
+    })
+
+    return this.polling.run()
+  }
+
+  private stopPolling() {
+    this.polling?.stop()
+    this.polling = undefined
+    this.bot?.stopPolling()
+  }
+
   onApplicationShutdown(): void {
     if (this.options.enable) {
       this.isStopping = true
-      this.bot?.stop()
+      this.stopPolling()
       this.logger.log('MAX bot polling stopped')
     }
   }
