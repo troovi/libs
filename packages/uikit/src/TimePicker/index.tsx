@@ -148,6 +148,9 @@ export const TimePicker = (props: TimePickerProps) => {
       disabled={disabled}
     >
       <Input
+        // подсказка по умолчанию; своя подсказка поля («Не важно») её заменяет
+        placeholder="00:00"
+        inputMode="numeric"
         {...inputProps}
         value={inputValue}
         disabled={disabled}
@@ -155,7 +158,6 @@ export const TimePicker = (props: TimePickerProps) => {
         onValueChange={handleInputChange}
         onBlur={handleInputBlur}
         mask={'99:99'}
-        placeholder="00:00"
         rightElement={
           <SelectRightElements
             clearButton={clearButton}
