@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export interface SliderOptions {
   baseId: string
@@ -10,7 +10,9 @@ export const useTabSlider = ({ baseId, value, containerRef }: SliderOptions) => 
   // до первого замера ползунок скрыт: иначе при монтировании он «выезжает» от левого края
   const [styles, setStyles] = useState<React.CSSProperties>({ display: 'none' })
 
-  useLayoutEffect(() => {
+  // useEffect, а не useLayoutEffect: ползунок — ребёнок контейнера, а layout-эффекты детей выполняются раньше, чем
+  // React присвоит ref контейнеру, — при монтировании containerRef.current ещё пуст
+  useEffect(() => {
     const container = containerRef.current
 
     if (!container) {
