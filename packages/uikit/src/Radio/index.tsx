@@ -26,7 +26,6 @@ export const RadioGroup = <T extends string>(props: RadioGroupProps<T>) => {
       className={cn('radio-group', className)}
       disabled={disabled}
       data-required={attr(required && !value)}
-      data-v={value}
       value={value}
       onValueChange={(e) => onChange(e as T)}
     >

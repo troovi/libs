@@ -10,9 +10,12 @@
 @mixin use-mode($appearance, $mode) {
   @include mixins.use-styles(button, $appearance, $mode, enabled);
 
-  &:hover {
-    @include mixins.use-styles(button, $appearance, $mode, hovered);
-    z-index: 1;
+  // на сенсорном экране :hover залипает после касания — наведение только у устройств с наведением, как в VKUI
+  @media (hover: hover) {
+    &:hover {
+      @include mixins.use-styles(button, $appearance, $mode, hovered);
+      z-index: 1;
+    }
   }
 
   &[data-active],

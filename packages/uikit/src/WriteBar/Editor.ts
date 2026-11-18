@@ -253,7 +253,7 @@ export class Editor {
     this.element.contentEditable = disabled ? 'false' : 'true'
   }
 
-  private handlePaste = async (event: ClipboardEvent): Promise<void> => {
+  private handlePaste = (event: ClipboardEvent): void => {
     event.preventDefault()
 
     const { clipboardData } = event
@@ -267,11 +267,12 @@ export class Editor {
       return
     }
 
-    // const files = await getFilesFromDataTransferItems(clipboardData.items)
+    // без текста в буфере — файлы: скриншот, «Копировать изображение», файлы из проводника
+    const files = Array.from(clipboardData.files)
 
-    // if (files) {
-    //   this.handlers.paste?.(files)
-    // }
+    if (files.length > 0) {
+      this.handlers.paste?.(files)
+    }
   }
 
   private handleFocus = (): void => {

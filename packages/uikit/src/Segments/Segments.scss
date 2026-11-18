@@ -33,6 +33,7 @@
     height: 100%;
     cursor: pointer;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
     background: transparent;
     border: 0;
     border-radius: inherit;
@@ -41,8 +42,11 @@
     @include mixins.use-styles(segment-control, option);
 
     &:not([data-selected]) {
-      &:hover {
-        @include mixins.use-styles(segment-control, option, hovered);
+      // на сенсорном экране :hover залипает после касания — наведение только у устройств с наведением
+      @media (hover: hover) {
+        &:hover {
+          @include mixins.use-styles(segment-control, option, hovered);
+        }
       }
 
       &:active {

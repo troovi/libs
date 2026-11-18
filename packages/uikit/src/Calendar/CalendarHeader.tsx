@@ -40,6 +40,7 @@ export interface CalendarHeaderProps {
 export const CalendarHeader = ({
   viewDate,
   onChange,
+  disablePickers,
   isMonthDisabled,
   isYearDisabled,
   onNextMonth,
@@ -105,33 +106,55 @@ export const CalendarHeader = ({
   return (
     <div className="calendar-header">
       {!prevMonthHidden && (
-        <button className="calendar-navigation" data-side="left" onClick={onPrevMonth}>
+        <button
+          type="button"
+          className="calendar-navigation"
+          data-side="left"
+          aria-label="Предыдущий месяц"
+          onClick={onPrevMonth}
+        >
           <Icon icon={faChevronLeft} />
         </button>
       )}
-      <div className="calendar-pickers">
-        <Select
-          fill
-          options={years}
-          size="sm"
-          value={currentYear}
-          minimalOptions
-          matchTarget="min-width"
-          onChange={(value) => onYearChange(value)}
-        />
-        <Select
-          fill
-          options={months}
-          size="sm"
-          className="capitalize"
-          value={currentMonth}
-          minimalOptions
-          matchTarget="min-width"
-          onChange={(value) => onMonthsChange(value)}
-        />
-      </div>
+      {disablePickers && (
+        <div className="calendar-title">
+          <span className="calendar-title-month">
+            {new Intl.DateTimeFormat(locale, { month: 'long' }).format(viewDate)}
+          </span>{' '}
+          {currentYear}
+        </div>
+      )}
+      {!disablePickers && (
+        <div className="calendar-pickers">
+          <Select
+            fill
+            options={years}
+            size="sm"
+            value={currentYear}
+            minimalOptions
+            matchTarget="min-width"
+            onChange={(value) => onYearChange(value)}
+          />
+          <Select
+            fill
+            options={months}
+            size="sm"
+            className="capitalize"
+            value={currentMonth}
+            minimalOptions
+            matchTarget="min-width"
+            onChange={(value) => onMonthsChange(value)}
+          />
+        </div>
+      )}
       {!nextMonthHidden && (
-        <button className="calendar-navigation" data-side="right" onClick={onNextMonth}>
+        <button
+          type="button"
+          className="calendar-navigation"
+          data-side="right"
+          aria-label="Следующий месяц"
+          onClick={onNextMonth}
+        >
           <Icon icon={faChevronRight} />
         </button>
       )}

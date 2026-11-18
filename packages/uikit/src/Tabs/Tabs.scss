@@ -37,6 +37,7 @@
   line-height: 1;
   background-color: transparent;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   position: relative;
   cursor: pointer;
   font-family: inherit;
@@ -48,8 +49,11 @@
     @include mixins.use-styles(tab, disabled);
   }
 
-  &:not([data-disabled]):not([data-state='active']):hover {
-    @include mixins.use-styles(tab, hovered);
+  // на сенсорном экране :hover залипает после касания — наведение только у устройств с наведением
+  @media (hover: hover) {
+    &:not([data-disabled]):not([data-state='active']):hover {
+      @include mixins.use-styles(tab, hovered);
+    }
   }
 
   &[data-state='active'] {

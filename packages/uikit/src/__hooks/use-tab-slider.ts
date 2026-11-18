@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
 export interface SliderOptions {
   baseId: string
@@ -7,38 +7,47 @@ export interface SliderOptions {
 }
 
 export const useTabSlider = ({ baseId, value, containerRef }: SliderOptions) => {
-  const [styles, setStyles] = useState<React.CSSProperties>({})
+  // до первого замера ползунок скрыт: иначе при монтировании он «выезжает» от левого края
+  const [styles, setStyles] = useState<React.CSSProperties>({ display: 'none' })
 
-  useEffect(() => {
-    const state = { observer: null as null | ResizeObserver }
+  useLayoutEffect(() => {
+    const container = containerRef.current
 
-    if (containerRef.current) {
-      const tabIdSelector = `#${makeTabId(baseId, value)}`
-      const selectedTabElement = containerRef.current.querySelector<HTMLElement>(tabIdSelector)
-
-      if (selectedTabElement != null) {
-        state.observer = new ResizeObserver(() => {
-          const { clientHeight, clientWidth, offsetLeft, offsetTop } = selectedTabElement
-
-          setStyles({
-            width: clientWidth,
-            height: clientHeight,
-            transform: `translateX(${Math.floor(offsetLeft)}px) translateY(${Math.floor(offsetTop)}px)`
-          })
-        })
-
-        state.observer.observe(selectedTabElement)
-      } else {
-        setStyles({ display: 'none' })
-      }
+    if (!container) {
+      return
     }
+
+    const measure = () => {
+      // по id, а не селектором `#…`: значение с пробелом или точкой ломает селектор
+      const selected = document.getElementById(makeTabId(baseId, value))
+
+      if (!selected || !container.contains(selected)) {
+        setStyles({ display: 'none' })
+        return
+      }
+
+      const { clientHeight, clientWidth, offsetLeft, offsetTop } = selected
+
+      setStyles({
+        width: clientWidth,
+        height: clientHeight,
+        transform: `translateX(${Math.floor(offsetLeft)}px) translateY(${Math.floor(offsetTop)}px)`
+      })
+    }
+
+    // выбранный пункт сдвигается и без смены своего размера — когда меняется ширина соседей (счётчики в подписях),
+    // поэтому наблюдаются контейнер и все пункты
+    const observer = new ResizeObserver(measure)
+    const items = container.querySelectorAll(`[id^="${makeTabId(baseId, '')}"]`)
+
+    observer.observe(container)
+    items.forEach((item) => observer.observe(item))
+    measure()
 
     return () => {
-      if (state.observer) {
-        state.observer.disconnect()
-      }
+      observer.disconnect()
     }
-  }, [value])
+  }, [baseId, value])
 
   return styles
 }

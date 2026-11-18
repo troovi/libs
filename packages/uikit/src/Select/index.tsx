@@ -115,6 +115,38 @@ export const Select = <T,>(props: SelectProps<T>) => {
     }
   }
 
+  const getTrigger = () => {
+    if (isCustomTrigger) {
+      return children({ option: activeOption, title: activeOption?.title ?? '', isOpen, clear: handleClear })
+    }
+
+    // готовый элемент-триггер (поле с маской у TimePicker) рисуется вместо поля селекта
+    if (children) {
+      return children
+    }
+
+    return (
+      <SelectInput
+        required={required}
+        className={className}
+        leftElement={leftElement}
+        inputRef={inputRef}
+        onClear={handleClear}
+        fill={fill}
+        size={size}
+        placeholder={placeholder}
+        onClick={onClick}
+        disabled={disabled}
+        clearButton={clearButton}
+        customElement={activeOption?.indicator}
+        clearButtonIcon={clearButtonIcon}
+        value={activeOption?.title ?? ''}
+      />
+    )
+  }
+
+  const trigger = getTrigger()
+
   return (
     <Popover
       minimal
@@ -144,26 +176,7 @@ export const Select = <T,>(props: SelectProps<T>) => {
         />
       )}
     >
-      {isCustomTrigger ? (
-        children({ option: activeOption, title: activeOption?.title ?? '', isOpen, clear: handleClear })
-      ) : (
-        <SelectInput
-          required={required}
-          className={className}
-          leftElement={leftElement}
-          inputRef={inputRef}
-          onClear={handleClear}
-          fill={fill}
-          size={size}
-          placeholder={placeholder}
-          onClick={onClick}
-          disabled={disabled}
-          clearButton={clearButton}
-          customElement={activeOption?.indicator}
-          clearButtonIcon={clearButtonIcon}
-          value={activeOption?.title ?? ''}
-        />
-      )}
+      {trigger}
     </Popover>
   )
 }

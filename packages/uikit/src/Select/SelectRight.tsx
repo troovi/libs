@@ -7,16 +7,18 @@ interface SelectRightElementsProps {
   clearButtonIcon?: React.ReactNode
   customElement?: React.ReactNode
   value: boolean
+  /** Поле отключено — значение не сбрасывается, крестика нет. */
+  disabled?: boolean
 }
 
 export const SelectRightElements = (props: SelectRightElementsProps) => {
-  const { customElement, clearButton, clearButtonIcon, value, onClear } = props
+  const { customElement, clearButton, clearButtonIcon, value, disabled, onClear } = props
 
   return (
     <>
       {customElement}
-      {clearButton && value && (
-        <button className="select-close-button" onClick={onClear}>
+      {clearButton && value && !disabled && (
+        <button type="button" className="select-close-button" onClick={onClear}>
           {clearButtonIcon ?? <Icon className="select-close-icon" icon={faXmark} size="xxxs" />}
         </button>
       )}

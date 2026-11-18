@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getNum } from '@companix/utils-js'
 import { removeDigits, convertTimeToOption, getTimeValue, getTimesOptions } from '../__utils/utils'
 import { SelectRightElements } from '../Select/SelectRight'
@@ -64,6 +64,14 @@ export const TimePicker = (props: TimePickerProps) => {
   const [inputValue, setInputValue] = useState(() => {
     return timeInput.toString(value)
   })
+
+  // значение, сменённое снаружи (умолчания режима, другая заявка), попадает в поле; ввод, ещё не ставший временем,
+  // не трогается
+  const valueText = timeInput.toString(value)
+
+  useEffect(() => {
+    setInputValue(valueText)
+  }, [valueText])
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
@@ -152,6 +160,7 @@ export const TimePicker = (props: TimePickerProps) => {
           <SelectRightElements
             clearButton={clearButton}
             clearButtonIcon={clearButtonIcon}
+            disabled={disabled}
             value={Boolean(removeDigits(inputValue, [':', '_']))}
             onClear={handleClear}
           />

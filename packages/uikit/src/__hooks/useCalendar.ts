@@ -6,12 +6,15 @@ import { useCallback, useState } from 'react'
 export interface UseCalendarDependencies
   extends Pick<
     CalendarProps,
-    'minDateTime' | 'maxDateTime' | 'shouldDisableDate' | 'disableFuture' | 'disablePast'
+    | 'minDateTime'
+    | 'maxDateTime'
+    | 'shouldDisableDate'
+    | 'disableFuture'
+    | 'disablePast'
+    | 'onHeaderChange'
+    | 'onNextMonth'
+    | 'onPrevMonth'
   > {
-  disablePast?: boolean
-  disableFuture?: boolean
-  minDateTime?: Date
-  maxDateTime?: Date
   value?: Date | null
 }
 
@@ -21,18 +24,30 @@ export const useCalendar = ({
   disableFuture,
   shouldDisableDate,
   minDateTime,
-  maxDateTime
+  maxDateTime,
+  onHeaderChange,
+  onNextMonth,
+  onPrevMonth
 }: UseCalendarDependencies) => {
   const [viewDate, setViewDate] = useState(value || new Date())
 
   const setPrevMonth = useCallback(() => {
-    // onPrevMonth?.();
+    onPrevMonth?.()
     setViewDate(subMonths(viewDate, 1))
-  }, [viewDate])
+  }, [viewDate, onPrevMonth])
+
   const setNextMonth = useCallback(() => {
-    // onNextMonth?.();
+    onNextMonth?.()
     setViewDate(addMonths(viewDate, 1))
-  }, [viewDate])
+  }, [viewDate, onNextMonth])
+
+  const handleSetViewDate = useCallback(
+    (value: Date) => {
+      onHeaderChange?.(value)
+      setViewDate(value)
+    },
+    [onHeaderChange]
+  )
 
   const isDayDisabled = useDayDisableCheker({
     disableFuture,
@@ -94,7 +109,7 @@ export const useCalendar = ({
 
   return {
     viewDate,
-    setViewDate,
+    setViewDate: handleSetViewDate,
     setPrevMonth,
     setNextMonth,
     isDayDisabled,

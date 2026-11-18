@@ -38,13 +38,17 @@ export const Viewport = forwardRef<ViewportRef, AlertBaseProps>((props, ref) => 
 
   return (
     <>
-      {alerts.map(({ id, ...alert }) => (
+      {alerts.map(({ id, onClosed, ...alert }) => (
         <AlertDialog
           defaultOpen
-          onClosed={() => handleClose(id)}
           key={`alert-${id}`}
           {...props}
           {...alert}
+          // свой onClosed вызывающего не отменяет удаление записи алерта из состояния
+          onClosed={() => {
+            handleClose(id)
+            onClosed?.()
+          }}
         />
       ))}
     </>

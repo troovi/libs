@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useState } from 'react'
 import { box } from '@companix/utils-browser'
 import { getInitialsFontSize } from './helpers'
 import { AvatarSize } from './types'
@@ -54,7 +55,12 @@ export const Avatar = ({
   className,
   children
 }: AvatarProps) => {
-  const hasSrc = src || srcSet
+  const source = src || srcSet
+
+  // источник, который не загрузился (404, нет сети): вместо пустого круга — инициалы или иконка, как у ImageBase VKUI;
+  // новый `src` снова пробует загрузку без эффекта сброса
+  const [failedSource, setFailedSource] = useState<string>()
+  const hasSrc = Boolean(source) && failedSource !== source
 
   const _fallbackIcon = initials ? (
     <div className="avatar-initials" style={{ fontSize: getInitialsFontSize(size) }}>
@@ -80,6 +86,7 @@ export const Avatar = ({
           src={src}
           srcSet={srcSet}
           useMap={useMap}
+          onError={() => setFailedSource(source)}
         />
       )}
       {fallbackIcon && <div className="avatar-icon">{fallbackIcon}</div>}

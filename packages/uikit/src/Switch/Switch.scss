@@ -3,6 +3,7 @@
 .switch {
   display: inline-table;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   max-width: max-content;
 

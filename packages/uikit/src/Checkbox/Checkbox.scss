@@ -3,14 +3,18 @@
 .checkbox {
   display: inline-table;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   max-width: max-content;
 
   @include mixins.use-styles(checkbox);
 
-  &:not([data-disabled]):not([data-required]):hover {
-    .checkbox-box[data-state='unchecked'] {
-      @include mixins.use-styles(checkbox, box, hovered);
+  // на сенсорном экране :hover залипает после касания — наведение только у устройств с наведением
+  @media (hover: hover) {
+    &:not([data-disabled]):not([data-required]):hover {
+      .checkbox-box[data-state='unchecked'] {
+        @include mixins.use-styles(checkbox, box, hovered);
+      }
     }
   }
 

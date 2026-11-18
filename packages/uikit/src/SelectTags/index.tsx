@@ -60,7 +60,14 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
 
   const { popoverRef, froozePopoverPosition, handleAnimationEnd } = useFroozeClosing()
 
+  // отключённое поле не открывает список и не снимает теги
+  const isLocked = Boolean(disabled)
+
   const handleSelect = (value: T[], close: () => void) => {
+    // набранный фильтр сбрасывается после выбора, как в ChipsSelect VKUI
+    setInputValue('')
+    onInputChange?.('')
+
     if (closeAfterSelect) {
       froozePopoverPosition()
       onChange(value)
@@ -100,7 +107,10 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
 
   const handleRemove = (e: React.MouseEvent, value: T) => {
     e.stopPropagation()
-    onChange(arrays.remove(values, value))
+
+    if (!isLocked) {
+      onChange(arrays.remove(values, value))
+    }
   }
 
   const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +127,7 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
       onAnimationEnd={handleAnimationEnd}
       onOpenAutoFocus={(e) => e.preventDefault()}
       onCloseAutoFocus={(e) => e.preventDefault()}
+      disabled={isLocked}
       content={({ close }) => (
         <OptionsPopover<T>
           {...optionsPopoverProps}
@@ -159,9 +170,15 @@ export const SelectTags = <T extends string | number>(props: SelectTagsProps<T>)
                   return (
                     <div key={`tag-option-${value}-${i}`} className="tag">
                       <span className="tag-name">{optionsStore.current[value].title}</span>
-                      <button className="tag-close-button" onClick={(e) => handleRemove(e, value)}>
-                        <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
-                      </button>
+                      {!isLocked && (
+                        <button
+                          type="button"
+                          className="tag-close-button"
+                          onClick={(e) => handleRemove(e, value)}
+                        >
+                          <Icon className="tag-close-icon" icon={faXmark} size="xxxs" />
+                        </button>
+                      )}
                     </div>
                   )
                 })}

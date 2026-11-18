@@ -69,8 +69,10 @@
     outline: none;
 
     margin: 12px 0;
-    min-height: var(--messageLineHeight);
-    max-height: calc(12 * var(--messageLineHeight));
+    // высота строки web.vk.me (20px) — значение по умолчанию: без него max-height пропадает, и длинный текст растягивает
+    // поле на весь экран
+    min-height: var(--messageLineHeight, 20px);
+    max-height: calc(12 * var(--messageLineHeight, 20px));
   }
 
   &-icon {

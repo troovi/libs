@@ -31,8 +31,11 @@
       right: 0;
     }
 
-    &:hover {
-      @include mixins.use-styles(calendar, navigation, hover);
+    // на сенсорном экране :hover залипает после касания — подсветка наведения только у устройств с наведением
+    @media (hover: hover) {
+      &:hover {
+        @include mixins.use-styles(calendar, navigation, hover);
+      }
     }
 
     &:active {
@@ -48,6 +51,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+
+  &-title {
+    font-weight: 500;
+
+    @include mixins.use-styles(calendar, title);
+
+    &-month {
+      text-transform: capitalize;
+    }
   }
 
   &-names {
@@ -75,14 +88,21 @@
 
     @include mixins.use-styles(calendar, day);
 
+    // день соседнего месяца (`showNeighboringMonth`) — приглушён, как недоступный, но выбирается
+    &[data-outside] {
+      @include mixins.use-styles(calendar, day, disabled);
+    }
+
     &:not([data-disabled]) {
       cursor: pointer;
 
-      &:hover {
-        @include mixins.use-styles(calendar, day, hover);
+      @media (hover: hover) {
+        &:hover {
+          @include mixins.use-styles(calendar, day, hover);
+        }
       }
 
-      &[data-active] {
+      &:active {
         @include mixins.use-styles(calendar, day, active);
       }
 

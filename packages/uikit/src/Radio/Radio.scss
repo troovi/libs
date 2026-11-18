@@ -13,9 +13,12 @@
 
   @include mixins.use-styles(radio);
 
-  &:not([data-required]):not([data-disabled]):hover {
-    .radio-box[data-state='unchecked'] {
-      @include mixins.use-styles(radio, box, hovered);
+  // на сенсорном экране :hover залипает после касания — наведение только у устройств с наведением
+  @media (hover: hover) {
+    &:not([data-required]):not([data-disabled]):hover {
+      .radio-box[data-state='unchecked'] {
+        @include mixins.use-styles(radio, box, hovered);
+      }
     }
   }
 

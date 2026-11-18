@@ -55,8 +55,6 @@ export interface DropAreaProps extends Omit<DropTargetProps, 'onDrop'> {
 export const DropArea = ({ onFilesAdd, ...props }: DropAreaProps) => {
   const { onHide, isVisable } = useContext(DropAreaContext)
 
-  const [isDragging, setIsDragging] = useState(false)
-
   // Prevent default drag behavior
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -74,7 +72,7 @@ export const DropArea = ({ onFilesAdd, ...props }: DropAreaProps) => {
 
       onHide()
     },
-    [isDragging, onHide]
+    [onHide]
   )
 
   // Handle file drop
@@ -95,16 +93,16 @@ export const DropArea = ({ onFilesAdd, ...props }: DropAreaProps) => {
 
   return (
     <div
-      onDragStart={() => setIsDragging(true)}
-      onDragEnter={() => setIsDragging(true)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={classNames('drop-area', {
         'drop-area-hidden': !isVisable
       })}
-      onDrop={() => {
+      // бросок мимо цели внутри области: dragover его разрешил, и без preventDefault браузер откроет файл вместо
+      // страницы (VKUI DropZone требует preventDefault и в dragover, и в drop)
+      onDrop={(event) => {
+        event.preventDefault()
         onHide()
-        setIsDragging(false)
       }}
     >
       {isVisable && <DropTarget {...props} onDrop={handleDrop} />}

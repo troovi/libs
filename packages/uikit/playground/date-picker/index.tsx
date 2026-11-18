@@ -10,6 +10,12 @@ export const DatePickerExample = () => {
         <div style={{ width: '340px' }}>
           <DatePickerControl size="md" />
         </div>
+        <div style={{ width: '340px' }}>
+          <DatePickerControl size="md" showNeighboringMonth disablePickers />
+        </div>
+        <div style={{ width: '340px' }}>
+          <DatePickerControl size="md" native />
+        </div>
       </div>
     </div>
   )
@@ -19,9 +25,13 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   required?: boolean
+  native?: boolean
+  showNeighboringMonth?: boolean
+  disablePickers?: boolean
 }
 
-export const DatePickerControl = ({ size, disabled, required }: Props) => {
+export const DatePickerControl = (props: Props) => {
+  const { size, disabled, required, native, showNeighboringMonth, disablePickers } = props
   const [value, onChange] = useState<null | Date>(new Date())
 
   console.log(value)
@@ -40,6 +50,9 @@ export const DatePickerControl = ({ size, disabled, required }: Props) => {
       required={required}
       placeholder="Укажите дату"
       disableFuture
+      native={native}
+      showNeighboringMonth={showNeighboringMonth}
+      disablePickers={disablePickers}
     />
   )
 }

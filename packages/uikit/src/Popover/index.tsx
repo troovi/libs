@@ -101,8 +101,10 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>((props, ref) => 
           onAnimationEnd={onAnimationEnd}
           onOpenAutoFocus={onOpenAutoFocus}
           onCloseAutoFocus={onCloseAutoFocus}
-          // https://github.com/radix-ui/primitives/issues/1159
+          // https://github.com/radix-ui/primitives/issues/1159: блокировка прокрутки модального окна (react-remove-scroll)
+          // гасит колесо и касание вне окна, а поповер порталится в body — его прокрутка до document не доходит
           onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <PopoverPrimitive.Close ref={buttonRef} style={{ display: 'none' }} />
           {showArrows && (

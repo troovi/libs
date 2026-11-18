@@ -114,6 +114,7 @@ export const SelectInput = forwardRef<HTMLDivElement, SelectFormProps>(
             <SelectRightElements
               customElement={customElement}
               clearButton={clearButton}
+              disabled={disabled}
               value={Boolean(value)}
               clearButtonIcon={clearButtonIcon}
               onClear={handleClear}

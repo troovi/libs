@@ -16,6 +16,10 @@ export const Tooltip = ({ children, content, side }: TooltipProps) => {
       showArrows
       className="tooltip"
       open={open}
+      // подсказка не забирает фокус ни при показе, ни при скрытии; Esc и клик закрывают её, как в VKUI
+      onOpenChange={setOpen}
+      onOpenAutoFocus={(e) => e.preventDefault()}
+      onCloseAutoFocus={(e) => e.preventDefault()}
       side={side}
       content={() => content}
       triggerProps={{

@@ -38,7 +38,7 @@ const Switch = (props: SwitchProps) => {
         </SwitchPrimitive.Thumb>
       </SwitchPrimitive.Root>
       {label && (
-        <label className="switch-label" htmlFor={id} data-disabled={disabled}>
+        <label className="switch-label" htmlFor={id} data-disabled={attr(disabled)}>
           {label}
         </label>
       )}

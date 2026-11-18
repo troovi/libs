@@ -45,12 +45,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    // пока идёт загрузка, нажатие не повторяет действие и не отправляет форму; кнопка не становится disabled,
+    // чтобы не менять вид на стиль недоступной
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (loading || buttonProps.disabled) {
+        event.preventDefault()
+        return
+      }
+
+      buttonProps.onClick?.(event)
+    }
+
     return (
       <Component
         ref={ref}
         className={classNames('button', className)}
         data-size={size}
         data-loading={attr(loading)}
+        aria-busy={loading || undefined}
         data-align={loading ? 'center' : align ?? (icon && iconRight ? 'left' : 'center')}
         data-appearance={appearance}
         data-mode={mode}
@@ -58,7 +70,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         data-active={attr(active)}
         type={Component === 'button' ? 'button' : undefined}
         {...buttonProps}
-        onClick={loading ?? buttonProps.disabled ? undefined : buttonProps.onClick}
+        onClick={handleClick}
       >
         {loading ? (
           <>

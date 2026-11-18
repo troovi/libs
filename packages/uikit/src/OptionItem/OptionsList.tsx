@@ -19,7 +19,6 @@ export const OptionsList = ({
       implementation="inner"
       padding={10}
       thumbPadding={3}
-      thumbColor="#0000002b"
       maxHeight={maxHeight}
       scrollY
     >

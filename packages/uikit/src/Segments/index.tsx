@@ -19,6 +19,13 @@ export const Segments = <T extends number | string>({ value, onChange, options }
   const currentIndex = options.findIndex((option) => option.value === value)
   const baseId = useId().replaceAll(':', '')
 
+  // выбранный сегмент не вызывает onChange повторно, как радиокнопка в SegmentedControl VKUI
+  const handleSelect = (next: T) => {
+    if (next !== value) {
+      onChange(next)
+    }
+  }
+
   return (
     <div className="segments-container">
       <div role="radiogroup" className="segments" ref={containerRef}>
@@ -30,7 +37,7 @@ export const Segments = <T extends number | string>({ value, onChange, options }
             <div
               key={`segment-${option.value}`}
               id={makeTabId(baseId, option.value)}
-              onClick={() => onChange(option.value)}
+              onClick={() => handleSelect(option.value)}
               className="segments-option"
               data-selected={attr(option.value === value)}
             >

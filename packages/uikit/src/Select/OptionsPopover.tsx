@@ -104,7 +104,7 @@ export const OptionsPopover = <T,>(props: OptionsPopoverProps<T>) => {
     return options
   }, [options, filterOptions, disableFiltering])
 
-  if (isLoading ?? isLoadingProp) {
+  if (isLoading || isLoadingProp) {
     return (
       <div className="select-popover-loading">
         <Spinner size={24} />

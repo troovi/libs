@@ -40,35 +40,29 @@ export const dateToFormat = (date: Date): DateFormat => {
   }
 }
 
+/**
+ * Проверка даты по границам: месяц или день за границей сбрасывается в новом объекте — значение родителя не меняется;
+ * дата в границах — `undefined`.
+ */
 export const createDateValidation = ({ min, max }: { min: DateFormat; max: DateFormat }) => {
-  return (value: DateFormat) => {
+  return (value: DateFormat): DateFormat | undefined => {
     if (min.year === value.year) {
       if (value.month !== 0 && value.month < min.month) {
-        value.month = 0
-        value.day = 0
-
-        return value
+        return { ...value, month: 0, day: 0 }
       }
 
       if (value.month === min.month && value.day < min.day && value.day !== 0) {
-        value.day = 0
-
-        return value
+        return { ...value, day: 0 }
       }
     }
 
     if (max.year === value.year) {
       if (value.month !== 0 && value.month > max.month) {
-        value.month = 0
-        value.day = 0
-
-        return value
+        return { ...value, month: 0, day: 0 }
       }
 
       if (value.month === max.month && value.day > max.day && value.day !== 0) {
-        value.day = 0
-
-        return value
+        return { ...value, day: 0 }
       }
     }
   }

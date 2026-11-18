@@ -13,6 +13,15 @@ export interface InputProps extends Omit<InputContainerProps, 'inputRef' | 'chil
   inputRef?: React.Ref<HTMLInputElement>
   inputClassName?: string
   inputType?: React.HTMLInputTypeAttribute
+  /**
+   * Клавиатура на сенсорных устройствах: `numeric` — цифровая.
+   */
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
+  /**
+   * Границы значения для `inputType` `date` и `number`.
+   */
+  min?: string
+  max?: string
   mask?: string
   maskChar?: string | null
 }
@@ -28,6 +37,9 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
       placeholder,
       mask,
       inputType = 'text',
+      inputMode,
+      min,
+      max,
       maskChar,
       inputRef: clientInputRef,
       ...containerProps
@@ -40,6 +52,9 @@ export const Input = forwardRef<HTMLDivElement, InputProps>(
       <InputContainer ref={ref} inputRef={inputRef} {...containerProps}>
         <InputElement
           type={inputType}
+          inputMode={inputMode}
+          min={min}
+          max={max}
           ref={mergeRefs([inputRef, clientInputRef])}
           className={classNames('form-input form-input-base', inputClassName)}
           aria-disabled={containerProps.disabled}
