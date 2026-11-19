@@ -1,11 +1,10 @@
 import * as ToasterPrimitive from '@radix-ui/react-toast'
 import { attr } from '@companix/utils-browser'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ToastOptions } from '.'
+import { InnerToast } from '.'
 import { RemoveListener } from '../__utils/RemoveListener'
 
-interface ToastProps extends ToastOptions {
-  id: string
+interface ToastProps extends InnerToast {
   onClosed: () => void
   onClosing: () => void
   onInitialized: (ref: HTMLLIElement) => void
@@ -18,7 +17,9 @@ export const Toast = (options: ToastProps) => {
   const ref = useRef<HTMLLIElement>(null)
 
   const {
+    id,
     appearance = 'neutral',
+    render,
     icon,
     title,
     description,
@@ -48,11 +49,14 @@ export const Toast = (options: ToastProps) => {
     setOpen(open)
   }
 
+  const close = () => onOpenChange(false)
+
   return (
     <ToasterPrimitive.Root
       ref={ref}
       data-expanded
       data-appearance={appearance}
+      data-custom={attr(Boolean(render))}
       data-mounted={attr(mounted)}
       className="toaster"
       open={open}
@@ -60,15 +64,23 @@ export const Toast = (options: ToastProps) => {
       duration={duration}
     >
       <RemoveListener callback={onClosed} />
-      {icon && <div className="toaster-icon">{icon}</div>}
-      <div className="toaster-content">
-        {title && <ToasterPrimitive.Title className="toaster-title">{title}</ToasterPrimitive.Title>}
-        {description && (
-          <ToasterPrimitive.Description className="toaster-description">
-            {description}
-          </ToasterPrimitive.Description>
-        )}
-      </div>
+      {render ? (
+        <div className="toaster-custom">{render({ id, close })}</div>
+      ) : (
+        <>
+          {icon && <div className="toaster-icon">{icon}</div>}
+          <div className="toaster-content">
+            {title && (
+              <ToasterPrimitive.Title className="toaster-title">{title}</ToasterPrimitive.Title>
+            )}
+            {description && (
+              <ToasterPrimitive.Description className="toaster-description">
+                {description}
+              </ToasterPrimitive.Description>
+            )}
+          </div>
+        </>
+      )}
       {closable && (
         <Toast.Close className="toaster-close toaster-close-placement" closeIcon={closeIcon} />
       )}

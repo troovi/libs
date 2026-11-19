@@ -13,8 +13,30 @@ export interface ToastOptions {
   closable?: boolean
 }
 
+/**
+ * То, что получает функция отрисовки кастомного тоста.
+ */
+export interface ToastRenderProps {
+  id: string
+  /**
+   * Закрывает тост с анимацией — например, по клику на его содержимое.
+   */
+  close: () => void
+}
+
+export type ToastRender = (toast: ToastRenderProps) => React.ReactNode
+
+/**
+ * Параметры кастомного тоста: `icon`, `title` и `description` заменяет функция отрисовки.
+ */
+export type CustomToastOptions = Pick<
+  ToastOptions,
+  'id' | 'appearance' | 'duration' | 'closeIcon' | 'closable'
+>
+
 export interface InnerToast extends ToastOptions {
   id: string
+  render?: ToastRender
 }
 
 export const createToaster = (rootProps: ViewportProps = {}) => {
@@ -26,9 +48,19 @@ export const createToaster = (rootProps: ViewportProps = {}) => {
 
   return {
     api: {
-      show: (toast: ToastOptions) => {
+      standard: (toast: ToastOptions) => {
         const id = toast.id ?? hash()
         store.showToast({ ...toast, id })
+        return id
+      },
+      /**
+       * Показывает тост с собственной вёрсткой. Поверхность тоста (фон, рамка, тень, скругление,
+       * ширина) берётся из темы, а всё внутреннее пространство без отступов отдаётся `render`.
+       * Повторный вызов с тем же `id` обновляет показанный тост.
+       */
+      custom: (render: ToastRender, options: CustomToastOptions = {}) => {
+        const id = options.id ?? hash()
+        store.showToast({ ...options, id, render })
         return id
       }
     },

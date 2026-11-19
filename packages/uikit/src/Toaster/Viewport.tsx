@@ -99,7 +99,7 @@ export const Viewport = forwardRef<ViewportRef, ViewportProps>((props, ref) => {
           id={id}
           key={`toaster-${id}`}
           duration={toast.duration ?? duration}
-          closeIcon={closeIcon}
+          closeIcon={toast.closeIcon ?? closeIcon}
           onInitialized={(ref) => {
             toastsRefs[id] = ref
             applyOffsets(toasters)

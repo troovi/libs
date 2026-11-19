@@ -40,6 +40,10 @@
   @include use-appearance(positive);
   @include use-appearance(warning);
 
+  &[data-custom] {
+    @include mixins.use-styles(toaster, custom);
+  }
+
   &[data-expanded]:not([data-mounted]) {
     opacity: 0;
     --y: translateY(calc(var(--lift) * -100% - var(--toaster_viewport_offset, 0)));
@@ -102,6 +106,13 @@
     width: 100%;
 
     @include mixins.use-styles(toaster, content);
+  }
+
+  &-custom {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-width: 0;
+    border-radius: inherit;
   }
 
   &-title {

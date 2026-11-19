@@ -145,6 +145,7 @@ export { useSyncSubmit } from './__hooks/use-sync-submit'
 // agents
 export { createAlertAgent } from './DialogAlert'
 export { createToaster } from './Toaster'
+export type { ToastOptions, CustomToastOptions, ToastRender, ToastRenderProps } from './Toaster'
 export { Toast } from './Toaster/Toast'
 // types
 export * from './types'

@@ -1,3 +1,4 @@
+import { Avatar } from '@/Avatar'
 import { Button } from '@/Button'
 import { ButtonGroup } from '@/ButtonGroup'
 import { Icon } from '@/Icon'
@@ -9,7 +10,7 @@ import {
   faCloudArrowUp,
   faTriangleExclamation
 } from '@companix/icons-solid'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 const { api: toaster, Viewport: ToasterViewport } = createToaster({
   duration: 2500,
@@ -17,12 +18,76 @@ const { api: toaster, Viewport: ToasterViewport } = createToaster({
   align: 'center'
 })
 
+interface Sender {
+  name: string
+  initials: string
+  avatar?: string
+}
+
+const incomingMessages: { sender: Sender; text: string }[] = [
+  {
+    sender: {
+      name: 'Pavel Victorov',
+      initials: 'PV',
+      avatar: 'https://avatars.githubusercontent.com/u/95082945?s=100'
+    },
+    text: 'Hi! Have you seen the new mockups? I left a couple of comments on the checkout screen, take a look when you have a minute.'
+  },
+  {
+    sender: { name: 'Anna Smirnova', initials: 'AS' },
+    text: 'Sure, see you at 3 PM 👍'
+  },
+  {
+    sender: { name: 'Maximilian Alexander Konstantinopolsky', initials: 'MK' },
+    text: 'The release build is ready. QA found one blocker in the payment flow, the rest can wait until the next sprint.'
+  }
+]
+
+interface MessageToastProps {
+  sender: Sender
+  text: string
+  onOpen: () => void
+}
+
+const MessageToast = ({ sender, text, onOpen }: MessageToastProps) => {
+  return (
+    <button type="button" className="message-toast" onClick={onOpen}>
+      <Avatar size={40} src={sender.avatar} initials={sender.initials} />
+      <span className="message-toast-body">
+        <span className="message-toast-name">{sender.name}</span>
+        <span className="message-toast-text">{text}</span>
+      </span>
+    </button>
+  )
+}
+
 export const ToasterExample = () => {
   const [side, setSide] = useState<'top' | 'bottom'>('top')
   const [align, setAlign] = useState<'center' | 'left' | 'right'>('center')
+  const [openedChat, setOpenedChat] = useState<string | null>(null)
+  const messageIndex = useRef(0)
+
+  const handleNewMessage = () => {
+    const { sender, text } = incomingMessages[messageIndex.current % incomingMessages.length]
+    messageIndex.current++
+
+    toaster.custom(
+      ({ close }) => (
+        <MessageToast
+          sender={sender}
+          text={text}
+          onOpen={() => {
+            setOpenedChat(sender.name)
+            close()
+          }}
+        />
+      ),
+      { duration: 5000 }
+    )
+  }
 
   const handleCreateEvent = () => {
-    toaster.show({
+    toaster.standard({
       appearance: 'neutral',
       title: 'Event created',
       description: 'Sunday, December 21, 2025 at 2:45 AM'
@@ -30,14 +95,14 @@ export const ToasterExample = () => {
   }
 
   const handleCopyText = () => {
-    toaster.show({
+    toaster.standard({
       appearance: 'neutral',
       title: 'The text is copied'
     })
   }
 
   const handleMoveFiles = () => {
-    toaster.show({
+    toaster.standard({
       appearance: 'positive',
       title: 'Move files is completed!',
       description: 'Moved 6 files'
@@ -45,7 +110,7 @@ export const ToasterExample = () => {
   }
 
   const handleDelete = () => {
-    toaster.show({
+    toaster.standard({
       appearance: 'negative',
       title: 'Permission error',
       description:
@@ -70,13 +135,13 @@ export const ToasterExample = () => {
   const handleUpload = () => {
     let progress = 0
 
-    const id = toaster.show(renderProgress(progress))
+    const id = toaster.standard(renderProgress(progress))
     const progressToastInterval = setInterval(() => {
       if (progress > 100) {
         clearInterval(progressToastInterval)
       } else {
         progress += 10 + Math.random() * 20
-        toaster.show({ id, ...renderProgress(progress) })
+        toaster.standard({ id, ...renderProgress(progress) })
       }
     }, 1000)
   }
@@ -115,10 +180,18 @@ export const ToasterExample = () => {
           <Button onClick={handleUpload}>Upload file</Button>
         </div>
         <div className="row-group">
+          <Button appearance="neutral" onClick={handleNewMessage}>
+            New message
+          </Button>
+          <span className="quieter">
+            {openedChat ? `Opened chat: ${openedChat}` : 'Click a message to open the chat'}
+          </span>
+        </div>
+        <div className="row-group">
           <Button
             appearance="primary"
             onClick={() => {
-              toaster.show({
+              toaster.standard({
                 appearance: 'primary',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -131,7 +204,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              toaster.show({
+              toaster.standard({
                 appearance: 'neutral',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -144,7 +217,7 @@ export const ToasterExample = () => {
           <Button
             appearance="positive"
             onClick={() => {
-              toaster.show({
+              toaster.standard({
                 appearance: 'positive',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -157,7 +230,7 @@ export const ToasterExample = () => {
           <Button
             appearance="negative"
             onClick={() => {
-              toaster.show({
+              toaster.standard({
                 appearance: 'negative',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
@@ -170,7 +243,7 @@ export const ToasterExample = () => {
           <Button
             appearance="neutral"
             onClick={() => {
-              toaster.show({
+              toaster.standard({
                 appearance: 'warning',
                 title: 'Event has been created',
                 description: 'Be at the area 10 minutes before the event time',
