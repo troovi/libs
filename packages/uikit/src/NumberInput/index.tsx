@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { forwardRef, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { InputContainer, InputContainerProps } from '../Input/InputContainer'
-import { NumericFormat } from 'react-number-format'
+import { NumberFormatValues, NumericFormat } from 'react-number-format'
 
 export interface ReactNumberFormatParams {
   thousandSeparator?: boolean | string
@@ -23,6 +23,8 @@ export interface NumberInputProps
     ReactNumberFormatParams {
   placeholder?: string
   value?: number | null
+  /** Верхняя граница: ввод, после которого число стало бы больше, поле не принимает. */
+  max?: number
   readOnly?: boolean
   onValueChange?: (value: number | null) => void
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -39,6 +41,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
       inputClassName,
       value,
       placeholder,
+      max,
       thousandSeparator,
       decimalSeparator,
       allowedDecimalSeparators,
@@ -56,6 +59,10 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
   ) => {
     const inputRef = useRef<HTMLInputElement>(null)
 
+    const isWithinMax = ({ floatValue }: NumberFormatValues) => {
+      return max === undefined || floatValue === undefined || floatValue <= max
+    }
+
     return (
       <InputContainer ref={ref} inputRef={inputRef} {...containerProps}>
         <NumericFormat
@@ -65,6 +72,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
           aria-disabled={containerProps.disabled}
           onChange={onChange}
           onValueChange={({ floatValue }) => onValueChange?.(floatValue ?? null)}
+          isAllowed={isWithinMax}
           value={value}
           placeholder={placeholder}
           disabled={containerProps.disabled}
