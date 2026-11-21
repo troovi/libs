@@ -16,6 +16,15 @@
       &-description {
         @include mixins.use-styles(toaster, $appearance, description);
       }
+
+      // крестик по тону: на залитом тосте общий цвет и подложка наведения не видны
+      &-close {
+        @include mixins.use-styles(toaster, $appearance, close);
+
+        &:hover {
+          @include mixins.use-styles(toaster, $appearance, close, hover);
+        }
+      }
     }
   }
 }
@@ -53,8 +62,11 @@
     --y: translateY(calc(var(--lift) * var(--offset)));
   }
 
+  // уход: по умолчанию съезд к краю, тема заменяет его ключом out_animation
   &[data-state='closed'] {
     animation: toastOut 400ms, toastFadeOut 400ms;
+
+    @include mixins.use-styles(toaster, out);
   }
 
   &-viewport {
