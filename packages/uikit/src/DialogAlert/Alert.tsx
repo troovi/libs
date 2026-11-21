@@ -15,7 +15,11 @@ export interface AlertDialogProps {
   onClosed?: () => void
   icon?: React.ReactNode
   title?: string
-  description?: string
+  /**
+   * Текст под заголовком. Рисуется абзацем `<p>`, поэтому внутри — строчное содержимое: текст и `span`; приписку
+   * другим тоном вызывающий оформляет своим `span` (например, блочным).
+   */
+  description?: React.ReactNode
   confirm?: ActionProps
   cancel?: ActionProps
   cancelDefaultText?: string
