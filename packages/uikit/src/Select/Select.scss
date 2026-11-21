@@ -88,6 +88,32 @@
       margin-left: var(--form_space, 0);
     }
   }
+
+  // подпись справа от значения: отступ от текста поля — свой, до крестика — его собственный, до стрелки — у стрелки
+  &-aside {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: var(--form_space, 0);
+    white-space: nowrap;
+    user-select: none;
+    font-variant-numeric: tabular-nums;
+
+    @include mixins.use-styles(form, placeholder);
+
+    & + .select-expand {
+      margin-left: var(--form_space, 0);
+    }
+  }
+}
+
+// подпись на 2px мельче текста поля того же размера
+.form {
+  @each $size in sm, md, lg {
+    &[data-size='#{$size}'] .select-aside {
+      font-size: calc(var(--form_size_#{$size}_font-size) - 2px);
+    }
+  }
 }
 
 // expand icon

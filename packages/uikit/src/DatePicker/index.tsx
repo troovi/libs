@@ -1,6 +1,6 @@
 import { Popover } from '../Popover'
 import { Input, InputProps } from '../Input/Input'
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Calendar, CalendarProps } from '../Calendar/Calendar'
 import { useDayDisableCheker } from '../__libs/calendar'
 import { formatTime, getNum } from '@companix/utils-js'
@@ -75,7 +75,18 @@ export interface DatePickerProps
    * выбранного дня.
    */
   native?: boolean
+  /**
+   * Подпись в правой части поля, перед крестиком и стрелкой: например, сколько дней осталось до выбранной даты.
+   * Функция получает дату, которую показывает поле, — `null`, пока поле пусто или набранное ещё не стало выбранной
+   * датой, так что подпись не расходится с полем. Вернув `null`, подпись можно скрыть. Нажатия подпись не
+   * перехватывает: клик по ней открывает календарь, как по полю.
+   */
+  aside?: React.ReactNode | ((value: Date | null) => React.ReactNode)
   children?: React.ReactNode
+}
+
+const renderAside = (aside: DatePickerProps['aside'], value: Date | null) => {
+  return typeof aside === 'function' ? aside(value) : aside
 }
 
 export const DatePicker = ({ native = !hasMouse, ...props }: DatePickerProps) => {
@@ -92,6 +103,7 @@ const CustomDatePicker = (props: VariantProps) => {
   const {
     clearButton,
     clearButtonIcon,
+    aside,
     children,
     disabled,
     closeOnChange = true,
@@ -117,12 +129,17 @@ const CustomDatePicker = (props: VariantProps) => {
     return dateInput.toString(value ?? null)
   })
 
-  // значение, сменённое снаружи (сброс формы, загрузка), попадает в поле; ввод, ещё не ставший датой, не трогается
+  // значение, сменённое снаружи (сброс формы, загрузка), попадает в поле; ввод, ещё не ставший датой, не трогается.
+  // До отрисовки — иначе кадр поле показывает прежнюю дату, а подпись `aside` гаснет
   const time = value?.getTime()
+  const valueText = dateInput.toString(value ?? null)
 
-  useEffect(() => {
-    setInputValue(dateInput.toString(value ?? null))
+  useLayoutEffect(() => {
+    setInputValue(valueText)
   }, [time])
+
+  // подпись — о дате в поле: пока набранное расходится с выбранной датой, она получает `null`
+  const shownValue = value && inputValue === valueText ? value : null
 
   const popoverRef = useRef<HTMLDivElement>(null)
 
@@ -217,6 +234,7 @@ const CustomDatePicker = (props: VariantProps) => {
         mask={'99-99-9999'}
         rightElement={
           <SelectRightElements
+            aside={renderAside(aside, shownValue)}
             clearButton={clearButton}
             clearButtonIcon={clearButtonIcon}
             disabled={disabled}
@@ -237,6 +255,7 @@ const NativeDatePicker = (props: VariantProps) => {
   const {
     clearButton,
     clearButtonIcon,
+    aside,
     children,
     closeOnChange,
     // calendar props
@@ -289,6 +308,7 @@ const NativeDatePicker = (props: VariantProps) => {
       onValueChange={handleInputChange}
       rightElement={
         <SelectRightElements
+          aside={renderAside(aside, value ?? null)}
           clearButton={clearButton}
           clearButtonIcon={clearButtonIcon}
           disabled={inputProps.disabled}
