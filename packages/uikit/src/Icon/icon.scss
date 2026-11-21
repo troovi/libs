@@ -12,7 +12,11 @@ $icon-sizes: xxxs, xxs, xs, s, m, l, xl, xxl, xxxl;
   fill: currentcolor;
 }
 
+// Глиф Font Awesome бывает шире своей рамки: путь выходит за viewBox `0 0 w h` на 16–64 единицы ради оптического
+// баланса, и рендерер Font Awesome рисует его с `overflow: visible`. У встроенного svg по умолчанию `hidden` — без
+// правила такие иконки срезаются по краю рамки.
 .icon {
   // display: inline-block;
   flex-shrink: 0;
+  overflow: visible;
 }
