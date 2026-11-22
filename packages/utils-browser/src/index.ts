@@ -1,3 +1,4 @@
+export * from './boot-guard'
 export * from './css'
 export * from './html/index'
 export * from './device/index'
